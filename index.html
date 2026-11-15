@@ -125,11 +125,34 @@
   .sw { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
   .foot { margin-top: 16px; font-size: 12px; color: var(--faint); }
   .warn { color: var(--down); }
+
+  /* tabs and tool pages */
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 14px; border-bottom: 1px solid var(--line); }
+  .tabs a { color: var(--muted); text-decoration: none; font: 500 14px var(--font); padding: 8px 12px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs a.on { color: var(--fg); border-bottom-color: var(--accent); }
+  .tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .form { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
+  .form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .form label.check { flex-direction: row; align-items: center; gap: 6px; padding-bottom: 6px; }
+  .form input[type=number], .form input[type=date], .form select { font: 13px var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; min-width: 0; max-width: 100%; }
+  .form select { font-family: var(--font); max-width: min(100%, 420px); }
+  .form input[type=number] { width: 110px; }
+  .coinpick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--chip); border-radius: 999px; padding: 5px 10px; font-size: 12.5px; cursor: pointer; }
+  .run { background: var(--accent); color: #fff; border: 0; border-radius: 9px; padding: 8px 18px; font: 600 13.5px var(--font); cursor: pointer; }
+  .run.ghost { background: var(--chip); color: var(--fg); }
+  .run:disabled { opacity: .6; cursor: progress; }
+  .kpis.wide { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .tablewrap { overflow-x: auto; margin-top: 12px; }
+  .tbl { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .tbl th, .tbl td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .tbl th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--panel); }
+  .tbl.heat td { padding: 6px 8px; } .tbl.heat td:first-child { white-space: normal; min-width: 180px; }
   @media (prefers-reduced-motion: no-preference) { .card, .section, .acct { transition: border-color .2s; } }
 </style>
 </head>
 <body>
-<script>window.BOT = {"updated": 1794752424117, "events": [{"ts": 1794731912000, "symbol": "BTC", "kind": "execute error", "price": null, "note": "{\"error\":{\"code\":\"agent.account.not_ready\",\"message\":\"Account is not ready yet. Please try again later.\",\"retryable\":fal"}, {"ts": 1794731919000, "symbol": "ETH", "kind": "opened short", "price": 1797.13}, {"ts": 1794731923000, "symbol": "SOL", "kind": "opened short", "price": 70.456}, {"ts": 1794731927000, "symbol": "XRP", "kind": "opened short", "price": 0.950162}, {"ts": 1794733407000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734009000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734611000, "symbol": "BTC", "kind": "giving up on bar", "price": null, "note": ""}, {"ts": 1794742435000, "symbol": "SOL", "kind": "closed by Walt (stop-loss or liquidation)", "price": null}, {"ts": 1794744243000, "symbol": "BTC", "kind": "opened short", "price": 65313.1}], "account": [[1794731912000, 100.0092], [1794732528000, 99.6954], [1794732805000, 99.3751], [1794733407000, 97.443], [1794734009000, 95.8173], [1794734611000, 96.1079], [1794735213000, 96.3377], [1794735814000, 96.5294], [1794736416000, 97.0497], [1794737018000, 96.6295], [1794737619000, 96.0146], [1794738221000, 96.8047], [1794738823000, 96.7398], [1794739425000, 96.85], [1794740027000, 96.7955], [1794740629000, 96.4589], [1794741231000, 96.9183], [1794741833000, 96.3484], [1794742434000, 95.8297], [1794743036000, 95.7334], [1794743638000, 96.0412], [1794744239000, 96.4614], [1794744844000, 96.1717], [1794745446000, 95.6624], [1794746051000, 95.3916], [1794746653000, 95.6351], [1794747254000, 95.5115], [1794747856000, 95.3452], [1794748458000, 95.1916], [1794749060000, 94.758], [1794749661000, 95.2238], [1794750263000, 95.3003], [1794750865000, 95.2881], [1794751466000, 96.1446], [1794752068000, 96.1918]], "positions": {"ETH": {"side": "short", "entry": 1797.13, "size": 0.0331, "margin": 19.796782, "leverage": 3, "stop": 1850.31, "liquidation": 2366.818271377906, "ts": 1794731919000}, "XRP": {"side": "short", "entry": 0.950162, "size": 62.0, "margin": 19.659021, "leverage": 3, "stop": 0.979196, "liquidation": 1.2303329940494832, "ts": 1794731927000}, "BTC": {"side": "short", "entry": 65313.1, "size": 0.00091, "margin": 19.812207, "leverage": 3, "stop": 67282.4, "liquidation": 86052.13047821744, "ts": 1794744243000}}, "config": {"symbols": ["BTC", "ETH", "SOL", "XRP"], "interval": "4h", "leverage": 3, "margin_per_position": 20, "stop_loss_pct": 0.03, "max_drawdown_pct": 0.5, "end_utc": "2026-12-13T00:00:00Z", "budget": 100}, "fast": 20, "slow": 100};</script>
+<script>window.BOT = {"updated": 1794752641726, "events": [{"ts": 1794731912000, "symbol": "BTC", "kind": "execute error", "price": null, "note": "{\"error\":{\"code\":\"agent.account.not_ready\",\"message\":\"Account is not ready yet. Please try again later.\",\"retryable\":fal"}, {"ts": 1794731919000, "symbol": "ETH", "kind": "opened short", "price": 1797.13}, {"ts": 1794731923000, "symbol": "SOL", "kind": "opened short", "price": 70.456}, {"ts": 1794731927000, "symbol": "XRP", "kind": "opened short", "price": 0.950162}, {"ts": 1794733407000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734009000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734611000, "symbol": "BTC", "kind": "giving up on bar", "price": null, "note": ""}, {"ts": 1794742435000, "symbol": "SOL", "kind": "closed by Walt (stop-loss or liquidation)", "price": null}, {"ts": 1794744243000, "symbol": "BTC", "kind": "opened short", "price": 65313.1}], "account": [[1794731912000, 100.0092], [1794732528000, 99.6954], [1794732805000, 99.3751], [1794733407000, 97.443], [1794734009000, 95.8173], [1794734611000, 96.1079], [1794735213000, 96.3377], [1794735814000, 96.5294], [1794736416000, 97.0497], [1794737018000, 96.6295], [1794737619000, 96.0146], [1794738221000, 96.8047], [1794738823000, 96.7398], [1794739425000, 96.85], [1794740027000, 96.7955], [1794740629000, 96.4589], [1794741231000, 96.9183], [1794741833000, 96.3484], [1794742434000, 95.8297], [1794743036000, 95.7334], [1794743638000, 96.0412], [1794744239000, 96.4614], [1794744844000, 96.1717], [1794745446000, 95.6624], [1794746051000, 95.3916], [1794746653000, 95.6351], [1794747254000, 95.5115], [1794747856000, 95.3452], [1794748458000, 95.1916], [1794749060000, 94.758], [1794749661000, 95.2238], [1794750263000, 95.3003], [1794750865000, 95.2881], [1794751466000, 96.1446], [1794752068000, 96.1918]], "positions": {"ETH": {"side": "short", "entry": 1797.13, "size": 0.0331, "margin": 19.796782, "leverage": 3, "stop": 1850.31, "liquidation": 2366.818271377906, "ts": 1794731919000}, "XRP": {"side": "short", "entry": 0.950162, "size": 62.0, "margin": 19.659021, "leverage": 3, "stop": 0.979196, "liquidation": 1.2303329940494832, "ts": 1794731927000}, "BTC": {"side": "short", "entry": 65313.1, "size": 0.00091, "margin": 19.812207, "leverage": 3, "stop": 67282.4, "liquidation": 86052.13047821744, "ts": 1794744243000}}, "config": {"symbols": ["BTC", "ETH", "SOL", "XRP"], "interval": "4h", "leverage": 3, "margin_per_position": 20, "stop_loss_pct": 0.03, "max_drawdown_pct": 0.5, "end_utc": "2026-12-13T00:00:00Z", "budget": 100}, "fast": 20, "slow": 100, "freeBalance": 38.710672};</script>
 <div class="wrap">
   <header class="top">
     <div>
@@ -142,6 +165,11 @@
     </div>
     <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch light or dark theme">Theme</button>
   </header>
+
+  <nav class="tabs" aria-label="Pages">
+    <a href="#live" data-view="live">Live bot</a><a href="#whatif" data-view="whatif">What if</a><a href="#lab" data-view="lab">Strategy lab</a><a href="#research" data-view="research">Research</a>
+  </nav>
+  <div id="view-live">
 
   <section class="acct" aria-label="Account">
     <div class="kpis">
@@ -202,9 +230,15 @@
     </details>
   </section>
 
-  <div class="foot">Prices: Binance spot, refreshed every minute by this page; Walt's own price can differ slightly. Positions, orders and account value: the bot's own log, published about every 10 minutes. This page only displays; it cannot trade.</div>
+  </div>
+  <div id="view-whatif" hidden></div>
+  <div id="view-lab" hidden></div>
+  <div id="view-research" hidden></div>
+  <div class="foot">Prices: Binance spot, refreshed every minute by this page; Walt's own price can differ slightly. Positions, orders and account value: the bot's own log, published about every 10 minutes. Strategy lab and Research: daily history from Yahoo Finance and the alternative.me Fear &amp; Greed index. This page only displays; it cannot trade.</div>
 </div>
 
+<script src="whatif.js"></script>
+<script src="lab.js"></script>
 <script>
 (() => {
   const BOT = window.BOT || { events: [], account: [], positions: {}, config: { symbols: ['BTC', 'ETH', 'SOL', 'XRP'], budget: 100, leverage: 3, margin_per_position: 20, stop_loss_pct: 0.03 }, fast: 20, slow: 100, updated: 0 };
@@ -608,6 +642,19 @@
       if (m) { const fresh = JSON.parse(m[1].replace(/<\\\//g, '</')); if (fresh.updated > (BOT.updated || 0)) { Object.assign(BOT, fresh); drawAccount(); drawCoins(); drawFeed(); } }
     } catch {}
   }
+
+  const VIEWS = ['live', 'whatif', 'lab', 'research'];
+  function route() {
+    const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'live';
+    VIEWS.forEach((x) => { document.getElementById('view-' + x).hidden = x !== v; });
+    document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('on', a.dataset.view === v));
+    if (v === 'whatif' && window.WhatIf) window.WhatIf.mount(document.getElementById('view-whatif'), BOT);
+    if (v === 'lab' && window.Lab) window.Lab.mount(document.getElementById('view-lab'));
+    if (v === 'research' && window.Lab) window.Lab.mountResearch(document.getElementById('view-research'));
+    if (v === 'live') setTimeout(redrawAll, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
 
   (async () => {
     tick(); setInterval(tick, 1000);
