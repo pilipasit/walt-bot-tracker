@@ -1,0 +1,12 @@
+{
+  "symbols": ["BTC", "ETH", "SOL", "XRP"],
+  "interval": "4h",
+  "strategy": {"name": "sma_cross", "params": {"fast": 20, "slow": 100, "allow_short": true}},
+  "leverage": 3,
+  "margin_per_position": 20,
+  "budget": 100,
+  "stop_loss_pct": 0.03,
+  "max_drawdown_pct": 0.5,
+  "end_utc": "2026-12-13T00:00:00Z",
+  "poll_minutes": 10
+}

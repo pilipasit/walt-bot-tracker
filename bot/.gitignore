@@ -1,0 +1,5 @@
+__pycache__/
+data/candles/
+data/research/
+dashboard.html
+data/live/dashboard_data.js
