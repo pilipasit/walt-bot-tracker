@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walt bot decisions</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#16181d; --muted:#667085; --line:#e3e6ec; --price:#16181d;
+          --fast:#2563eb; --slow:#d97706; --long:#16a34a; --short:#dc2626; --longbg:rgba(22,163,74,.09); --shortbg:rgba(220,38,38,.09); }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1115; --card:#181b22; --text:#e8eaf0; --muted:#98a2b3; --line:#2a2f3a; --price:#e8eaf0;
+            --fast:#60a5fa; --slow:#fbbf24; --long:#4ade80; --short:#f87171; --longbg:rgba(74,222,128,.10); --shortbg:rgba(248,113,113,.10); }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:16px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  h2 { font-size:18px; margin:0; }
+  .muted { color:var(--muted); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:12px 0; }
+  .row { display:flex; flex-wrap:wrap; gap:10px 22px; align-items:baseline; }
+  .stat b { font-size:17px; font-variant-numeric:tabular-nums; }
+  .stat span { display:block; font-size:12px; color:var(--muted); }
+  .badge { display:inline-block; padding:2px 10px; border-radius:999px; font-weight:700; font-size:13px; color:#fff; }
+  .badge.long { background:var(--long); } .badge.short { background:var(--short); } .badge.flat { background:var(--muted); }
+  .legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted); margin:8px 0 4px; }
+  .legend i { display:inline-block; width:18px; height:3px; vertical-align:middle; margin-right:5px; border-radius:2px; }
+  canvas { width:100%; height:300px; display:block; touch-action:pan-y; }
+  .tip { font-size:12px; color:var(--muted); min-height:18px; font-variant-numeric:tabular-nums; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  td, th { text-align:left; padding:4px 10px 4px 0; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  th { color:var(--muted); font-weight:600; }
+  .controls button { background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:5px 12px; cursor:pointer; font:inherit; }
+  .controls button.on { border-color:var(--fast); color:var(--fast); font-weight:700; }
+  ol { margin:6px 0 0 20px; padding:0; } li { margin:3px 0; }
+  .warn { color:var(--short); }
+  details summary { cursor:pointer; color:var(--muted); font-size:13px; margin-top:8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Walt bot: how it decides</h1>
+  <div class="muted" id="clock">Loading prices...</div>
+
+  <div class="card">
+    <h2>The rule</h2>
+    <ol>
+      <li>The bot looks at the market once every <b>4 hours</b>, when a 4-hour bar closes (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC).</li>
+      <li>It compares two averages of the closing prices: the <b style="color:var(--fast)">fast average</b> (last <span id="nfast">20</span> bars) and the <b style="color:var(--slow)">slow average</b> (last <span id="nslow">100</span> bars).</li>
+      <li>Fast <b>above</b> slow: it wants to be <span class="badge long">LONG</span>. Fast <b>below</b> slow: it wants to be <span class="badge short">SHORT</span>.</li>
+      <li>When the two lines cross, it closes the old position and opens the opposite one. That crossing is the only moment it trades.</li>
+      <li>Every entry gets a stop-loss <span id="stoppct">3</span>% away, held by Walt. There is no take-profit. After a stop-loss, it stays out of that coin until the lines cross again.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <h2>Account</h2>
+      <div class="stat"><b id="accValue">-</b><span>account value (bot's last check)</span></div>
+      <div class="stat"><b id="accPnl">-</b><span>since start</span></div>
+      <div class="stat"><b id="livePnl">-</b><span>open positions at live prices</span></div>
+      <div class="stat"><b id="nextDecision">-</b><span>until next decision</span></div>
+    </div>
+    <div class="muted" id="botUpdated" style="font-size:12px;margin-top:6px"></div>
+  </div>
+
+  <div class="controls row" style="margin:14px 0 0">
+    <span class="muted">Chart range:</span>
+    <button data-bars="42">7 days</button><button data-bars="180" class="on">30 days</button><button data-bars="540">90 days</button>
+  </div>
+
+  <div id="cards"></div>
+
+  <div class="card">
+    <h2>What the bot actually did</h2>
+    <div class="muted" style="font-size:12px">From the bot's own log. Refreshed when the bot runs a cycle or the hourly check runs.</div>
+    <table id="events"><thead><tr><th>Time (UTC)</th><th>Coin</th><th>Action</th><th>Price</th><th>Note</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="muted" style="font-size:12px;margin:10px 0 30px">Prices and averages: Binance spot, fetched by this page every minute. Walt's own price can differ slightly. This page only displays; it cannot trade.</div>
+</main>
+
+<script>window.BOT = {"updated": 1794750598675, "events": [{"ts": 1794731912000, "symbol": "BTC", "kind": "execute error", "price": null, "note": "{\"error\":{\"code\":\"agent.account.not_ready\",\"message\":\"Account is not ready yet. Please try again later.\",\"retryable\":fal"}, {"ts": 1794731919000, "symbol": "ETH", "kind": "opened short", "price": 1797.13}, {"ts": 1794731923000, "symbol": "SOL", "kind": "opened short", "price": 70.456}, {"ts": 1794731927000, "symbol": "XRP", "kind": "opened short", "price": 0.950162}, {"ts": 1794733407000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734009000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734611000, "symbol": "BTC", "kind": "giving up on bar", "price": null, "note": ""}, {"ts": 1794742435000, "symbol": "SOL", "kind": "closed by Walt (stop-loss or liquidation)", "price": null}, {"ts": 1794744243000, "symbol": "BTC", "kind": "opened short", "price": 65313.1}], "account": [[1794731912000, 100.0092], [1794732528000, 99.6954], [1794732805000, 99.3751], [1794733407000, 97.443], [1794734009000, 95.8173], [1794734611000, 96.1079], [1794735213000, 96.3377], [1794735814000, 96.5294], [1794736416000, 97.0497], [1794737018000, 96.6295], [1794737619000, 96.0146], [1794738221000, 96.8047], [1794738823000, 96.7398], [1794739425000, 96.85], [1794740027000, 96.7955], [1794740629000, 96.4589], [1794741231000, 96.9183], [1794741833000, 96.3484], [1794742434000, 95.8297], [1794743036000, 95.7334], [1794743638000, 96.0412], [1794744239000, 96.4614], [1794744844000, 96.1717], [1794745446000, 95.6624], [1794746051000, 95.3916], [1794746653000, 95.6351], [1794747254000, 95.5115], [1794747856000, 95.3452], [1794748458000, 95.1916], [1794749060000, 94.758], [1794749661000, 95.2238], [1794750263000, 95.3003]], "positions": {"ETH": {"side": "short", "entry": 1797.13, "size": 0.0331, "margin": 19.796782, "leverage": 3, "stop": 1850.31, "liquidation": 2366.818271377906, "ts": 1794731919000}, "XRP": {"side": "short", "entry": 0.950162, "size": 62.0, "margin": 19.659021, "leverage": 3, "stop": 0.979196, "liquidation": 1.2303329940494832, "ts": 1794731927000}, "BTC": {"side": "short", "entry": 65313.1, "size": 0.00091, "margin": 19.812207, "leverage": 3, "stop": 67282.4, "liquidation": 86052.13047821744, "ts": 1794744243000}}, "config": {"symbols": ["BTC", "ETH", "SOL", "XRP"], "interval": "4h", "leverage": 3, "margin_per_position": 20, "stop_loss_pct": 0.03, "max_drawdown_pct": 0.5, "end_utc": "2026-12-13T00:00:00Z", "budget": 100}, "fast": 20, "slow": 100};</script>
+<script>
+const BOT = window.BOT || {events:[], account:[], positions:{}, config:{symbols:["BTC","ETH","SOL","XRP"], stop_loss_pct:0.03, budget:100}, fast:20, slow:100, updated:0};
+const FAST = BOT.fast, SLOW = BOT.slow, STEP = 4*3600*1000;
+const SYMBOLS = BOT.config.symbols;
+let visibleBars = 180;
+const data = {};   // symbol -> {bars, fast[], slow[], sig[], flips[]}
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (x, ref) => { const r = ref ?? x; const d = r >= 1000 ? 1 : r >= 10 ? 2 : r >= 1 ? 4 : 5; return x.toLocaleString("en-US", {minimumFractionDigits:d, maximumFractionDigits:d}); };
+const utc = ts => new Date(ts).toISOString().slice(0,16).replace("T"," ");
+const dayMon = ts => new Date(ts).toLocaleDateString("en-GB", {day:"numeric", month:"short", timeZone:"UTC"});
+
+document.getElementById("nfast").textContent = FAST;
+document.getElementById("nslow").textContent = SLOW;
+document.getElementById("stoppct").textContent = (BOT.config.stop_loss_pct*100).toFixed(0);
+
+function sma(values, n) {
+  const out = new Array(values.length).fill(null); let s = 0;
+  for (let i = 0; i < values.length; i++) { s += values[i]; if (i >= n) s -= values[i-n]; if (i >= n-1) out[i] = s/n; }
+  return out;
+}
+
+async function load(sym) {
+  const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${sym}USDT&interval=4h&limit=1000`);
+  const rows = await r.json();
+  const now = Date.now();
+  const all = rows.map(k => ({ts:k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}));
+  const bars = all.filter(b => b.ts + STEP <= now);          // closed bars only: what the bot sees
+  const live = all[all.length-1].c;                           // latest traded price
+  const closes = bars.map(b => b.c);
+  const fast = sma(closes, FAST), slow = sma(closes, SLOW);
+  const sig = closes.map((_, i) => slow[i] == null ? 0 : (fast[i] > slow[i] ? 1 : fast[i] < slow[i] ? -1 : 0));
+  const flips = [];
+  for (let i = 1; i < sig.length; i++) if (sig[i] !== sig[i-1] && sig[i-1] !== 0) flips.push({i, ts:bars[i].ts + STEP, side:sig[i], price:closes[i]});
+  data[sym] = {bars, fast, slow, sig, flips, live};
+}
+
+function cardHtml(sym) {
+  return `<div class="card" id="card-${sym}">
+    <div class="row"><h2>${sym}</h2><span id="badge-${sym}" class="badge flat">-</span>
+      <div class="stat"><b id="px-${sym}">-</b><span>price now</span></div>
+      <div class="stat"><b id="fa-${sym}" style="color:var(--fast)">-</b><span>fast average</span></div>
+      <div class="stat"><b id="sl-${sym}" style="color:var(--slow)">-</b><span>slow average</span></div>
+      <div class="stat"><b id="gap-${sym}">-</b><span>gap between the lines</span></div>
+    </div>
+    <div id="why-${sym}" style="margin:8px 0 2px"></div>
+    <div id="pos-${sym}" class="muted" style="font-size:13px"></div>
+    <div class="legend"><span><i style="background:var(--price)"></i>price (4h close)</span><span><i style="background:var(--fast)"></i>fast average</span>
+      <span><i style="background:var(--slow)"></i>slow average</span><span><i style="background:var(--long);height:10px;opacity:.35"></i>rule says long</span>
+      <span><i style="background:var(--short);height:10px;opacity:.35"></i>rule says short</span><span>&#9650;&#9660; lines crossed: the bot trades</span><span>&#9679; bot's real order</span></div>
+    <canvas id="cv-${sym}"></canvas>
+    <div class="tip" id="tip-${sym}">Move over the chart to read values.</div>
+    <details><summary>Past crossings (decision moments)</summary><table id="flips-${sym}"><thead><tr><th>Time (UTC)</th><th>Decision</th><th>Price</th></tr></thead><tbody></tbody></table></details>
+  </div>`;
+}
+
+function renderCard(sym) {
+  const d = data[sym]; if (!d) return;
+  const n = d.bars.length - 1, f = d.fast[n], s = d.slow[n], side = d.sig[n];
+  const badge = document.getElementById(`badge-${sym}`);
+  badge.textContent = side > 0 ? "RULE: LONG" : side < 0 ? "RULE: SHORT" : "NO SIGNAL";
+  badge.className = "badge " + (side > 0 ? "long" : side < 0 ? "short" : "flat");
+  document.getElementById(`px-${sym}`).textContent = fmt(d.live);
+  document.getElementById(`fa-${sym}`).textContent = fmt(f, d.live);
+  document.getElementById(`sl-${sym}`).textContent = fmt(s, d.live);
+  const gap = (f/s - 1) * 100;
+  document.getElementById(`gap-${sym}`).textContent = (gap >= 0 ? "+" : "") + gap.toFixed(2) + " %";
+  const last = d.flips[d.flips.length-1];
+  const since = last ? `since ${dayMon(last.ts)} ${utc(last.ts).slice(11)} UTC` : "for the whole chart";
+  document.getElementById(`why-${sym}`).innerHTML = `The fast average is <b>${gap < 0 ? "below" : "above"}</b> the slow average by ${Math.abs(gap).toFixed(2)} %, so the rule says <b>${side > 0 ? "long" : "short"}</b> ${since}. ` +
+    `It flips to ${side > 0 ? "short" : "long"} when the fast line crosses ${side > 0 ? "under" : "over"} the slow line at a 4-hour close.`;
+  const p = BOT.positions[sym], el = document.getElementById(`pos-${sym}`);
+  if (p) {
+    const dir = p.side === "long" ? 1 : -1, pnl = dir * (d.live - p.entry) * p.size, toStop = p.stop ? Math.abs(p.stop/d.live - 1)*100 : null;
+    el.innerHTML = `<b style="color:var(--text)">Bot's real position:</b> ${p.side} ${p.leverage}x, entry ${fmt(p.entry)}, margin ${p.margin.toFixed(2)} USD, ` +
+      `stop-loss ${p.stop ? fmt(p.stop, p.entry) + ` (${toStop.toFixed(2)} % away)` : "none"}, take-profit none. ` +
+      `At the live price: <b style="color:${pnl >= 0 ? "var(--long)" : "var(--short)"}">${pnl >= 0 ? "+" : ""}${pnl.toFixed(2)} USD</b>.`;
+  } else el.innerHTML = `<b style="color:var(--text)">Bot's real position:</b> none in ${sym}.`;
+  const tb = document.querySelector(`#flips-${sym} tbody`);
+  tb.innerHTML = d.flips.slice(-12).reverse().map(x => `<tr><td>${utc(x.ts)}</td><td>${x.side > 0 ? "close short, open LONG" : "close long, open SHORT"}</td><td>${fmt(x.price)}</td></tr>`).join("");
+  draw(sym);
+}
+
+function draw(sym, hover) {
+  const d = data[sym], cv = document.getElementById(`cv-${sym}`); if (!d || !cv) return;
+  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const g = cv.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0,0,W,H);
+  const padL = 8, padR = 64, padT = 14, padB = 22;
+  const start = Math.max(SLOW - 1, d.bars.length - visibleBars), end = d.bars.length;      // [start, end)
+  const count = end - start, xw = (W - padL - padR) / count;
+  const p = BOT.positions[sym];
+  let lo = Infinity, hi = -Infinity;
+  for (let i = start; i < end; i++) for (const v of [d.bars[i].l, d.bars[i].h, d.fast[i], d.slow[i]]) if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  for (const v of [d.live, p && p.entry, p && p.stop]) if (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  const pad = (hi - lo) * 0.05; lo -= pad; hi += pad;
+  const X = i => padL + (i - start + 0.5) * xw, Y = v => padT + (hi - v) / (hi - lo) * (H - padT - padB);
+  cv._geom = {start, end, xw, padL, X, Y};
+  // regime shading
+  for (let i = start; i < end; i++) { if (!d.sig[i]) continue; g.fillStyle = css(d.sig[i] > 0 ? "--longbg" : "--shortbg"); g.fillRect(X(i) - xw/2, padT, xw + 0.5, H - padT - padB); }
+  // grid + price labels
+  g.font = "11px system-ui"; g.fillStyle = css("--muted"); g.strokeStyle = css("--line"); g.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) { const v = lo + (hi - lo) * k / 4, y = Y(v); g.beginPath(); g.moveTo(padL, y); g.lineTo(W - padR, y); g.stroke(); g.fillText(fmt(v, d.live), W - padR + 6, y + 4); }
+  let lastDay = "";
+  for (let i = start; i < end; i++) { const day = dayMon(d.bars[i].ts); if (day !== lastDay && (i - start) % Math.ceil(count/7) === 0) { g.fillText(day, X(i) - 14, H - 6); lastDay = day; } }
+  // high-low range, then lines
+  g.strokeStyle = css("--muted"); g.globalAlpha = 0.35; g.beginPath();
+  for (let i = start; i < end; i++) { g.moveTo(X(i), Y(d.bars[i].h)); g.lineTo(X(i), Y(d.bars[i].l)); } g.stroke(); g.globalAlpha = 1;
+  const line = (get, color, width) => { g.strokeStyle = color; g.lineWidth = width; g.beginPath(); let on = false;
+    for (let i = start; i < end; i++) { const v = get(i); if (v == null) continue; on ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)); on = true; } g.stroke(); };
+  line(i => d.bars[i].c, css("--price"), 1.4);
+  line(i => d.slow[i], css("--slow"), 2);
+  line(i => d.fast[i], css("--fast"), 2);
+  // crossings
+  for (const f of d.flips) { if (f.i < start) continue; const x = X(f.i), col = css(f.side > 0 ? "--long" : "--short");
+    g.strokeStyle = col; g.setLineDash([4,4]); g.lineWidth = 1; g.beginPath(); g.moveTo(x, padT); g.lineTo(x, H - padB); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col; g.beginPath(); const y = f.side > 0 ? H - padB - 4 : padT + 4;
+    if (f.side > 0) { g.moveTo(x, y - 9); g.lineTo(x - 6, y); g.lineTo(x + 6, y); } else { g.moveTo(x, y + 9); g.lineTo(x - 6, y); g.lineTo(x + 6, y); } g.fill();
+    if (count <= 200) g.fillText(f.side > 0 ? "LONG" : "SHORT", x + 8, f.side > 0 ? H - padB - 6 : padT + 14); }
+  // bot's real position: entry and stop lines, order dots
+  const hline = (v, col, label) => { g.strokeStyle = col; g.setLineDash([6,4]); g.lineWidth = 1.2; g.beginPath(); g.moveTo(padL, Y(v)); g.lineTo(W - padR, Y(v)); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col; g.fillText(label, padL + 4, Y(v) - 4); };
+  if (p) { hline(p.entry, css("--text"), `bot entry ${fmt(p.entry)}`); if (p.stop) hline(p.stop, css("--short"), `stop-loss ${fmt(p.stop, p.entry)}`); }
+  for (const e of BOT.events) { if (e.symbol !== sym || e.price == null) continue; const i = (e.ts - d.bars[start].ts) / STEP + start - 0.5; if (i < start - 1) continue;
+    const x = Math.min(X(i), W - padR - 4); g.fillStyle = css("--text"); g.beginPath(); g.arc(x, Y(e.price), 5, 0, 7); g.fill(); g.strokeStyle = css("--card"); g.lineWidth = 2; g.stroke(); }
+  // live price tag
+  g.fillStyle = css("--text"); g.fillRect(W - padR + 2, Y(d.live) - 8, padR - 4, 16); g.fillStyle = css("--card"); g.fillText(fmt(d.live), W - padR + 6, Y(d.live) + 4);
+  if (hover != null) { g.strokeStyle = css("--muted"); g.lineWidth = 1; g.beginPath(); g.moveTo(X(hover), padT); g.lineTo(X(hover), H - padB); g.stroke(); }
+}
+
+function attachHover(sym) {
+  const cv = document.getElementById(`cv-${sym}`), tip = document.getElementById(`tip-${sym}`);
+  const move = ev => { const gm = cv._geom, d = data[sym]; if (!gm) return; const rect = cv.getBoundingClientRect(), cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
+    const i = Math.max(gm.start, Math.min(gm.end - 1, Math.floor((cx - gm.padL) / gm.xw) + gm.start)), b = d.bars[i];
+    tip.innerHTML = `${utc(b.ts + STEP)} UTC close &nbsp; price <b>${fmt(b.c)}</b> &nbsp; <span style="color:var(--fast)">fast ${fmt(d.fast[i], b.c)}</span> &nbsp; <span style="color:var(--slow)">slow ${fmt(d.slow[i], b.c)}</span> &nbsp; rule: <b>${d.sig[i] > 0 ? "long" : "short"}</b>`;
+    draw(sym, i); };
+  cv.addEventListener("mousemove", move); cv.addEventListener("touchstart", move, {passive:true}); cv.addEventListener("touchmove", move, {passive:true});
+  cv.addEventListener("mouseleave", () => { tip.textContent = "Move over the chart to read values."; draw(sym); });
+}
+
+function renderAccount() {
+  const acc = BOT.account, budget = BOT.config.budget || 100;
+  if (acc.length) { const v = acc[acc.length-1][1]; document.getElementById("accValue").textContent = v.toFixed(2) + " USD";
+    const el = document.getElementById("accPnl"); el.textContent = (v - budget >= 0 ? "+" : "") + (v - budget).toFixed(2) + " USD"; el.style.color = css(v >= budget ? "--long" : "--short"); }
+  let pnl = 0, any = false;
+  for (const [sym, p] of Object.entries(BOT.positions)) if (data[sym]) { pnl += (p.side === "long" ? 1 : -1) * (data[sym].live - p.entry) * p.size; any = true; }
+  const lp = document.getElementById("livePnl"); lp.textContent = any ? (pnl >= 0 ? "+" : "") + pnl.toFixed(2) + " USD" : "no positions"; lp.style.color = any ? css(pnl >= 0 ? "--long" : "--short") : "";
+  const age = BOT.updated ? Math.round((Date.now() - BOT.updated) / 60000) : null;
+  document.getElementById("botUpdated").innerHTML = BOT.updated ? `Bot record last refreshed ${utc(BOT.updated)} UTC (${age} min ago).` + (age > 90 ? ` <span class="warn">This is old: the bot or the hourly check may have stopped.</span>` : "")
+    : `<span class="warn">No bot record in this copy of the page. Charts still work.</span>`;
+  const tb = document.querySelector("#events tbody");
+  tb.innerHTML = BOT.events.slice().reverse().map(e => `<tr><td>${utc(e.ts)}</td><td>${e.symbol || ""}</td><td>${e.kind}</td><td>${e.price != null ? fmt(e.price) : ""}</td><td class="muted">${(e.note || "").replace(/[<>]/g, "")}</td></tr>`).join("") || `<tr><td colspan="5" class="muted">Nothing yet.</td></tr>`;
+}
+
+function tick() {
+  const now = Date.now(), next = Math.ceil(now / STEP) * STEP, left = next - now;
+  const h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), s = Math.floor(left % 60000 / 1000);
+  document.getElementById("nextDecision").textContent = `${h}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
+  document.getElementById("clock").textContent = `Now ${utc(now)} UTC. Next 4-hour close at ${utc(next).slice(11)} UTC. Prices refresh every minute.`;
+}
+
+async function refresh() {
+  for (const sym of SYMBOLS) { try { await load(sym); renderCard(sym); } catch (e) { document.getElementById(`why-${sym}`).innerHTML = `<span class="warn">Could not load prices for ${sym}: ${e.message}</span>`; } }
+  renderAccount();
+}
+
+document.getElementById("cards").innerHTML = SYMBOLS.map(cardHtml).join("");
+SYMBOLS.forEach(attachHover);
+document.querySelectorAll(".controls button").forEach(b => b.addEventListener("click", () => {
+  visibleBars = +b.dataset.bars; document.querySelectorAll(".controls button").forEach(x => x.classList.toggle("on", x === b)); SYMBOLS.forEach(s => draw(s)); }));
+window.addEventListener("resize", () => SYMBOLS.forEach(s => draw(s)));
+tick(); setInterval(tick, 1000);
+refresh(); setInterval(refresh, 60000);
+// the file is regenerated with the bot record inside it, so reload to pick up a newer copy
+setInterval(() => location.reload(), 600000);
+</script>
+</body>
+</html>
