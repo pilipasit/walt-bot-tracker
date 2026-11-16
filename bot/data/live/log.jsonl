@@ -215,3 +215,5 @@
 {"time": "2026-11-16 14:10:08", "mode": "LIVE", "event": "account", "available": 38.710672, "value": 99.2361, "open_positions": 3}
 {"time": "2026-11-16 14:20:08", "mode": "LIVE", "event": "account", "available": 38.710672, "value": 97.727, "open_positions": 3}
 {"time": "2026-11-16 14:30:08", "mode": "LIVE", "event": "account", "available": 38.710672, "value": 97.5468, "open_positions": 3}
+{"time": "2026-11-16 14:40:08", "mode": "LIVE", "event": "account", "available": 56.682637, "value": 94.6715, "open_positions": 2}
+{"time": "2026-11-16 14:40:09", "mode": "LIVE", "event": "position_gone", "symbol": "ETH", "was": "short"}
