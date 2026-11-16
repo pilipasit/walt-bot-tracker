@@ -1,11 +1,21 @@
 name: walt-bot
 
-# Runs the live Walt bot every ~10 minutes on GitHub's servers.
-# Scheduled runs trade only when the repository variable LIVE_ENABLED is "true".
-# Manual runs: mode "prices" (no sign-in needed), "dry" (reads the account, places nothing), "live".
+# Runs the live Walt bot on GitHub's servers, independent of the owner's PC.
+#
+# GitHub starts scheduled workflows "best effort": on this repo they fired twice in eleven hours. So one run does not
+# do one cycle — it LOOPS: a bot cycle every 10 minutes for ~5.5 hours, saving state and the renewed sign-in after
+# every cycle, then it starts the next run itself (workflow_dispatch from GITHUB_TOKEN is allowed to do that). The
+# hourly schedule is only a backup that restarts the chain if it ever breaks. `concurrency` keeps it to one at a time.
+#
+# Real orders only when the repository variable LIVE_ENABLED is "true".
+#   Stop at the end of the current loop:  set LIVE_ENABLED to false (the chain is not continued).
+#   Stop now:                             cancel the running "walt-bot" run in the Actions tab, AND set LIVE_ENABLED false.
+# Stops are attached to every order on Walt's side, so open positions stay protected between cycles and while stopped.
+#
+# Manual runs: mode "prices" (no sign-in), "dry" (reads the account, places nothing), "live"; `minutes` = loop length.
 on:
   schedule:
-    - cron: "4-59/10 * * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -13,6 +23,9 @@ on:
         type: choice
         options: [prices, dry, live]
         default: dry
+      minutes:
+        description: "how long this run keeps cycling (one cycle every 10 minutes; 0 = a single cycle)"
+        default: "330"
 
 concurrency:
   group: walt-bot
@@ -20,12 +33,16 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   cycle:
     if: github.event_name == 'workflow_dispatch' || vars.LIVE_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 350
+    env:
+      MODE: ${{ github.event_name == 'schedule' && 'live' || inputs.mode }}
+      MINUTES: ${{ github.event_name == 'schedule' && '330' || inputs.minutes }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,19 +51,39 @@ jobs:
           cache: pip
           cache-dependency-path: bot/requirements.txt
       - run: pip install -q -r bot/requirements.txt
-      - name: One bot cycle
-        working-directory: bot
+      - name: Bot cycles every 10 minutes
         env:
           WALT_TOKEN_KEY: ${{ secrets.WALT_TOKEN_KEY }}
-          MODE: ${{ github.event_name == 'schedule' && 'live' || inputs.mode }}
-        run: python -m waltbot cloud-run --mode "$MODE"
-      - name: Save state, renewed sign-in and tracker page
-        if: always() && (github.event_name == 'schedule' || inputs.mode != 'prices')
         run: |
           git config user.name "walt-bot"
           git config user.email "walt-bot@users.noreply.github.com"
-          git add -A bot index.html
-          git diff --cached --quiet && exit 0
-          git commit -q -m "bot cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
-          for i in 1 2 3 4; do git pull --rebase -q && git push -q && exit 0; sleep 7; done
-          exit 1
+          # In a rebase, -X theirs keeps THIS run's commit: the bot owns its state files.
+          save() {
+            [ "$MODE" = "prices" ] && return 0
+            git add -A bot index.html
+            git diff --cached --quiet && return 0
+            git commit -q -m "bot cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
+            for i in 1 2 3 4 5; do git pull --rebase -q -X theirs && git push -q && return 0; sleep 7; done
+            echo "::warning::could not push the state this cycle; will retry next cycle"
+          }
+          end=$(( $(date +%s) + MINUTES * 60 ))
+          n=0
+          while :; do
+            n=$((n + 1))
+            if [ -f bot/STOP ]; then echo "bot/STOP exists — stopping"; break; fi
+            echo "::group::cycle $n $(date -u +'%H:%M') UTC ($MODE)"
+            (cd bot && python -m waltbot cloud-run --mode "$MODE") || echo "::warning::cycle $n failed"
+            echo "::endgroup::"
+            save
+            now=$(date +%s)
+            [ $(( now + 600 )) -ge "$end" ] && break
+            sleep $(( 600 - now % 600 + 5 ))   # wake just after the next 10-minute mark
+            git pull --rebase -q -X theirs || git rebase --abort || true
+          done
+      - name: Start the next run (keeps the bot going without the PC)
+        if: success() && env.MODE == 'live' && env.MINUTES != '0' && vars.LIVE_ENABLED == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f bot/STOP ] && { echo "bot/STOP exists — not continuing"; exit 0; }
+          gh workflow run bot.yml --repo "${{ github.repository }}" -f mode=live -f minutes=330
