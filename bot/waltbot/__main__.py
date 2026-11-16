@@ -221,6 +221,8 @@ def main() -> None:
     p.set_defaults(fn=cmd_live)
     p = sub.add_parser("cloud-setup", help="move the live bot to GitHub Actions (run once, on this PC)")
     p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["setup"]).setup())
+    p = sub.add_parser("cloud-move", help="ONE command: stop the PC bot between cycles, move it to GitHub, start it there")
+    p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["move"]).move())
     p = sub.add_parser("cloud-run", help="one bot cycle on GitHub Actions (used by the workflow)")
     p.add_argument("--mode", choices=["prices", "dry", "live"], default="dry")
     p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["run"]).run(a.mode))

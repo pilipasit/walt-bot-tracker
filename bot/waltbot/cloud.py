@@ -90,6 +90,73 @@ def setup() -> None:
     print("Then switch real trading on:  gh variable set LIVE_ENABLED --body true --repo " + REPO)
 
 
+# ------------------------------------------------------------------ move (owner, local: the one command)
+def _pc_processes(fragment: str) -> list[int]:
+    """PIDs of python processes on this PC whose command line contains `fragment`."""
+    out = subprocess.run(["powershell", "-NoProfile", "-Command",
+                          "Get-CimInstance Win32_Process -Filter \"Name like 'python%'\" | "
+                          "ForEach-Object { \"$($_.ProcessId)`t$($_.CommandLine)\" }"],
+                         capture_output=True, text=True).stdout
+    me = os.getpid()
+    return [int(line.split("\t", 1)[0]) for line in out.splitlines()
+            if "\t" in line and fragment in line and "cloud" not in line and int(line.split("\t", 1)[0]) != me]
+
+
+def move() -> None:
+    """Everything the owner needs, in one command: stop the PC bot right after a cycle, hand the bot to GitHub,
+    start the cloud loop, stop the PC tracker publisher, and show the first cloud cycle."""
+    import time
+
+    log = ROOT / "data" / "live" / "log.jsonl"
+    pids = _pc_processes("waltbot live")
+    if pids:
+        # Stop BETWEEN cycles, never in the middle of one: wait for the next log line, then give it 10 seconds.
+        print("Waiting for the PC bot to finish its current 10-minute cycle (up to 11 minutes)…", flush=True)
+        start = log.stat().st_mtime if log.exists() else 0
+        deadline = time.time() + 660
+        while time.time() < deadline and (log.stat().st_mtime if log.exists() else 0) == start:
+            time.sleep(5)
+        time.sleep(10)
+        for pid in pids:
+            subprocess.run(["taskkill", "/PID", str(pid), "/F"], capture_output=True)
+        time.sleep(2)
+        if _local_bot_running():
+            sys.exit("Could not stop the PC bot. Close its window and run this again.")
+        print("PC bot stopped.", flush=True)
+    # The PC tracker publisher pushes to the same repo; stop it first so the hand-over push can't collide with it.
+    for pid in _pc_processes("publish_tracker.py"):
+        subprocess.run(["taskkill", "/PID", str(pid), "/F"], capture_output=True)
+    setup()
+    started = time.time()
+    r = subprocess.run(["gh", "workflow", "run", "bot.yml", "--repo", REPO, "-f", "mode=live", "-f", "minutes=330"],
+                       capture_output=True, text=True)
+    if r.returncode:
+        sys.exit("The bot is on GitHub but its first run did not start: " + r.stderr.strip()
+                 + "\nIt starts by itself within the hour (backup schedule), or run: gh workflow run bot.yml --repo "
+                 + REPO + " -f mode=live")
+    print("Cloud bot started. Waiting for its first cycle (a few minutes)…", flush=True)
+    cloud_log = SITE / "bot" / "data" / "live" / "log.jsonl"
+    for _ in range(48):  # up to 8 minutes
+        time.sleep(10)
+        subprocess.run(["git", "-C", str(SITE), "pull", "--rebase", "-q"], capture_output=True)
+        lines = cloud_log.read_text(encoding="utf-8").splitlines() if cloud_log.exists() else []
+        if lines and json.loads(lines[-1]).get("time", "") >= time.strftime("%Y-%m-%d %H:%M", time.gmtime(started)):
+            break
+        out = subprocess.run(["gh", "run", "list", "--repo", REPO, "--workflow", "bot.yml", "-L", "1",
+                              "--json", "status,conclusion,url"], capture_output=True, text=True).stdout
+        try:
+            last = json.loads(out)[0]
+        except Exception:  # noqa: BLE001
+            continue
+        if last["status"] == "completed" and last["conclusion"] != "success":
+            sys.exit("The first cloud run failed. Open " + last["url"] + " and send the link to Claude.")
+    else:
+        print("No cloud cycle seen yet; it may still be starting. Check later with: python -m waltbot cloud-status")
+    status()
+    print("\nDone. The bot now runs on GitHub every 10 minutes, without this PC. The PC can sleep or be off.")
+    print("Watch it: https://pilipasit.github.io/walt-bot-tracker/   Stop it: set LIVE_ENABLED to false on GitHub.")
+
+
 # ------------------------------------------------------------------ run (workflow)
 def run(mode: str) -> None:
     base = ROOT
