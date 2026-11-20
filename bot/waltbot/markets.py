@@ -60,8 +60,27 @@ def _load() -> dict[str, list[list[float]]]:
         return {}
 
 
+FUNDING = OUT / "funding.json"
+
+
+async def refresh_funding(client) -> None:
+    """Walt's current hourly funding per asset (positive = longs pay shorts), at most every 9 minutes."""
+    try:
+        if FUNDING.exists() and time.time() - FUNDING.stat().st_mtime < 540:
+            return
+        raw = await client.call("perps_list_contracts")
+        rows = raw.get("contracts", raw if isinstance(raw, list) else [])
+        f = {c["base_asset"]: float(c.get("funding_rate_hourly") or 0) for c in rows if c.get("base_asset")}
+        if f:
+            OUT.mkdir(parents=True, exist_ok=True)
+            FUNDING.write_text(json.dumps({"updated": int(time.time() * 1000), "hourly": f}), encoding="utf-8")
+    except Exception:  # noqa: BLE001 — funding is extra information; never block sampling
+        pass
+
+
 async def sample(client) -> int:
     """Append Walt's current price for every asset Walt lists. Returns how many were read."""
+    await refresh_funding(client)
     contracts = load_contracts()
     store, now, n = _load(), int(time.time() * 1000), 0
     for sym, _, _ in UNIVERSE:
@@ -106,7 +125,7 @@ def _hourly_from_samples(samples: list[list[float]]) -> list[tuple[int, float, f
     by_hour: dict[int, list[float]] = {}
     for ts, px in samples:
         by_hour.setdefault(int(ts) // HOUR * HOUR, []).append(px)
-    return [(h, v[0], max(v), min(v), v[-1]) for h, v in sorted(by_hour.items())]
+    return [(h, v[0], max(v), min(v), v[-1], None) for h, v in sorted(by_hour.items())]
 
 
 def _hourly_binance(symbol: str) -> list[tuple[int, float]]:
@@ -114,7 +133,7 @@ def _hourly_binance(symbol: str) -> list[tuple[int, float]]:
 
     now = int(time.time() * 1000)
     try:
-        return [(c.ts, c.o, c.h, c.l, c.c) for c in _download(symbol, "1h", now - KEEP_MS, now)]
+        return [(c.ts, c.o, c.h, c.l, c.c, c.v * c.c) for c in _download(symbol, "1h", now - KEEP_MS, now)]  # volume in USD
     except Exception:  # noqa: BLE001
         return []
 
@@ -128,8 +147,9 @@ def _hourly_yahoo(symbol: str) -> list[tuple]:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         d = json.load(urllib.request.urlopen(req, timeout=20))["chart"]["result"][0]
         q = d["indicators"]["quote"][0]
-        rows = [(int(t) * 1000, o, h, l, c) for t, o, h, l, c in zip(d["timestamp"], q["open"], q["high"], q["low"], q["close"])
-                if None not in (o, h, l, c)]
+        vols = q.get("volume") or [None] * len(d["timestamp"])
+        rows = [(int(t) * 1000, o, h, l, c, (v or 0) * c) for t, o, h, l, c, v in
+                zip(d["timestamp"], q["open"], q["high"], q["low"], q["close"], vols) if None not in (o, h, l, c)]
         return rows[-168:]
     except Exception:  # noqa: BLE001
         return []
@@ -215,7 +235,8 @@ def _chart(hourly: list[tuple]) -> dict:
     first = len(closes) - n - start
     line = lambda i, k: round(math.exp(ym + b * (i - xm) + k * sd), 10)  # noqa: E731
     return {
-        "candles": [[h[0], *(round(v, 10) for v in h[1:5])] for h in hourly[start:]],
+        # [ts, open, high, low, close, volume_usd or null]
+        "candles": [[h[0], *(round(v, 10) for v in h[1:5]), (round(h[5]) if len(h) > 5 and h[5] else None)] for h in hourly[start:]],
         "ema_fast": [round(v, 10) for v in e12[start:]], "ema_slow": [round(v, 10) for v in e48[start:]],
         "channel": {"from": first, "mid": [line(0, 0), line(n - 1, 0)], "hi": [line(0, 2), line(n - 1, 2)],
                     "lo": [line(0, -2), line(n - 1, -2)]},
@@ -250,6 +271,11 @@ def _proxy_ref(store: dict, last_walt) -> float | None:
 def build() -> Path:
     contracts = load_contracts()
     maint = _maintenance()
+    try:
+        funding = json.loads(FUNDING.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        funding = {"updated": None, "hourly": {}}
+    now_ms = time.time() * 1000
     store = _load()
     assets = []
     for sym, group, binance in UNIVERSE:
@@ -286,7 +312,13 @@ def build() -> Path:
             # Gold has no direct live feed; the page moves Walt's last gold price by PAXG's live % change.
             "proxy": "PAXGUSDT" if sym == "XAU" else None,
             "proxy_ref": _proxy_ref(store, last_walt) if sym == "XAU" else None,
-            "funding_h": c.funding_rate_hourly, "analysis": a,
+            # Walt's hourly funding as a FRACTION per hour (0.0001 = 0.01%/h); positive = longs pay shorts.
+            "funding_h": funding["hourly"].get(sym, c.funding_rate_hourly),
+            "funding_at": funding.get("updated") if sym in funding["hourly"] else None,
+            # Market open = crypto always; otherwise the latest hourly candle is under 2 hours old.
+            "market_open": group == "Crypto" or bool(hourly and now_ms - hourly[-1][0] < 2 * 3_600_000),
+            "last_candle_at": hourly[-1][0] if hourly else None,
+            "analysis": a,
         })
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "markets.json"
