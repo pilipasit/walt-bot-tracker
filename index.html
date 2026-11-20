@@ -583,10 +583,15 @@ function stream() {
 async function quotes() {
   if (!DATA) return;
   let q = null;
-  try {
-    const r = await fetch('https://api.github.com/repos/pilipasit/walt-bot-tracker/contents/bot/data/market/live.json', { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
-    if (r.ok) q = await r.json();
-  } catch {}
+  // 1) the walt-positions worker (updated every 2 min, no rate limit); 2) the GitHub API (60 requests/h per network);
+  // 3) the Pages copy (can lag by minutes). The newest answer wins.
+  const tryJson = async (url, opts) => { try { const r = await fetch(url, opts); return r.ok ? await r.json() : null; } catch { return null; } };
+  const w = await tryJson('https://walt-positions.mrsupetbred.workers.dev/live', { cache: 'no-store' });
+  if (w && w.updated) q = w;
+  if (!q || Date.now() - q.updated > 150000) {
+    const g = await tryJson('https://api.github.com/repos/pilipasit/walt-bot-tracker/contents/bot/data/market/live.json', { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+    if (g && g.updated && (!q || g.updated > q.updated)) q = g;
+  }
   if (!q) { try { q = await (await fetch('bot/data/market/live.json?t=' + Date.now())).json(); } catch { return; } }
   for (const a of DATA.assets) {
     const w = q.prices[a.symbol]; if (!w) continue;

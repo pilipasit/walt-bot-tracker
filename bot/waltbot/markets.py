@@ -114,9 +114,22 @@ async def sample(client) -> int:
     # live.json: just the latest Walt price per asset (+ PAXG at that moment) for the page's 1-minute refresh.
     latest = {k: v[-1] for k, v in store.items() if v and not k.startswith("_")}
     paxg = store.get("_PAXG", [])
-    (OUT / "live.json").write_text(json.dumps({"updated": now, "prices": latest,
-                                              "paxg": paxg[-1] if paxg and paxg[-1][0] > now - 120_000 else None},
-                                             separators=(",", ":")), encoding="utf-8")
+    live = json.dumps({"updated": now, "prices": latest,
+                       "paxg": paxg[-1] if paxg and paxg[-1][0] > now - 120_000 else None}, separators=(",", ":"))
+    (OUT / "live.json").write_text(live, encoding="utf-8")
+    # Also to the walt-positions worker every 2 minutes: the page reads it there without GitHub's 60/h API limit or the
+    # Pages/raw caches (Workers KV free tier allows 1,000 writes a day).
+    import os
+    import urllib.request
+    key = os.environ.get("POSITIONS_SYNC_KEY", "")
+    if key and int(time.time() // 60) % 2 == 0:
+        try:
+            urllib.request.urlopen(urllib.request.Request(
+                "https://walt-positions.mrsupetbred.workers.dev/live", data=live.encode(), method="PUT",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
+                         "User-Agent": "walt-markets/1.0"}), timeout=10)
+        except Exception as e:  # noqa: BLE001
+            print("live prices not pushed:", str(e)[:100], flush=True)
     return n
 
 
