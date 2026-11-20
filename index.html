@@ -46,6 +46,14 @@ td { padding:2px 0; } td:last-child { text-align:right; } td:first-child { font-
 .note { font-size:12px; color:var(--muted); line-height:1.4; }
 footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5; }
 .empty { opacity:.7; }
+.overview { margin:0 0 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; }
+.overview summary { cursor:pointer; font-weight:600; } .ovt { width:100%; border-collapse:collapse; margin-top:8px; font:12.5px ui-monospace,Consolas,monospace; }
+.ovt th { text-align:left; font:600 11px system-ui,sans-serif; color:var(--muted); padding:4px 6px; border-bottom:1px solid var(--line); }
+.ovt td { padding:4px 6px; border-bottom:1px solid var(--line); } .ovt tr { cursor:pointer; } .ovt tr:hover td { background:var(--chip); }
+.ovt td:first-child { font-family:system-ui,sans-serif; color:var(--ink); } .ovt .r { text-align:right; }
+.tf { display:flex; gap:6px; flex-wrap:wrap; font-size:12px; } .tf span { border:1px solid var(--line); border-radius:999px; padding:1px 8px; }
+.al { background:var(--accent); color:#fff; border-radius:999px; padding:1px 8px; font-size:11px; font-weight:700; }
+@media (max-width:700px) { .ovt .hide { display:none; } }
 #mypos { display:grid; gap:12px; margin-bottom:14px; }
 .pos { background:var(--panel); border:2px solid var(--accent); border-radius:12px; padding:12px; display:grid; gap:10px; }
 .pos h2 { margin:0; font-size:17px; } .pos .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
@@ -78,6 +86,7 @@ footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5;
 </div>
 
 <section id="mypos"></section>
+<details class="overview" open><summary>Overview — all assets</summary><div id="ov"></div></details>
 <details class="addpos"><summary>+ Add a position (kept only in this browser)</summary>
   <form id="posform">
     <label>Asset <select name="sym" id="possym"></select></label>
@@ -200,6 +209,18 @@ function scenario(a, lev) {
     hoursToTp: Math.abs(x.slope_pct_h) > 1e-6 ? tp / Math.abs(x.slope_pct_h) : null };
 }
 
+const arrow3 = (t) => ({ up: '▲', down: '▼', sideways: '◆' })[t] || '';
+
+function overview(list) {
+  const rows = list.map((a) => { const x = a.analysis, px = LIVE[a.symbol] ?? (x ? x.price : a.walt_price);
+    const tf = (k) => { const t = x && x.tf && x.tf[k]; return t ? `<span class="t-${t.trend}">${arrow3(t.trend)}</span>` : '·'; };
+    return `<tr data-go="${a.symbol}"><td>${a.name}${x && x.aligned ? ' <span class="al">★</span>' : ''}</td><td class="r">${fmtPx(px)}</td>
+      <td class="r ${cls(x && x.chg_24h)}">${x ? pc(x.chg_24h) : '—'}</td><td>${tf('24h')} ${tf('3d')} ${tf('7d')}</td>
+      <td class="r">${x ? x.score.toFixed(2) : '—'}</td><td class="r hide">${x ? x.atr_pct_h.toFixed(2) + '%' : '—'}</td><td class="hide">${a.group}</td></tr>`; }).join('');
+  return `<table class="ovt"><thead><tr><th>Asset</th><th class="r">Price</th><th class="r">24h</th><th>Trend 24h · 3d · 7d</th><th class="r">Quality</th><th class="r hide">Hourly move</th><th class="hide">Group</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="note" style="margin-top:6px">★ = the 24-hour, 3-day and 7-day trends all point the same way. Click a row to jump to its chart.</div>`;
+}
+
 function card(a, best) {
   const x = a.analysis, lev = state.per[a.symbol] ?? state.lev;
   const head = `<div class="top"><div><div class="sym">${a.name}${a.name !== a.symbol ? ` <span class="muted" style="font-weight:400;font-size:12px">${a.symbol}</span>` : ''}</div>
@@ -224,10 +245,11 @@ function card(a, best) {
       ${s.ok ? '' : `<div class="warn">⚠ Too much leverage: at ${s.L}× liquidation is only ${s.liq.toFixed(2)}% away, but this asset
         normally moves ${s.stop.toFixed(2)}% against you before a trend resumes. Use ${s.maxSensible}× or less
         <button class="fixlev" data-sym="${a.symbol}" data-v="${s.maxSensible}">Set ${s.maxSensible}×</button></div>`}`;
-  return `<div class="card${best ? ' best' : ''}">${best ? '<span class="badge">Cleanest trend</span>' : ''}${head}
+  return `<div class="card${best ? ' best' : ''}" id="c-${a.symbol}">${best ? '<span class="badge">Cleanest trend</span>' : ''}${head}
     <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="trend t-${x.trend}">${arrow}</span>
       <span class="muted" style="font-size:12px">quality ${x.score.toFixed(2)} · R² ${x.r2.toFixed(2)}</span></div>
     <div class="meter" title="Trend quality"><i style="width:${Math.min(100, x.score / 0.6 * 100).toFixed(0)}%"></i></div>
+    <div class="tf">${['24h', '3d', '7d'].map((k) => { const t = x.tf && x.tf[k]; return t ? `<span class="t-${t.trend}" title="R² ${t.r2}">${k} ${arrow3(t.trend)} ${t.move_pct == null ? '' : (t.move_pct > 0 ? '+' : '') + t.move_pct.toFixed(1) + '%'}</span>` : `<span class="muted">${k} —</span>`; }).join('')}${x.aligned ? '<span class="al">all timeframes agree</span>' : ''}</div>
     ${chartSvg(a)}
     <div class="legend"><span><i style="background:var(--accent)"></i>12h avg</span><span><i class="dash"></i>48h avg</span><span><i class="chan"></i>24h trend channel</span><span>▲▼● trend changed (hover)</span></div>
     ${lastFlip(a)}
@@ -285,7 +307,8 @@ function posCard(p) {
       <div class="kpi"><span>Open for</span><b>${hrs != null ? (hrs < 48 ? hrs.toFixed(1) + ' h' : (hrs / 24).toFixed(1) + ' d') : '—'}</b><span>margin $${p.margin}</span></div>
     </div>
     <div><b style="font-size:13px">Rule check</b> <span class="muted" style="font-size:12px">(arithmetic on your levels and the page's trend rules — not advice)</span><ul>${checks.join('')}</ul></div>
-    <button class="rm" data-rm="${p.id}">Remove this position</button></div>`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rm" data-edit="${p.id}">Edit stop / take-profit</button>
+      <button class="rm" data-copy="${p.id}">Copy link for another device</button><button class="rm" data-rm="${p.id}">Remove</button></div></div>`;
 }
 
 function render() {
@@ -296,14 +319,26 @@ function render() {
   document.getElementById('groups').innerHTML = groups.map((g) => `<button class="${g === state.group ? 'on' : ''}" data-g="${g}">${g}</button>`).join('');
   document.getElementById('lev').innerHTML = LEVS.map((l) => `<button class="${l === state.lev ? 'on' : ''}" data-l="${l}">${l}×</button>`).join('');
   const list = DATA.assets.filter((a) => state.group === 'All' || a.group === state.group);
-  const rank = (a) => !a.analysis ? -2 : a.analysis.trend === 'sideways' ? -1 + a.analysis.score / 100 : a.analysis.score;
+  const rank = (a) => !a.analysis ? -2 : a.analysis.trend === 'sideways' ? -1 + a.analysis.score / 100 : a.analysis.score + (a.analysis.aligned ? 0.25 : 0);
   list.sort((a, b) => rank(b) - rank(a));
   const trending = DATA.assets.filter((a) => a.analysis && a.analysis.trend !== 'sideways');
   const best = trending.sort((a, b) => b.analysis.score - a.analysis.score)[0];
   document.getElementById('grid').innerHTML = list.map((a) => card(a, best && a.symbol === best.symbol)).join('');
+  document.getElementById('ov').innerHTML = overview(list);
 }
 
 document.addEventListener('click', (e) => {
+  const go = e.target.closest('[data-go]');
+  if (go) { document.getElementById('c-' + go.dataset.go)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  const cp = e.target.closest('[data-copy]');
+  if (cp) { const p = POS.find((q) => String(q.id) === cp.dataset.copy); const { id, ...rest } = p;
+    const url = location.origin + location.pathname + '#add=' + btoa(unescape(encodeURIComponent(JSON.stringify(rest))));
+    navigator.clipboard?.writeText(url).then(() => { cp.textContent = 'Link copied — open it on the other device'; }, () => prompt('Copy this link:', url)); return; }
+  const ed = e.target.closest('[data-edit]');
+  if (ed) { const p = POS.find((q) => String(q.id) === ed.dataset.edit);
+    const sl = prompt('Stop-loss price', p.sl ?? ''); if (sl === null) return; const tp = prompt('Take-profit price', p.tp ?? ''); if (tp === null) return;
+    const liq = prompt('Liquidation price', p.liq ?? ''); if (liq === null) return;
+    Object.assign(p, { sl: sl === '' ? null : +sl, tp: tp === '' ? null : +tp, liq: liq === '' ? null : +liq }); savePos(); render(); return; }
   const rm = e.target.closest('[data-rm]');
   if (rm) { if (confirm('Remove this position from the page?')) { POS = POS.filter((p) => String(p.id) !== rm.dataset.rm); savePos(); render(); } return; }
   const f = e.target.closest('.fixlev');
@@ -346,7 +381,7 @@ function stream() {
   const open = (i) => {
     ws = new WebSocket(`${hosts[i % 2]}/stream?streams=${pairs.map((p) => p[0] + '@miniTicker').join('/')}`);
     ws.onmessage = (m) => { const d = JSON.parse(m.data).data; if (!d) return; const sym = map[d.s.toLowerCase()], a = DATA.assets.find((x) => x.symbol === sym);
-      if (a && a.proxy) { const ref = a.analysis ? a.analysis.price : a.walt_price; PROXY0[sym] ??= +d.c; LIVE[sym] = ref * (+d.c / PROXY0[sym]); }
+      if (a && a.proxy) { if (a.walt_price && a.proxy_ref) LIVE[sym] = a.walt_price * (+d.c / a.proxy_ref); }
       else LIVE[sym] = +d.c;
       if (!pending) { pending = true; setTimeout(() => { pending = false; render(); }, 500); } };
     ws.onclose = () => setTimeout(() => open(i + 1), 3000);

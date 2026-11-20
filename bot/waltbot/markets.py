@@ -75,6 +75,19 @@ async def sample(client) -> int:
         if px > 0:
             store.setdefault(sym, []).append([now, px])
             n += 1
+    # PAXG at the same moment: the page moves Walt's gold by PAXG's live change SINCE THIS SAMPLE (PAXG itself sits
+    # ~0.2% away from Walt's gold, so only its change is used, never its level).
+    try:
+        import urllib.request
+        for host in ("https://data-api.binance.vision", "https://api.binance.com"):
+            try:
+                t = json.load(urllib.request.urlopen(f"{host}/api/v3/ticker/price?symbol=PAXGUSDT", timeout=10))
+                store.setdefault("_PAXG", []).append([now, float(t["price"])])
+                break
+            except Exception:  # noqa: BLE001
+                continue
+    except Exception:  # noqa: BLE001
+        pass
     for sym in store:
         store[sym] = [s for s in store[sym] if s[0] > now - KEEP_MS]
     OUT.mkdir(parents=True, exist_ok=True)
@@ -204,6 +217,30 @@ def _chart(hourly: list[tuple]) -> dict:
     }
 
 
+def _window_trend(closes: list[float], n: int) -> dict | None:
+    """Direction of a longer window: least-squares slope on log prices, called only when the fit is clean (R² ≥ 0.4)."""
+    if len(closes) < max(12, n * 2 // 3):
+        return None
+    logs = [math.log(c) for c in closes[-n:]]
+    k = len(logs)
+    xm, ym = (k - 1) / 2, sum(logs) / k
+    sxx = sum((i - xm) ** 2 for i in range(k)) or 1
+    b = sum((i - xm) * (y - ym) for i, y in enumerate(logs)) / sxx
+    ss = sum((y - ym) ** 2 for y in logs) or 1e-12
+    r2 = max(0.0, 1 - sum((y - (ym + b * (i - xm))) ** 2 for i, y in enumerate(logs)) / ss)
+    move = (math.exp(b * (k - 1)) - 1) * 100
+    return {"trend": ("up" if b > 0 else "down") if r2 >= 0.4 else "sideways", "r2": round(r2, 3),
+            "move_pct": round(move, 2)}
+
+
+def _proxy_ref(store: dict, last_walt) -> float | None:
+    """PAXG price recorded with Walt's latest gold sample (within 2 minutes of it), or None."""
+    if not last_walt:
+        return None
+    near = [px for ts, px in store.get("_PAXG", []) if abs(ts - last_walt[0]) < 120_000]
+    return near[-1] if near else None
+
+
 def build() -> Path:
     contracts = load_contracts()
     maint = _maintenance()
@@ -225,6 +262,12 @@ def build() -> Path:
         a = analyse(closes)
         if a:
             a["chart"] = _chart(hourly)
+            # Multi-timeframe view: the 24 h trend (above) checked against 3-day and 7-day windows.
+            tf = {"24h": {"trend": a["trend"], "r2": a["r2"], "move_pct": a["chg_24h"]},
+                  "3d": _window_trend(closes, 72), "7d": _window_trend(closes, 168)}
+            a["tf"] = tf
+            dirs = [v["trend"] for v in tf.values() if v]
+            a["aligned"] = len(dirs) == 3 and dirs[0] != "sideways" and len(set(dirs)) == 1
         last_walt = walt[-1] if walt else None
         # Levels are computed from the price the owner actually trades at: Walt's, when a recent sample exists.
         if a and last_walt and last_walt[0] > time.time() * 1000 - 30 * 60_000:
@@ -236,6 +279,7 @@ def build() -> Path:
             "binance": binance if binance and sym != "XAU" else None,  # live stream on the page (PAXG != Walt gold)
             # Gold has no direct live feed; the page moves Walt's last gold price by PAXG's live % change.
             "proxy": "PAXGUSDT" if sym == "XAU" else None,
+            "proxy_ref": _proxy_ref(store, last_walt) if sym == "XAU" else None,
             "funding_h": c.funding_rate_hourly, "analysis": a,
         })
     OUT.mkdir(parents=True, exist_ok=True)
