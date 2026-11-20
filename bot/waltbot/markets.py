@@ -141,7 +141,11 @@ async def sample(client) -> int:
     import os
     import urllib.request
     key = os.environ.get("POSITIONS_SYNC_KEY", "")
-    if key and int(time.time() // 60) % 2 == 0:
+    # KV free tier = 1,000 writes/day: every minute while the US stock market is open (13:30-20:00 UTC, Mon-Fri,
+    # ~390 writes), every 4 minutes otherwise (~260). Crypto and gold are also live in the page via Binance.
+    tm = time.gmtime()
+    us_open = tm.tm_wday < 5 and (13 * 60 + 30) <= tm.tm_hour * 60 + tm.tm_min < 20 * 60
+    if key and (us_open or tm.tm_min % 4 == 0):
         try:
             urllib.request.urlopen(urllib.request.Request(
                 "https://walt-positions.mrsupetbred.workers.dev/live", data=live.encode(), method="PUT",
