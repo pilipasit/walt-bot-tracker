@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+const context = { window: {} };
+vm.runInNewContext(readFileSync(new URL('../extras.js', import.meta.url), 'utf8'), context);
+const { funding, journalMath, summary } = context.window.WaltExtras;
+assert.ok(Math.abs(funding(.0001, -1, 1000, 24) - 2.4) < 1e-9);
+assert.ok(Math.abs(funding(.0001, 1, 1000, 24) + 2.4) < 1e-9);
+assert.equal(funding(null, 1, 1000, 24), null);
+const trade = journalMath({ side: 1, size: 1000, entry: 100, sl: 90, fee: 1, opened: '2026-01-01T00:00:00Z' }, 110, .1, Date.parse('2026-01-02T00:00:00Z'));
+assert.ok(Math.abs(trade.pnl - 97.9) < 1e-9);
+assert.ok(Math.abs(trade.r - 97.9 / 101.9) < 1e-9);
+assert.equal(trade.hours, 24);
+const counts = summary([{analysis:{trend:'down',aligned:true}},{analysis:{trend:'up'}},{analysis:{trend:'sideways'}},{analysis:null}]);
+assert.equal(JSON.stringify(counts), JSON.stringify({up:1,down:1,sideways:1,aligned:1}));
+console.log('extras tests passed');

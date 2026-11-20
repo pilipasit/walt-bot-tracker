@@ -20,6 +20,14 @@ def cmd_contracts(args) -> None:
 
 
 def cmd_backtest(args) -> None:
+    if args.data:
+        from pathlib import Path
+        from .backtest import run
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(run(args.data), separators=(",", ":")), encoding="utf-8")
+        print(f"Market backtest written to {out}")
+        return
     summary, res = run_backtest(load_config(args.config))
     print(json.dumps(summary, indent=2))
     if args.trades:
@@ -185,6 +193,8 @@ def main() -> None:
     p = sub.add_parser("backtest", help="run the configured strategy over history")
     p.add_argument("--config", default="config.json")
     p.add_argument("--trades", action="store_true", help="also print every event")
+    p.add_argument("--data", help="directory of market candle JSON files (runs market trend backtest)")
+    p.add_argument("--out", default="data/market/backtest.json", help="market backtest output path")
     p.set_defaults(fn=cmd_backtest)
     p = sub.add_parser("compare", help="run every strategy with default parameters, side by side")
     p.add_argument("--config", default="config.json")
