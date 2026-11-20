@@ -1,0 +1,155 @@
+{
+ "_TNX_k1.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 164,
+   "avg_gross": 0.09,
+   "avg_after_fees": -0.05,
+   "win": 0.488,
+   "t": 0.52
+  },
+  "test": {
+   "n": 124,
+   "avg_gross": -0.222,
+   "avg_after_fees": -0.362,
+   "win": 0.46,
+   "t": -0.96
+  }
+ },
+ "_TNX_k1.5": {
+  "side_from_train": -1,
+  "train": {
+   "n": 69,
+   "avg_gross": 0.106,
+   "avg_after_fees": -0.034,
+   "win": 0.449,
+   "t": 0.52
+  },
+  "test": {
+   "n": 53,
+   "avg_gross": 0.245,
+   "avg_after_fees": 0.105,
+   "win": 0.509,
+   "t": 0.54
+  }
+ },
+ "_TNX_k2.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 27,
+   "avg_gross": 1.005,
+   "avg_after_fees": 0.865,
+   "win": 0.593,
+   "t": 1.9
+  },
+  "test": {
+   "n": 24,
+   "avg_gross": -1.265,
+   "avg_after_fees": -1.405,
+   "win": 0.375,
+   "t": -2.01
+  }
+ },
+ "EURUSD_X_k1.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 155,
+   "avg_gross": 0.068,
+   "avg_after_fees": -0.072,
+   "win": 0.477,
+   "t": 0.42
+  },
+  "test": {
+   "n": 111,
+   "avg_gross": -0.103,
+   "avg_after_fees": -0.243,
+   "win": 0.423,
+   "t": -0.39
+  }
+ },
+ "EURUSD_X_k1.5": {
+  "side_from_train": -1,
+  "train": {
+   "n": 67,
+   "avg_gross": 0.075,
+   "avg_after_fees": -0.065,
+   "win": 0.433,
+   "t": 0.32
+  },
+  "test": {
+   "n": 51,
+   "avg_gross": 0.095,
+   "avg_after_fees": -0.045,
+   "win": 0.412,
+   "t": 0.22
+  }
+ },
+ "EURUSD_X_k2.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 24,
+   "avg_gross": 0.041,
+   "avg_after_fees": -0.099,
+   "win": 0.5,
+   "t": 0.12
+  },
+  "test": {
+   "n": 24,
+   "avg_gross": 0.513,
+   "avg_after_fees": 0.373,
+   "win": 0.583,
+   "t": 0.77
+  }
+ },
+ "QQQ_k1.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 148,
+   "avg_gross": 0.037,
+   "avg_after_fees": -0.103,
+   "win": 0.426,
+   "t": 0.19
+  },
+  "test": {
+   "n": 119,
+   "avg_gross": -0.083,
+   "avg_after_fees": -0.223,
+   "win": 0.437,
+   "t": -0.38
+  }
+ },
+ "QQQ_k1.5": {
+  "side_from_train": -1,
+  "train": {
+   "n": 67,
+   "avg_gross": 0.211,
+   "avg_after_fees": 0.071,
+   "win": 0.448,
+   "t": 0.66
+  },
+  "test": {
+   "n": 56,
+   "avg_gross": 0.456,
+   "avg_after_fees": 0.316,
+   "win": 0.482,
+   "t": 1.19
+  }
+ },
+ "QQQ_k2.0": {
+  "side_from_train": -1,
+  "train": {
+   "n": 29,
+   "avg_gross": 0.533,
+   "avg_after_fees": 0.393,
+   "win": 0.517,
+   "t": 1.16
+  },
+  "test": {
+   "n": 28,
+   "avg_gross": 0.843,
+   "avg_after_fees": 0.703,
+   "win": 0.5,
+   "t": 1.87
+  }
+ }
+}
