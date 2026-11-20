@@ -29,15 +29,25 @@ HOUR = 3_600_000
 UNIVERSE = [
     ("BTC", "Crypto", "BTCUSDT"), ("ETH", "Crypto", "ETHUSDT"), ("SOL", "Crypto", "SOLUSDT"),
     ("XRP", "Crypto", "XRPUSDT"), ("BNB", "Crypto", "BNBUSDT"), ("DOGE", "Crypto", "DOGEUSDT"),
-    ("HYPE", "Crypto", None), ("LINK", "Crypto", "LINKUSDT"),
+    ("HYPE", "Crypto", None), ("LINK", "Crypto", "LINKUSDT"), ("AVAX", "Crypto", "AVAXUSDT"),
+    ("ADA", "Crypto", "ADAUSDT"), ("SUI", "Crypto", "SUIUSDT"), ("TRX", "Crypto", "TRXUSDT"), ("XMR", "Crypto", None),
     ("XAU", "Metals", "PAXGUSDT"), ("XAG", "Metals", None), ("XPT", "Metals", None), ("XCU", "Metals", None),
     ("WTI", "Energy", None), ("BRENTOIL", "Energy", None), ("NATGAS", "Energy", None),
     ("SPY", "Indices", None), ("US100", "Indices", None), ("US10Y", "Indices", None),
     ("NVDA", "Stocks", None), ("TSLA", "Stocks", None), ("AAPL", "Stocks", None), ("MSFT", "Stocks", None),
     ("AMZN", "Stocks", None), ("GOOGL", "Stocks", None), ("META", "Stocks", None), ("AMD", "Stocks", None),
     ("MSTR", "Stocks", None), ("COIN", "Stocks", None), ("PLTR", "Stocks", None), ("TSM", "Stocks", None),
-    ("EURUSD", "FX", None), ("GBPUSD", "FX", None), ("USDJPY", "FX", None),
+    ("AVGO", "Stocks", None), ("MU", "Stocks", None), ("ORCL", "Stocks", None), ("INTC", "Stocks", None),
+    ("HOOD", "Stocks", None), ("BABA", "Stocks", None),
+    ("EURUSD", "FX", None), ("GBPUSD", "FX", None), ("USDJPY", "FX", None), ("USDCHF", "FX", None),
+    ("USDCAD", "FX", None),
 ]
+# Yahoo Finance hourly candles as the history for everything Binance doesn't cover. Unofficial data, used for this
+# personal analysis page only; futures stand in for spot commodities (levels still use Walt's own price).
+YAHOO = {"XAU": "GC=F", "XAG": "SI=F", "XPT": "PL=F", "XCU": "HG=F", "WTI": "CL=F", "BRENTOIL": "BZ=F",
+         "NATGAS": "NG=F", "SPY": "SPY", "US100": "NQ=F", "US10Y": "^TNX", "EURUSD": "EURUSD=X",
+         "GBPUSD": "GBPUSD=X", "USDJPY": "JPY=X", "USDCHF": "CHF=X", "USDCAD": "CAD=X", "HYPE": "HYPE32196-USD",
+         "XMR": "XMR-USD"}
 NAMES = {"XAU": "Gold", "XAG": "Silver", "XPT": "Platinum", "XCU": "Copper", "WTI": "WTI crude",
          "BRENTOIL": "Brent crude", "NATGAS": "Natural gas", "SPY": "S&P 500 (SPY)", "US100": "Nasdaq 100",
          "US10Y": "US 10-year yield", "EURUSD": "EUR/USD", "GBPUSD": "GBP/USD", "USDJPY": "USD/JPY"}
@@ -86,6 +96,22 @@ def _hourly_binance(symbol: str) -> list[tuple[int, float]]:
     now = int(time.time() * 1000)
     try:
         return [(c.ts, c.o, c.h, c.l, c.c) for c in _download(symbol, "1h", now - KEEP_MS, now)]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _hourly_yahoo(symbol: str) -> list[tuple]:
+    import urllib.parse
+    import urllib.request
+
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}?interval=1h&range=1mo"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        d = json.load(urllib.request.urlopen(req, timeout=20))["chart"]["result"][0]
+        q = d["indicators"]["quote"][0]
+        rows = [(int(t) * 1000, o, h, l, c) for t, o, h, l, c in zip(d["timestamp"], q["open"], q["high"], q["low"], q["close"])
+                if None not in (o, h, l, c)]
+        return rows[-168:]
     except Exception:  # noqa: BLE001
         return []
 
@@ -187,8 +213,11 @@ def build() -> Path:
         c = contracts.get(sym)
         if c is None:
             continue
-        hourly = _hourly_binance(binance) if binance else []
-        source = "Binance 1h" + (" (PAXG as the gold proxy)" if sym == "XAU" else "")
+        hourly = _hourly_binance(binance) if binance and sym != "XAU" else []
+        source = "Binance 1h"
+        ysym = YAHOO.get(sym, sym if group == "Stocks" else None)  # US stocks use their own ticker
+        if len(hourly) < 12 and ysym:
+            hourly, source = _hourly_yahoo(ysym), f"Yahoo Finance 1h ({ysym})"
         walt = store.get(sym, [])
         if len(hourly) < 12:
             hourly, source = _hourly_from_samples(walt), "Walt price, sampled every 10 min"

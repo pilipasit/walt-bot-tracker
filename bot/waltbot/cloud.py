@@ -226,20 +226,39 @@ def run(mode: str) -> None:
         from .live import run as live_run
         from .walt_client import connect
 
-        cfg = _live_config(str(base / "config.live.json"))
-        print(("LIVE" if mode == "live" else "Dry run") + " cycle", flush=True)
-        asyncio.run(live_run(cfg, mode == "live", False, connect))
+        if mode != "markets":  # "markets" = the analysis page only: no trading code runs at all
+            cfg = _live_config(str(base / "config.live.json"))
+            print(("LIVE" if mode == "live" else "Dry run") + " cycle", flush=True)
+            asyncio.run(live_run(cfg, mode == "live", False, connect))
+        try:  # sample Walt's prices for the analysis page with the same sign-in
+            from .markets import sample
+
+            async def _sample():
+                async with connect() as client:
+                    return await sample(client)
+
+            print(f"market prices sampled: {asyncio.run(_sample())}", flush=True)
+        except Exception as e:  # noqa: BLE001
+            print("market sampling skipped:", str(e)[:200], flush=True)
     finally:
+        try:
+            from .markets import build
+
+            build()
+        except Exception as e:  # noqa: BLE001
+            print("market analysis not rebuilt:", str(e)[:200], flush=True)
         if before is not None and TOKEN.exists() and hashlib.sha256(TOKEN.read_bytes()).hexdigest() != before:
             enc.write_bytes(_fernet(key).encrypt(TOKEN.read_bytes()))
             print("sign-in renewed and saved", flush=True)
         if TOKEN.exists():
             TOKEN.unlink()
+        if mode == "markets":
+            return
         try:
             from .dashboard import write_data
 
             write_data()
-            shutil.copyfile(base / "dashboard.html", base.parent / "index.html")
+            shutil.copyfile(base / "dashboard.html", base.parent / "bot.html")  # index.html is the markets page
         except Exception as e:  # noqa: BLE001
             print("tracker page not rebuilt:", e, flush=True)
 
