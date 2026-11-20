@@ -1,5 +1,12 @@
 # Review of the Codex research (20 Nov 2026, Claude)
 
+> **Correction 2 (20 Nov 2026, 15:30, supersedes the one below):** measured on the owner's MSTR short, Walt's
+> `funding_rate_hourly` is the **8-hour rate as a fraction, paid hourly at 1/8**. Real funding is therefore about 0.01%/day
+> at the common rate (3.5%/year) and 0.03%/day at the upper rate (10.5%/year): 12.5x more than the "percent" reading
+> below, and 8x less than the original reading. Funding carry stays dead (3.5–10% a year minus hedge costs and risk).
+> Long holds pay a real but modest drag: the six-month long trend made +453% at zero funding and +50% at 0.03%/day
+> (`hold_baseline.py`). That bounds the true Walt result. Holding the same assets in a spot account avoids it.
+
 > **Correction (20 Nov 2026, later):** Walt's `funding_rate_hourly` is a **percent** per hour, not a fraction. The owner's
 > real positions paid or received only about $1–2 a day (e.g. a $36k gold short), which matches the percent reading. So Walt
 > funding is about 100× smaller than stated below: roughly 0.001–0.01% a day. Consequences: the funding-carry lead is

@@ -81,8 +81,8 @@ def _append_hourly(path: Path, payload: dict) -> None:
 
 
 async def refresh_funding(client) -> None:
-    """Walt's current hourly funding per asset in PERCENT per hour, as Walt reports it (positive = longs pay shorts),
-    at most every 9 minutes."""
+    """Walt's current funding per asset as Walt reports it: the 8-hour rate as a fraction, paid hourly at 1/8
+    (positive = longs pay shorts). Refreshed at most every 9 minutes."""
     try:
         if FUNDING.exists() and time.time() - FUNDING.stat().st_mtime < 540:
             return
@@ -345,9 +345,10 @@ def build() -> Path:
             # Gold has no direct live feed; the page moves Walt's last gold price by PAXG's live % change.
             "proxy": "PAXGUSDT" if sym == "XAU" else None,
             "proxy_ref": _proxy_ref(store, last_walt) if sym == "XAU" else None,
-            # Walt's funding_rate_hourly is a PERCENT per hour (confirmed by the owner's real positions, 20 Nov 2026:
-            # about $1/day on a $36k gold short whose rate read 0.000112). Published here as a FRACTION per hour.
-            "funding_h": funding["hourly"].get(sym, c.funding_rate_hourly) / 100,
+            # Walt's funding_rate_hourly is the 8-HOUR rate as a fraction, paid hourly at 1/8 (Hyperliquid convention).
+            # Measured 20 Nov 2026: one hourly payment of $0.0541 on a ~$13.8k MSTR short whose rate read 3.2e-5
+            # (3.2e-5 / 8 x 13.8k = $0.055). Published here as a FRACTION PER HOUR.
+            "funding_h": funding["hourly"].get(sym, c.funding_rate_hourly) / 8,
             "funding_at": funding.get("updated") if sym in funding["hourly"] else None,
             # Market open = crypto always; otherwise the latest hourly candle is under 2 hours old.
             "market_open": group == "Crypto" or bool(hourly and now_ms - hourly[-1][0] < 2 * 3_600_000),
@@ -362,7 +363,7 @@ def build() -> Path:
         x["symbol"]: [{"up": 1, "down": -1}.get(x["analysis"]["trend"], 0), round(x["analysis"]["score"], 3),
                       int(bool(x["analysis"].get("aligned"))), x["analysis"]["price"],
                       round(2.5 * x["analysis"]["atr_pct_h"] + x["analysis"]["band_pct"], 3),
-                      round((x.get("funding_h") or 0) * 1e8)]   # raw Walt value (percent/h) x 1e6
+                      round((x.get("funding_h") or 0) * 8e6)]   # raw Walt value (8h rate) x 1e6
         for x in assets if x.get("analysis")})
     path.write_text(json.dumps({"updated": int(time.time() * 1000), "fee_pct": 0.07, "assets": assets},
                                separators=(",", ":")), encoding="utf-8")

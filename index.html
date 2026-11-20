@@ -393,12 +393,13 @@ function fundingTable(assets) {
   const rows = assets.filter((a) => a.funding_h != null).map((a) => ({ a, d: a.funding_h * 24 * 100 }))
     .sort((p, q) => Math.abs(q.d) - Math.abs(p.d));
   const row = ({ a, d }) => `<tr data-go="${a.symbol}"><td>${a.name}</td><td class="r">${d > 0 ? 'longs pay' : d < 0 ? 'shorts pay' : '—'}</td>
-    <td class="r">${Math.abs(d).toFixed(5)}%</td><td class="r">${(Math.abs(d) * 365).toFixed(2)}%</td>
+    <td class="r">${Math.abs(d).toFixed(4)}%</td><td class="r">${(Math.abs(d) * 365).toFixed(1)}%</td>
     <td class="r">${Math.abs(d) > 0 ? (0.14 / Math.abs(d)).toFixed(0) + ' d' : '—'}</td></tr>`;
   return `<table class="ovt"><thead><tr><th>Asset</th><th class="r">Direction</th><th class="r">Per day (of position size)</th><th class="r">Per year</th><th class="r">Covers fees in</th></tr></thead>
     <tbody>${rows.slice(0, 14).map(row).join('')}</tbody></table>
-    <div class="note" style="margin-top:6px">Multiply by your leverage for % of margin. Walt's funding is small: usually well under
-    0.01% of position size a day (about $1 a day on a $36k position), so it rarely matters next to the 0.14% round-trip fee.
+    <div class="note" style="margin-top:6px">Multiply by your leverage for % of margin. Walt pays funding every hour at 1/8 of its
+    listed 8-hour rate: usually about 0.01% of position size a day (about $3.50 a day on a $36k position), up to about 0.03% a day
+    on the busiest contracts. That's small for a trade of a few hours but adds up to roughly 3.5–10% a year on a long-term hold.
     "Covers fees in" = days of funding needed to pay that fee. Rates change; the page logs them every hour. Analysis, not advice.</div>`;
 }
 

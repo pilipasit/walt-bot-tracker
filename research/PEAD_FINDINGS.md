@@ -1,7 +1,7 @@
 # Post-Earnings-Announcement Drift (PEAD) Findings
 
 > **Correction (Claude, 20 Nov 2026):** the 0.08%/day funding in this test came from a wrong reading of Walt's rate; real
-> Walt funding is about 100x smaller. Read the **No Funding** columns. Even then the frozen choice is not significant on
+> Walt funding is about 8x smaller (0.01%/day). Read the **No Funding** columns. Even then the frozen choice is not significant on
 > 2020-2026 (+3.16% per 60-day trade, t 1.13), and the long side beats a random long by under 1% (market beta). The EPS-surprise
 > rule's +1.77% (t 2.06) was not the setting chosen on 2012-2019 (+0.04% there), so it doesn't count. Verdict unchanged: null.
 
