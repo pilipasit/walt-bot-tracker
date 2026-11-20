@@ -61,6 +61,9 @@ footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5;
 .pos .kpi b { font:600 16px ui-monospace,Consolas,monospace; } .pos ul { margin:0; padding-left:18px; display:grid; gap:3px; }
 .pos .ok { color:var(--up); } .pos .bad { color:var(--down); } .pos .mid { color:var(--warn); }
 .pos .rm { justify-self:start; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:6px; padding:2px 8px; cursor:pointer; font:inherit; }
+.rules { width:100%; border-collapse:collapse; margin-top:6px; font:12.5px ui-monospace,Consolas,monospace; }
+.rules th { text-align:left; font:600 11px system-ui,sans-serif; color:var(--muted); padding:3px 6px; border-bottom:1px solid var(--line); }
+.rules td { padding:4px 6px; border-bottom:1px solid var(--line); } .rules td:last-child { font:12px system-ui,sans-serif; }
 .addpos { margin:0 0 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; }
 .addpos summary { cursor:pointer; color:var(--accent); } .addpos form { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:8px; margin-top:10px; }
 .addpos label { display:grid; gap:3px; font-size:12px; color:var(--muted); }
@@ -268,6 +271,7 @@ function posCard(p) {
   const x = a.analysis, price = LIVE[p.sym] ?? (x ? x.price : a.walt_price);
   const qty = p.size / p.entry, pnl = p.side * qty * (price - p.entry), closeFee = qty * price * DATA.fee_pct / 100;
   const net = pnl - (p.fee || 0) - closeFee, pct = (v) => (v / p.margin * 100);
+  const money = (v) => `${v < 0 ? '−' : '+'}$${Math.abs(v).toFixed(2)}`;
   const dist = (lvl) => lvl > 0 ? (p.side * (price - lvl) / price * 100) : null;   // % the price can still move before it is hit
   const toSl = p.sl ? Math.abs(price - p.sl) / price * 100 : null, toTp = p.tp ? Math.abs(p.tp - price) / price * 100 : null;
   const toLiq = p.liq ? Math.abs(p.liq - price) / price * 100 : null;
@@ -289,12 +293,36 @@ function posCard(p) {
       checks.push(`<li>${withTrend ? `At the current trend pace the take-profit is about ${Math.round(toTp / Math.abs(x.slope_pct_h))} h away.` : 'The current trend pace is moving away from your take-profit.'}</li>`);
     }
   }
+  /* Rule levels: the page's own stop/TP rule applied to this position FROM THE CURRENT PRICE (arithmetic, not advice).
+     Stop = the asset's normal swing (2.5 x hourly move + channel width) beyond the price, never past 75% of the way to
+     liquidation; once the position is ahead by more than that swing, at least breakeven (entry +/- both fees).
+     Take-profit = 2 x the stop distance in the trade's direction. A rule stop never loosens your own tighter stop. */
+  let rule = '';
+  if (x) {
+    const noise = 2.5 * x.atr_pct_h + x.band_pct, fee = DATA.fee_pct;
+    const liqD = p.liq ? Math.abs(p.liq - price) / price * 100 : (100 / p.lev - (a.maintenance ?? a.closeout) * 100 - fee);
+    const stopD = Math.min(noise, 0.75 * liqD);
+    let rs = price * (1 - p.side * stopD / 100);
+    const ahead = p.side * (price - p.entry) / p.entry * 100;
+    const be = p.entry * (1 + p.side * 2 * fee / 100);
+    let why = stopD < noise ? `capped at 75% of the way to liquidation (the normal swing of ${noise.toFixed(2)}% does not fit at ${p.lev}x)` : `the normal swing (${noise.toFixed(2)}%) beyond the current price`;
+    if (ahead > noise && p.side * (be - rs) > 0) { rs = be; why = 'breakeven: the position is ahead by more than the normal swing'; }
+    if (p.sl && p.side * (p.sl - rs) > 0) { rs = p.sl; why = 'keep yours: the rule never loosens a tighter stop'; }
+    const rt = price * (1 + p.side * 2 * stopD / 100);
+    const plAt = (v) => p.side * qty * (v - p.entry) - (p.fee || 0) - qty * v * fee / 100;
+    const row = (name, mine, r, note) => { const same = mine && Math.abs(mine - r) / r < 0.0005, v = plAt(r);
+      return `<tr><td>${name}</td><td>${mine ? fmtPx(mine) : '—'}</td><td><b>${fmtPx(r)}</b>${same ? ' <span class="ok">✓ same</span>' : ''}</td>`
+        + `<td class="${v >= 0 ? 'ok' : 'bad'}">${money(v)} (${pct(v) >= 0 ? '+' : ''}${pct(v).toFixed(1)}%)</td><td class="muted">${note}</td></tr>`; };
+    rule = `<div><b style="font-size:13px">Rule levels from the current price</b> <span class="muted" style="font-size:12px">(the page's stop/take-profit rule applied to this position — not advice; P/L after both fees)</span>
+      <table class="rules"><tr><th></th><th>Yours</th><th>Rule</th><th>P/L if hit</th><th></th></tr>
+      ${row('Stop', p.sl, rs, why)}${row('Take-profit', p.tp, rt, "2 x the stop distance, in the trade's direction")}</table></div>`;
+  }
   if (p.sl && p.tp) { const rr = Math.abs(p.tp - p.entry) / Math.abs(p.sl - p.entry);
     checks.push(`<li>Your reward:risk from entry is ${rr.toFixed(2)} : 1 (the page's rule uses 2 : 1).</li>`); }
   if (toLiq != null && toSl != null) checks.push(toSl < toLiq ? `<li class="ok">Stop sits before liquidation (liquidation ${toLiq.toFixed(2)}% away).</li>`
     : `<li class="bad">Liquidation (${toLiq.toFixed(2)}% away) comes BEFORE your stop.</li>`);
   const opened = p.opened ? new Date(p.opened) : null, hrs = opened ? (Date.now() - opened) / 3600000 : null;
-  const col = (v) => v >= 0 ? 'ok' : 'bad', money = (v) => `${v < 0 ? '−' : '+'}$${Math.abs(v).toFixed(2)}`;
+  const col = (v) => v >= 0 ? 'ok' : 'bad';
   return `<div class="pos"><h2>Your position: ${a.name} ${p.side < 0 ? 'SHORT' : 'LONG'} ${p.lev}×</h2>
     <div class="kpis">
       <div class="kpi"><span>Price now${LIVE[p.sym] ? ' (live)' : ''}</span><b>${fmtPx(price)}</b></div>
@@ -306,6 +334,7 @@ function posCard(p) {
       <div class="kpi"><span>Liquidation ${fmtPx(p.liq)}</span><b class="mid">${toLiq != null ? toLiq.toFixed(2) + '% away' : '—'}</b></div>
       <div class="kpi"><span>Open for</span><b>${hrs != null ? (hrs < 48 ? hrs.toFixed(1) + ' h' : (hrs / 24).toFixed(1) + ' d') : '—'}</b><span>margin $${p.margin}</span></div>
     </div>
+    ${rule}
     <div><b style="font-size:13px">Rule check</b> <span class="muted" style="font-size:12px">(arithmetic on your levels and the page's trend rules — not advice)</span><ul>${checks.join('')}</ul></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rm" data-edit="${p.id}">Edit stop / take-profit</button>
       <button class="rm" data-copy="${p.id}">Copy link for another device</button><button class="rm" data-rm="${p.id}">Remove</button></div></div>`;
