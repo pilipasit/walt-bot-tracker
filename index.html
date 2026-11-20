@@ -41,7 +41,10 @@ td { padding:2px 0; } td:last-child { text-align:right; } td:first-child { font-
 .warn { color:var(--warn); font-size:12px; line-height:1.35; }
 .note { font-size:12px; color:var(--muted); line-height:1.4; }
 footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5; }
-.empty { opacity:.7; }
+.empty { opacity:.7; } tr.bad td { color:var(--down); font-weight:700; }
+.fixlev { margin-left:6px; border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:6px; padding:1px 6px; font:inherit; cursor:pointer; }
+.dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--up); margin-right:6px; vertical-align:middle; animation:pulse 2s infinite; }
+@keyframes pulse { 50% { opacity:.3; } }
 </style>
 </head>
 <body>
@@ -65,8 +68,8 @@ footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5;
   <b>How it's computed.</b> Trend = the slope of the last 24 hourly closes (log scale) and how tightly prices follow it
   (R²), confirmed by a 12-hour average above/below a 48-hour one. Quality = drift per hour ÷ hourly noise × R², so a high
   score means a strong <i>and</i> narrow channel. Stop distance = 2.5 × the average hourly move + the channel's width;
-  take-profit = 2 × the stop (reward:risk 2:1). Liquidation distance at leverage L ≈ 1/L + fee − Walt's close-out
-  margin. Fees use your Walt Silver tier: 0.07% per side on perpetuals (0.14% per round trip); funding isn't included.
+  take-profit = 2 × the stop (reward:risk 2:1). Liquidation distance at leverage L ≈ 1/L − Walt's maintenance margin − fee
+  (a touch closer than Walt's own figure). Fees use your Walt Silver tier: 0.07% per side on perpetuals (0.14% per round trip); funding isn't included.
   Prices: Binance hourly candles for crypto (PAXG for gold), and Walt's own price, sampled every 10 minutes, for
   everything else. Rule-based arithmetic on past prices — not financial advice, and not instructions to the bot.
 </footer>
@@ -78,6 +81,7 @@ const state = { lev: 3, group: 'All', per: {} };
 try { Object.assign(state, JSON.parse(localStorage.getItem('waltMarkets') || '{}')); } catch {}
 const save = () => { try { localStorage.setItem('waltMarkets', JSON.stringify(state)); } catch {} };
 let DATA = null;
+const LIVE = {};   // symbol → live price from Binance's public stream (crypto only)
 
 const fmtPx = (p) => p == null ? '—' : p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 2 })
   : p >= 1 ? p.toLocaleString('en-US', { maximumFractionDigits: 4 }) : p.toPrecision(5);
@@ -96,10 +100,12 @@ function spark(xs, trend) {
 function scenario(a, lev) {
   const x = a.analysis, fee = DATA.fee_pct, L = Math.min(lev, a.max_leverage);
   const stop = 2.5 * x.atr_pct_h + x.band_pct, tp = 2 * stop;
-  const liq = (1 / L) * 100 + fee - a.closeout * 100;
+  // Walt liquidates at the maintenance margin; subtracting the fee keeps this a touch closer than Walt's own figure.
+  const mm = (a.maintenance ?? a.closeout) * 100;
+  const liq = (1 / L) * 100 - mm - fee;
   const safe = 0.75 * liq;
-  const maxSensible = Math.max(1, Math.min(a.max_leverage, Math.floor(100 / (stop / 0.75 + a.closeout * 100 - fee))));
-  const side = x.trend === 'down' ? -1 : 1, p = x.price;
+  const maxSensible = Math.max(1, Math.min(a.max_leverage, Math.floor(100 / (stop / 0.75 + mm + fee))));
+  const side = x.trend === 'down' ? -1 : 1, p = LIVE[a.symbol] ?? x.price;
   return { L, side, stop, tp, liq, ok: stop <= safe, maxSensible,
     stopPx: p * (1 - side * stop / 100), tpPx: p * (1 + side * tp / 100), liqPx: p * (1 - side * liq / 100),
     lossM: L * (stop + 2 * fee), gainM: L * (tp - 2 * fee),
@@ -110,7 +116,7 @@ function card(a, best) {
   const x = a.analysis, lev = state.per[a.symbol] ?? state.lev;
   const head = `<div class="top"><div><div class="sym">${a.name}${a.name !== a.symbol ? ` <span class="muted" style="font-weight:400;font-size:12px">${a.symbol}</span>` : ''}</div>
     <div class="grp">${a.group} · up to ${a.max_leverage}×</div></div>
-    <div class="px">${fmtPx(x ? x.price : a.walt_price)}</div></div>`;
+    <div class="px">${a.binance && LIVE[a.symbol] ? '<span class="dot" title="live"></span>' : ''}${fmtPx(LIVE[a.symbol] ?? (x ? x.price : a.walt_price))}</div></div>`;
   if (!x) return `<div class="card empty">${head}<div class="note">Building history from Walt's price (sampled every 10 minutes) —
     the trend appears after about 12 hours of samples.</div></div>`;
   const s = scenario(a, lev);
@@ -121,13 +127,15 @@ function card(a, best) {
     ? `<div class="note">No clean direction (R² ${x.r2.toFixed(2)}). Levels aren't offered for a trend that isn't there;
        a range trade would need its own rules.</div>`
     : `<table>
-        <tr><td>${s.side > 0 ? 'Long' : 'Short'} at ${s.L}× — stop</td><td>${fmtPx(s.stopPx)} (${(s.side > 0 ? '−' : '+') + s.stop.toFixed(2)}%)</td></tr>
+        <tr${s.ok ? '' : ' class="bad"'}><td>${s.side > 0 ? 'Long' : 'Short'} at ${s.L}× — stop</td><td>${fmtPx(s.stopPx)} (${(s.side > 0 ? '−' : '+') + s.stop.toFixed(2)}%)</td></tr>
         <tr><td>Take profit</td><td>${fmtPx(s.tpPx)} (${(s.side > 0 ? '+' : '−') + s.tp.toFixed(2)}%)</td></tr>
         <tr><td>Liquidation ≈</td><td>${fmtPx(s.liqPx)} (${s.liq.toFixed(2)}% away)</td></tr>
         <tr><td>On margin, after fees</td><td><span class="neg">−${s.lossM.toFixed(1)}%</span> / <span class="pos">+${s.gainM.toFixed(1)}%</span></td></tr>
         <tr><td>At the current pace, TP in</td><td>${s.hoursToTp ? (s.hoursToTp < 48 ? s.hoursToTp.toFixed(0) + ' h' : (s.hoursToTp / 24).toFixed(1) + ' days') : '—'}</td></tr>
       </table>
-      ${s.ok ? '' : `<div class="warn">⚠ At ${s.L}× the stop sits too close to liquidation for this volatility. Highest sensible leverage: ${s.maxSensible}×.</div>`}`;
+      ${s.ok ? '' : `<div class="warn">⚠ Too much leverage: at ${s.L}× liquidation is only ${s.liq.toFixed(2)}% away, but this asset
+        normally moves ${s.stop.toFixed(2)}% against you before a trend resumes. Use ${s.maxSensible}× or less
+        <button class="fixlev" data-sym="${a.symbol}" data-v="${s.maxSensible}">Set ${s.maxSensible}×</button></div>`}`;
   return `<div class="card${best ? ' best' : ''}">${best ? '<span class="badge">Cleanest trend</span>' : ''}${head}
     <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="trend t-${x.trend}">${arrow}</span>
       <span class="muted" style="font-size:12px">quality ${x.score.toFixed(2)} · R² ${x.r2.toFixed(2)}</span></div>
@@ -155,6 +163,8 @@ function render() {
 }
 
 document.addEventListener('click', (e) => {
+  const f = e.target.closest('.fixlev');
+  if (f) { state.per[f.dataset.sym] = +f.dataset.v; save(); render(); return; }
   const l = e.target.closest('[data-l]'), g = e.target.closest('[data-g]');
   if (l) { state.lev = +l.dataset.l; state.per = {}; save(); render(); }
   if (g) { state.group = g.dataset.g; save(); render(); }
@@ -170,11 +180,27 @@ async function load() {
     DATA = await r.json();
     const ago = Math.round((Date.now() - DATA.updated) / 60000);
     document.getElementById('meta').textContent = `Updated ${new Date(DATA.updated).toLocaleString()} (${ago} min ago) · `
-      + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · refreshes every 10 minutes`;
-    render();
+      + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · crypto prices live · others refresh every 10 min`;
+    render(); stream();
   } catch (e) { document.getElementById('meta').textContent = 'Could not load the market data yet.'; }
 }
-load(); setInterval(load, 5 * 60 * 1000);
+/* Live prices: Binance's public mini-ticker stream for the crypto assets; the cards re-render at most twice a second. */
+let ws = null, wsKey = '', pending = false;
+function stream() {
+  const pairs = DATA.assets.filter((a) => a.binance).map((a) => [a.binance.toLowerCase(), a.symbol]);
+  const key = pairs.map((p) => p[0]).join('/');
+  if (!pairs.length || (ws && ws.readyState <= 1 && key === wsKey)) return;
+  wsKey = key; const map = Object.fromEntries(pairs);
+  const hosts = ['wss://data-stream.binance.vision', 'wss://stream.binance.com:9443'];
+  const open = (i) => {
+    ws = new WebSocket(`${hosts[i % 2]}/stream?streams=${pairs.map((p) => p[0] + '@miniTicker').join('/')}`);
+    ws.onmessage = (m) => { const d = JSON.parse(m.data).data; if (!d) return; LIVE[map[d.s.toLowerCase()]] = +d.c;
+      if (!pending) { pending = true; setTimeout(() => { pending = false; render(); }, 500); } };
+    ws.onclose = () => setTimeout(() => open(i + 1), 3000);
+  };
+  open(0);
+}
+load(); setInterval(load, 60 * 1000);
 </script>
 </body>
 </html>

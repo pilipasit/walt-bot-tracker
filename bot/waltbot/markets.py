@@ -131,8 +131,16 @@ def analyse(closes: list[float]) -> dict | None:
     }
 
 
+def _maintenance() -> dict[str, float]:
+    """Walt liquidates at the MAINTENANCE margin (checked against Walt's own liquidation price, 20.11.2026)."""
+    raw = json.loads((ROOT / "data" / "contracts_raw.json").read_text(encoding="utf-8"))
+    return {c["base_asset"]: float((c.get("margin") or {}).get("maintenance_margin_fraction", 0)) / 10_000
+            for c in raw.get("contracts", [])}
+
+
 def build() -> Path:
     contracts = load_contracts()
+    maint = _maintenance()
     store = _load()
     assets = []
     for sym, group, binance in UNIVERSE:
@@ -147,10 +155,14 @@ def build() -> Path:
         closes = [p for _, p in hourly]
         a = analyse(closes)
         last_walt = walt[-1] if walt else None
+        # Levels are computed from the price the owner actually trades at: Walt's, when a recent sample exists.
+        if a and last_walt and last_walt[0] > time.time() * 1000 - 30 * 60_000:
+            a["price"] = last_walt[1]
         assets.append({
             "symbol": sym, "name": NAMES.get(sym, sym), "group": group, "source": source,
             "walt_price": last_walt[1] if last_walt else None, "walt_at": last_walt[0] if last_walt else None,
-            "max_leverage": c.max_leverage, "closeout": c.closeout_margin_fraction,
+            "max_leverage": c.max_leverage, "closeout": c.closeout_margin_fraction, "maintenance": maint.get(sym),
+            "binance": binance if binance and sym != "XAU" else None,  # live stream on the page (PAXG != Walt gold)
             "funding_h": c.funding_rate_hourly, "analysis": a,
         })
     OUT.mkdir(parents=True, exist_ok=True)
