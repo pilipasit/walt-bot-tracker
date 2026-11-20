@@ -157,6 +157,50 @@ def move() -> None:
     print("Watch it: https://pilipasit.github.io/walt-bot-tracker/   Stop it: set LIVE_ENABLED to false on GitHub.")
 
 
+# ------------------------------------------------------------------ relogin (owner, local)
+def relogin() -> None:
+    """The cloud bot's Walt sign-in expired: sign in again in the browser and hand ONLY the new sign-in to GitHub.
+    The cloud bot's code, state and log stay as they are on GitHub (the PC copies are older)."""
+    import asyncio
+
+    from cryptography.fernet import Fernet
+
+    from .walt_client import connect
+
+    async def go():
+        async with connect(interactive=True) as walt:
+            print("Signed in. Server time:", await walt.call("get_server_time"), flush=True)
+
+    asyncio.run(go())
+    if not TOKEN.exists():
+        sys.exit("No sign-in was saved; run this again and finish the sign-in in the browser.")
+    git = lambda *a: subprocess.run(["git", "-C", str(SITE), *a], capture_output=True, text=True)  # noqa: E731
+    git("pull", "--rebase", "-q")
+    key = Fernet.generate_key().decode()
+    _enc_path(SITE / "bot").write_bytes(_fernet(key).encrypt(TOKEN.read_bytes()))
+    r = subprocess.run(["gh", "secret", "set", "WALT_TOKEN_KEY", "--repo", REPO], input=key, text=True, capture_output=True)
+    if r.returncode:
+        sys.exit("Could not store the key on GitHub: " + r.stderr.strip())
+    TOKEN.replace(TOKEN.with_name("walt_oauth.moved-to-github.json"))  # one owner of the sign-in: the cloud bot
+    git("add", str(_enc_path(SITE / "bot")))
+    git("commit", "-q", "-m", "New Walt sign-in for the cloud bot")
+    for _ in range(4):
+        if git("pull", "--rebase", "-q", "-X", "theirs").returncode == 0 and git("push", "-q").returncode == 0:
+            break
+    else:
+        sys.exit("Push failed; run this again.")
+    # A running loop holds the OLD key from when it started, so restart it on the new one.
+    ids = subprocess.run(["gh", "run", "list", "--repo", REPO, "--workflow", "bot.yml", "--status", "in_progress",
+                          "--json", "databaseId", "-q", ".[].databaseId"], capture_output=True, text=True).stdout.split()
+    for i in ids:
+        subprocess.run(["gh", "run", "cancel", i, "--repo", REPO], capture_output=True)
+    import time
+    time.sleep(15)
+    subprocess.run(["gh", "workflow", "run", "bot.yml", "--repo", REPO, "-f", "mode=live", "-f", "minutes=330"],
+                   capture_output=True)
+    print("Done. The cloud bot restarted with the new sign-in; its first check runs within a minute. The PC can be off.")
+
+
 # ------------------------------------------------------------------ run (workflow)
 def run(mode: str) -> None:
     base = ROOT
@@ -185,23 +229,7 @@ def run(mode: str) -> None:
         cfg = _live_config(str(base / "config.live.json"))
         print(("LIVE" if mode == "live" else "Dry run") + " cycle", flush=True)
         asyncio.run(live_run(cfg, mode == "live", False, connect))
-        try:  # market analysis page: sample Walt's prices with the same sign-in; never allowed to affect the bot
-            from .markets import sample
-
-            async def _sample():
-                async with connect() as client:
-                    return await sample(client)
-
-            print(f"market prices sampled: {asyncio.run(_sample())}", flush=True)
-        except Exception as e:  # noqa: BLE001
-            print("market sampling skipped:", str(e)[:200], flush=True)
     finally:
-        try:
-            from .markets import build
-
-            build()
-        except Exception as e:  # noqa: BLE001
-            print("market analysis not rebuilt:", str(e)[:200], flush=True)
         if before is not None and TOKEN.exists() and hashlib.sha256(TOKEN.read_bytes()).hexdigest() != before:
             enc.write_bytes(_fernet(key).encrypt(TOKEN.read_bytes()))
             print("sign-in renewed and saved", flush=True)
@@ -211,7 +239,7 @@ def run(mode: str) -> None:
             from .dashboard import write_data
 
             write_data()
-            shutil.copyfile(base / "dashboard.html", base.parent / "bot.html")  # index.html is the markets page
+            shutil.copyfile(base / "dashboard.html", base.parent / "index.html")
         except Exception as e:  # noqa: BLE001
             print("tracker page not rebuilt:", e, flush=True)
 
