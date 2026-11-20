@@ -245,8 +245,9 @@ footer b { color:var(--ink-2); }
 <div class="bar">
   <div><div class="ctl-label">Leverage for every asset</div><div class="seg" id="lev"></div></div>
   <div><div class="ctl-label">Show</div><div class="chips" id="groups"></div></div>
-  <div class="note">Each card's own leverage menu overrides this. Cards are sorted by trend quality; the
-    <b style="color:var(--best)">highlighted</b> one has the strongest, cleanest (narrowest) trend right now.</div>
+  <div class="note">Each card's own leverage menu overrides this. Cards are sorted by trend quality. The trend shows the
+    recent direction, not a trade signal: in the backtests, following it did no better than a coin flip after fees,
+    and the cleanest trends did worst. Funding (below) is often the bigger number.</div>
 </div>
 
 <section id="mypos"></section>
@@ -267,7 +268,8 @@ footer b { color:var(--ink-2); }
   </form>
 </details>
 <details class="overview" open><summary>Overview — all assets</summary><div id="ov"></div></details>
-<h2 class="sec">Markets <small>sorted by trend quality</small></h2>
+<details class="overview" open><summary>Funding — who pays whom on Walt right now</summary><div id="fund"></div></details>
+<h2 class="sec">Markets <small>sorted by trend quality · recent direction, not a signal</small></h2>
 <div class="grid" id="grid"></div>
 
 <footer>
@@ -371,7 +373,36 @@ function scenario(a, lev) {
   return { L, side, stop, tp, liq, ok: stop <= safe, maxSensible,
     stopPx: p * (1 - side * stop / 100), tpPx: p * (1 + side * tp / 100), liqPx: p * (1 - side * liq / 100),
     lossM: L * (stop + 2 * fee), gainM: L * (tp - 2 * fee),
-    hoursToTp: Math.abs(x.slope_pct_h) > 1e-6 ? tp / Math.abs(x.slope_pct_h) : null };
+    hoursToTp: Math.abs(x.slope_pct_h) > 1e-6 ? tp / Math.abs(x.slope_pct_h) : null,
+    liqTouch: touchChance(liq, x.atr_pct_h), stopTouch: touchChance(stop, x.atr_pct_h) };
+}
+
+/** Chance that a driftless random walk touches a level `dist`% away within 24 hours (reflection principle).
+ *  Hourly sigma ≈ 1.25 × the mean absolute hourly move. A rough guide: real prices have fatter tails. */
+function touchChance(dist, atrH) {
+  const sd = 1.2533 * atrH * Math.sqrt(24);
+  if (!(sd > 0)) return null;
+  const z = dist / sd, t = 1 / (1 + 0.2316419 * z);
+  const tail = Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI) * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return Math.min(1, 2 * tail);
+}
+const pctChance = (p) => p == null ? '—' : p < 0.005 ? '<1%' : (p * 100).toFixed(0) + '%';
+
+/** Funding table: Walt's current hourly rate (fraction; positive = longs pay shorts), per day and per year. */
+function fundingTable(assets) {
+  const rows = assets.filter((a) => a.funding_h != null).map((a) => ({ a, d: a.funding_h * 24 * 100 }))
+    .sort((p, q) => Math.abs(q.d) - Math.abs(p.d));
+  const row = ({ a, d }) => `<tr data-go="${a.symbol}"><td>${a.name}</td><td class="r">${d > 0 ? 'longs pay' : d < 0 ? 'shorts pay' : '—'}</td>
+    <td class="r">${Math.abs(d).toFixed(3)}%</td><td class="r">${(Math.abs(d) * 365).toFixed(0)}%</td>
+    <td class="r">${Math.abs(d) > 0 ? (0.14 / Math.abs(d)).toFixed(1) + ' d' : '—'}</td></tr>`;
+  return `<table class="ovt"><thead><tr><th>Asset</th><th class="r">Direction</th><th class="r">Per day (of position size)</th><th class="r">Per year</th><th class="r">Covers fees in</th></tr></thead>
+    <tbody>${rows.slice(0, 14).map(row).join('')}</tbody></table>
+    <div class="note" style="margin-top:6px">Multiply by your leverage for % of margin. The side that receives funding is paid
+    every hour; the side that pays loses it every hour. Most of Walt's assets charge longs, about 0.08%/day at the usual rate and
+    0.23%/day at the common upper rate. That cost alone sinks long-only holding strategies on Walt. A short hedged with the same
+    asset bought elsewhere (spot or an ETF) earns the funding without betting on direction. That's the strongest idea in the
+    research, but rates change, so the page now logs them every hour to test it. "Covers fees in" = days of funding that pay
+    a 0.14% round trip. Analysis, not advice.</div>`;
 }
 
 const arrow3 = (t) => ({ up: '▲', down: '▼', sideways: '◆' })[t] || '';
@@ -404,6 +435,7 @@ function card(a, best) {
         <tr${s.ok ? '' : ' class="bad"'}><td>${s.side > 0 ? 'Long' : 'Short'} at ${s.L}× — stop</td><td>${fmtPx(s.stopPx)} (${(s.side > 0 ? '−' : '+') + s.stop.toFixed(2)}%)</td></tr>
         <tr><td>Take profit</td><td>${fmtPx(s.tpPx)} (${(s.side > 0 ? '+' : '−') + s.tp.toFixed(2)}%)</td></tr>
         <tr><td>Liquidation ≈</td><td>${fmtPx(s.liqPx)} (${s.liq.toFixed(2)}% away)</td></tr>
+        <tr${s.liqTouch > 0.1 ? ' class="bad"' : ''}><td>Chance an ordinary day reaches liquidation</td><td>${pctChance(s.liqTouch)} · stop: ${pctChance(s.stopTouch)}</td></tr>
         <tr><td>On margin, after fees</td><td><span class="neg">−${s.lossM.toFixed(1)}%</span> / <span class="pos">+${s.gainM.toFixed(1)}%</span></td></tr>
         <tr><td>At the current pace, TP in</td><td>${s.hoursToTp ? (s.hoursToTp < 48 ? s.hoursToTp.toFixed(0) + ' h' : (s.hoursToTp / 24).toFixed(1) + ' days') : '—'}</td></tr>
       </table>
@@ -513,9 +545,10 @@ function render() {
   const rank = (a) => !a.analysis ? -2 : a.analysis.trend === 'sideways' ? -1 + a.analysis.score / 100 : a.analysis.score + (a.analysis.aligned ? 0.25 : 0);
   list.sort((a, b) => rank(b) - rank(a));
   const trending = DATA.assets.filter((a) => a.analysis && a.analysis.trend !== 'sideways');
-  const best = trending.sort((a, b) => b.analysis.score - a.analysis.score)[0];
-  document.getElementById('grid').innerHTML = list.map((a) => card(a, best && a.symbol === best.symbol)).join('');
+  void trending; // the old "cleanest trend" highlight is gone: in the backtest the cleanest trends did worst
+  document.getElementById('grid').innerHTML = list.map((a) => card(a, false)).join('');
   document.getElementById('ov').innerHTML = overview(list);
+  document.getElementById('fund').innerHTML = fundingTable(DATA.assets);
 }
 
 document.addEventListener('click', (e) => {

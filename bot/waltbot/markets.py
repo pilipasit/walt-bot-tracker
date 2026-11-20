@@ -63,6 +63,23 @@ def _load() -> dict[str, list[list[float]]]:
 FUNDING = OUT / "funding.json"
 
 
+NL = chr(10)
+
+
+def _append_hourly(path: Path, payload: dict) -> None:
+    """Append one line per UTC hour ({"t": hour start ms, "v": payload}); later calls in the same hour are ignored.
+    Builds the history that backtests lack: Walt funding (in millionths per hour) and the page's own signals."""
+    hour = int(time.time() // 3600) * 3_600_000
+    try:
+        last = path.read_text(encoding="utf-8").rstrip().rsplit(NL, 1)[-1] if path.exists() else ""
+        if last and json.loads(last).get("t") == hour:
+            return
+    except Exception:  # noqa: BLE001
+        pass
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps({"t": hour, "v": payload}, separators=(",", ":")) + NL)
+
+
 async def refresh_funding(client) -> None:
     """Walt's current hourly funding per asset (positive = longs pay shorts), at most every 9 minutes."""
     try:
@@ -74,6 +91,7 @@ async def refresh_funding(client) -> None:
         if f:
             OUT.mkdir(parents=True, exist_ok=True)
             FUNDING.write_text(json.dumps({"updated": int(time.time() * 1000), "hourly": f}), encoding="utf-8")
+            _append_hourly(OUT / "funding_history.jsonl", {k: round(v * 1e6) for k, v in sorted(f.items())})
     except Exception:  # noqa: BLE001 — funding is extra information; never block sampling
         pass
 
@@ -336,6 +354,14 @@ def build() -> Path:
         })
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "markets.json"
+    # Forward paper log: what the page showed each hour (trend code, quality, aligned, price, stop %, funding x1e6),
+    # scored later against what happened next. This is the out-of-sample test the backtests can no longer give.
+    _append_hourly(OUT / "signal_log.jsonl", {
+        x["symbol"]: [{"up": 1, "down": -1}.get(x["analysis"]["trend"], 0), round(x["analysis"]["score"], 3),
+                      int(bool(x["analysis"].get("aligned"))), x["analysis"]["price"],
+                      round(2.5 * x["analysis"]["atr_pct_h"] + x["analysis"]["band_pct"], 3),
+                      round((x.get("funding_h") or 0) * 1e6)]
+        for x in assets if x.get("analysis")})
     path.write_text(json.dumps({"updated": int(time.time() * 1000), "fee_pct": 0.07, "assets": assets},
                                separators=(",", ":")), encoding="utf-8")
     return path
