@@ -54,6 +54,8 @@ jobs:
       - name: Bot cycles every 10 minutes
         env:
           WALT_TOKEN_KEY: ${{ secrets.WALT_TOKEN_KEY }}
+          EOS_SEND_SECRET: ${{ secrets.EOS_SEND_SECRET }}
+          POSITIONS_SYNC_KEY: ${{ secrets.POSITIONS_SYNC_KEY }}
         run: |
           git config user.name "walt-bot"
           git config user.email "walt-bot@users.noreply.github.com"

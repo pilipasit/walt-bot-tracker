@@ -238,6 +238,11 @@ def run(mode: str) -> None:
                     return await sample(client)
 
             print(f"market prices sampled: {asyncio.run(_sample())}", flush=True)
+            if mode in ("markets", "quote"):
+                from .markets import build as _b  # noqa: F401  (markets.json may be from this or an earlier cycle)
+                from .alerts import check
+
+                print(f"alerts sent: {check()}", flush=True)
         except Exception as e:  # noqa: BLE001
             print("market sampling skipped:", str(e)[:200], flush=True)
     finally:
