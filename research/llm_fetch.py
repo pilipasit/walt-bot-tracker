@@ -14,7 +14,7 @@ while d <= end:
         s = d.strftime("%Y%m%d")
         url = (f"https://api.gdeltproject.org/api/v2/doc/doc?query={q}&mode=artlist&maxrecords=75&sort=hybridrel"
                f"&format=json&startdatetime={s}000000&enddatetime={s}235959")
-        for attempt in range(4):
+        for attempt in range(6):
             try:
                 raw = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "research-script/1.0"}), timeout=30).read()
                 data = json.loads(raw or b"{}")
@@ -24,7 +24,7 @@ while d <= end:
                 break
             except Exception as e:  # noqa: BLE001 — 429 or bad JSON: back off and retry
                 print(d, "retry", attempt, str(e)[:80], flush=True)
-                time.sleep(30 * (attempt + 1))
-        time.sleep(6.5)
+                time.sleep(120 * (attempt + 1))
+        time.sleep(20)
     d += timedelta(days=1)
 print("done", flush=True)

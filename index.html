@@ -288,7 +288,7 @@ const LEVS = [1, 2, 3, 5, 10, 20, 30, 50];
 const state = { lev: 3, group: 'All', per: {} };
 try { Object.assign(state, JSON.parse(localStorage.getItem('waltMarkets') || '{}')); } catch {}
 const save = () => { try { localStorage.setItem('waltMarkets', JSON.stringify(state)); } catch {} };
-let DATA = null;
+let DATA = null, TOUCH_STATS = null;
 const LIVE = {};   // symbol → live price from Binance's public stream (crypto; gold via PAXG's % change)
 /* The owner's positions: stored ONLY in this browser (localStorage), never in the public repo. A link of the form
    …/#add=<base64 JSON> adds one; the part after # is never sent to any server. */
@@ -374,12 +374,27 @@ function scenario(a, lev) {
     stopPx: p * (1 - side * stop / 100), tpPx: p * (1 + side * tp / 100), liqPx: p * (1 - side * liq / 100),
     lossM: L * (stop + 2 * fee), gainM: L * (tp - 2 * fee),
     hoursToTp: Math.abs(x.slope_pct_h) > 1e-6 ? tp / Math.abs(x.slope_pct_h) : null,
-    liqTouch: touchChance(liq, x.atr_pct_h), stopTouch: touchChance(stop, x.atr_pct_h) };
+    liqTouch: touchChance(liq, x.atr_pct_h, a, side), stopTouch: touchChance(stop, x.atr_pct_h, a, side) };
 }
+
+/** Interpolate measured probabilities, clamping outside the available range. */
+function interpolateTouch(k, points, odds) {
+  if (k <= points[0]) return odds[0];
+  for (let i = 1; i < points.length; i++) {
+    if (k <= points[i]) return odds[i - 1] + (odds[i] - odds[i - 1]) * (k - points[i - 1]) / (points[i] - points[i - 1]);
+  }
+  return odds[odds.length - 1];
+}
+window.interpolateTouch = interpolateTouch;
 
 /** Chance that a driftless random walk touches a level `dist`% away within 24 hours (reflection principle).
  *  Hourly sigma ≈ 1.25 × the mean absolute hourly move. A rough guide: real prices have fatter tails. */
-function touchChance(dist, atrH) {
+function touchChance(dist, atrH, asset, side) {
+  if (!(atrH > 0)) return null;
+  if (dist <= 0) return 1;
+  const stats = TOUCH_STATS && TOUCH_STATS.assets[asset.symbol];
+  const odds = stats && stats[side < 0 ? 'short' : 'long'];
+  if (odds && TOUCH_STATS.k) return interpolateTouch(dist / atrH, TOUCH_STATS.k, odds);
   const sd = 1.2533 * atrH * Math.sqrt(24);
   if (!(sd > 0)) return null;
   const z = dist / sd, t = 1 / (1 + 0.2316419 * z);
@@ -433,7 +448,7 @@ function card(a, best) {
         <tr${s.ok ? '' : ' class="bad"'}><td>${s.side > 0 ? 'Long' : 'Short'} at ${s.L}× — stop</td><td>${fmtPx(s.stopPx)} (${(s.side > 0 ? '−' : '+') + s.stop.toFixed(2)}%)</td></tr>
         <tr><td>Take profit</td><td>${fmtPx(s.tpPx)} (${(s.side > 0 ? '+' : '−') + s.tp.toFixed(2)}%)</td></tr>
         <tr><td>Liquidation ≈</td><td>${fmtPx(s.liqPx)} (${s.liq.toFixed(2)}% away)</td></tr>
-        <tr${s.liqTouch > 0.1 ? ' class="bad"' : ''}><td>Chance an ordinary day reaches liquidation</td><td>${pctChance(s.liqTouch)} · stop: ${pctChance(s.stopTouch)}</td></tr>
+        <tr${s.liqTouch > 0.1 ? ' class="bad"' : ''}><td title="measured on 2 years of hourly prices, any 24-hour window">Chance an ordinary day reaches liquidation</td><td>${pctChance(s.liqTouch)} · stop: ${pctChance(s.stopTouch)}</td></tr>
         <tr><td>On margin, after fees</td><td><span class="neg">−${s.lossM.toFixed(1)}%</span> / <span class="pos">+${s.gainM.toFixed(1)}%</span></td></tr>
         <tr><td>At the current pace, TP in</td><td>${s.hoursToTp ? (s.hoursToTp < 48 ? s.hoursToTp.toFixed(0) + ' h' : (s.hoursToTp / 24).toFixed(1) + ' days') : '—'}</td></tr>
       </table>
@@ -587,8 +602,12 @@ document.addEventListener('submit', (e) => {
 
 async function load() {
   try {
-    const r = await fetch('bot/data/market/markets.json?t=' + Date.now());
+    const [r, stats] = await Promise.all([
+      fetch('bot/data/market/markets.json?t=' + Date.now()),
+      fetch('bot/data/market/touch_stats.json').then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
     DATA = await r.json();
+    TOUCH_STATS = stats;
     const ago = Math.round((Date.now() - DATA.updated) / 60000);
     document.getElementById('meta').textContent = `Updated ${new Date(DATA.updated).toLocaleString()} (${ago} min ago) · `
       + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · crypto + gold live · other Walt prices every minute · trends every 10 min`;
