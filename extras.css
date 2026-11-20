@@ -13,3 +13,6 @@
 .extras-journal-body { padding: 0 16px 14px; overflow-wrap: anywhere; }
 .extras-trade { padding: 7px 0; border-top: 1px solid var(--line); }
 @media (max-width: 375px) { .extras-journal-body { padding-inline: 10px; } }
+.bt-line { font-size:12px; padding:4px 8px; border-radius:6px; border:1px solid var(--line); }
+.bt-line.ok { color:var(--up); } .bt-line.bad { color:var(--down); } .bt-line.mid { color:var(--muted); }
+#bt-overall { display:grid; gap:4px; margin:0 0 12px; }

@@ -146,3 +146,35 @@
   if (key) pull(); setInterval(pull, 60000);
   if (DATA) render();
 })();
+
+/* Backtest (bot/data/market/backtest.json, 90 days of hourly history): how the page's 2:1 stop/take-profit rule did on
+   each asset vs a random long/short at the same moments. Shown on each card and as one overall line. Past data only. */
+(function () {
+  let BT = null;
+  fetch('bot/data/market/backtest.json').then((r) => r.ok ? r.json() : null).then((d) => { BT = d; if (window.render) window.render(); }).catch(() => {});
+  const pct = (v) => v == null ? '—' : (v * 100).toFixed(0) + '%';
+  const line = (s, label) => {
+    if (!s || !s.paired_episodes) return '';
+    const edge = s.paired_tp_rate - s.random_tp_rate, pnl = s.episode && s.episode.avg_pnl_pct;
+    const cls = edge > 0.03 && pnl > 0 ? 'ok' : edge < -0.03 || pnl < 0 ? 'bad' : 'mid';
+    return `<div class="bt-line ${cls}" title="${s.paired_episodes} signals over ~90 days; one trade per trend episode; fees included">${label}: `
+      + `take-profit hit ${pct(s.paired_tp_rate)} vs ${pct(s.random_tp_rate)} random · avg ${pnl == null ? '—' : (pnl > 0 ? '+' : '') + pnl.toFixed(2) + '%'} per trade · ${s.paired_episodes} trades</div>`;
+  };
+  const origCard = window.card;
+  window.card = function (a, best) {
+    const html = origCard(a, best);
+    const s = BT && BT.assets && BT.assets[a.symbol];
+    if (!s) return html;
+    return html.replace(/<\/div>\s*$/, line(s.all, 'Rule, last 90 days') + '</div>');
+  };
+  const origRender = window.render;
+  window.render = function () {
+    origRender();
+    if (!BT || !BT.overall) return;
+    let el = document.getElementById('bt-overall');
+    if (!el) { el = document.createElement('div'); el.id = 'bt-overall'; const ov = document.querySelector('.overview') || document.getElementById('grid'); ov && ov.parentNode.insertBefore(el, ov); }
+    const o = BT.overall.all || BT.overall, al = BT.overall.alignment && (BT.overall.alignment.aligned || BT.overall.alignment.true || BT.overall.alignment['true']);
+    el.innerHTML = line(o, 'Backtest, all assets') + (al ? line(al, '★ aligned trends only') : '')
+      + '<div class="note">The rule\'s results on the last ~90 days of hourly history, against a coin-flip long/short at the same moments. Past data; not a forecast.</div>';
+  };
+})();
