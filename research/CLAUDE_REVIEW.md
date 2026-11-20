@@ -1,5 +1,13 @@
 # Review of the Codex research (20 Nov 2026, Claude)
 
+> **Correction (20 Nov 2026, later):** Walt's `funding_rate_hourly` is a **percent** per hour, not a fraction. The owner's
+> real positions paid or received only about $1–2 a day (e.g. a $36k gold short), which matches the percent reading. So Walt
+> funding is about 100× smaller than stated below: roughly 0.001–0.01% a day. Consequences: the funding-carry lead is
+> **dead**, and funding does **not** sink long holds on Walt. With near-zero funding, the six-month long-only trend made +453%
+> (drawdown 20%) vs +402% for simply holding the same assets (`hold_baseline.py`, funding 0 rows), so the trend filter
+> still adds little over holding. Sections below that rely on large funding are superseded.
+
+
 Second opinion on `BACKTEST_AUDIT.md`, `POSITIVE_STRATEGY_FINDINGS.md` and `BROADER_RESEARCH_FINDINGS.md`. I added two checks.
 
 ## 1. The six-month trend "edge" is the asset mix
