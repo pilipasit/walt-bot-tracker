@@ -281,6 +281,51 @@ def _chart(hourly: list[tuple]) -> dict:
     }
 
 
+DAILY_VOL = OUT / "daily_vol.json"
+
+
+def _daily_vol(sym: str, binance: str | None, ysym: str | None, cache: dict) -> float | None:
+    """Standard deviation of the last 60 daily log returns, in %. Refreshed once a day per asset (cached)."""
+    hit = cache.get(sym)
+    if hit and time.time() - hit[0] < 20 * 3600:
+        return hit[1]
+    closes = []
+    try:
+        if binance and sym != "XAU":
+            from .data import _download
+            now = int(time.time() * 1000)
+            closes = [c.c for c in _download(binance, "1d", now - 100 * 86_400_000, now)]
+        elif ysym:
+            import urllib.parse
+            import urllib.request
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(ysym)}?interval=1d&range=6mo"
+            d = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=15))
+            closes = [c for c in d["chart"]["result"][0]["indicators"]["quote"][0]["close"] if c]
+    except Exception:  # noqa: BLE001 — optional extra; keep the old value if any
+        return hit[1] if hit else None
+    rets = [math.log(b / a) for a, b in zip(closes[-61:], closes[-60:])]
+    if len(rets) < 30:
+        return hit[1] if hit else None
+    m = sum(rets) / len(rets)
+    vol = (sum((r - m) ** 2 for r in rets) / (len(rets) - 1)) ** 0.5 * 100
+    cache[sym] = [time.time(), round(vol, 4)]
+    return cache[sym][1]
+
+
+def _move7(hourly: list, vol_d: float | None) -> dict | None:
+    """Price change over the last 7 calendar days and its size in daily-volatility units (z = log move / (vol x sqrt 7)).
+    research/extreme_moves.py measured what usually follows |z| >= 3 (2012-2026)."""
+    if not hourly:
+        return None
+    cutoff = hourly[-1][0] - 7 * 86_400_000
+    past = [h for h in hourly if h[0] <= cutoff + 6 * 3_600_000]   # Binance keeps exactly 7 days
+    if not past:
+        return None
+    lm = math.log(hourly[-1][4] / past[-1][4])
+    return {"pct": round((math.exp(lm) - 1) * 100, 2),
+            "z": round(lm * 100 / (vol_d * 7 ** 0.5), 2) if vol_d else None, "vol_d": vol_d}
+
+
 def _window_trend(closes: list[float], n: int) -> dict | None:
     """Direction of a longer window: least-squares slope on log prices, called only when the fit is clean (R² ≥ 0.4)."""
     if len(closes) < max(12, n * 2 // 3):
@@ -314,6 +359,10 @@ def build() -> Path:
         funding = {"updated": None, "hourly": {}}
     now_ms = time.time() * 1000
     store = _load()
+    try:
+        vol_cache = json.loads(DAILY_VOL.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        vol_cache = {}
     assets = []
     for sym, group, binance in UNIVERSE:
         c = contracts.get(sym)
@@ -337,6 +386,7 @@ def build() -> Path:
             a["tf"] = tf
             dirs = [v["trend"] for v in tf.values() if v]
             a["aligned"] = len(dirs) == 3 and dirs[0] != "sideways" and len(set(dirs)) == 1
+            a["move7"] = _move7(hourly, _daily_vol(sym, binance, ysym, vol_cache))
         last_walt = walt[-1] if walt else None
         # Levels are computed from the price the owner actually trades at: Walt's, when a recent sample exists.
         if a and last_walt and last_walt[0] > time.time() * 1000 - 30 * 60_000:
@@ -360,6 +410,7 @@ def build() -> Path:
             "analysis": a,
         })
     OUT.mkdir(parents=True, exist_ok=True)
+    DAILY_VOL.write_text(json.dumps(vol_cache, separators=(",", ":")), encoding="utf-8")
     path = OUT / "markets.json"
     # Forward paper log: what the page showed each hour (trend code, quality, aligned, price, stop %, funding x1e6),
     # scored later against what happened next. This is the out-of-sample test the backtests can no longer give.

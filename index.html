@@ -288,7 +288,7 @@ const LEVS = [1, 2, 3, 5, 10, 20, 30, 50];
 const state = { lev: 3, group: 'All', per: {} };
 try { Object.assign(state, JSON.parse(localStorage.getItem('waltMarkets') || '{}')); } catch {}
 const save = () => { try { localStorage.setItem('waltMarkets', JSON.stringify(state)); } catch {} };
-let DATA = null, TOUCH_STATS = null;
+let DATA = null, TOUCH_STATS = null, EXTREME = null;
 const LIVE = {};   // symbol → live price from Binance's public stream (crypto; gold via PAXG's % change)
 /* The owner's positions: stored ONLY in this browser (localStorage), never in the public repo. A link of the form
    …/#add=<base64 JSON> adds one; the part after # is never sent to any server. */
@@ -430,6 +430,21 @@ function overview(list) {
     <div class="note" style="margin-top:6px">★ = the 24-hour, 3-day and 7-day trends all point the same way. Click a row to jump to its chart.</div>`;
 }
 
+/** "Extended move" note: what usually followed a 7-day move this large (research/extreme_moves.py, 2020-2026 and 2012-2019). */
+function extremeNote(a) {
+  const m = a.analysis && a.analysis.move7;
+  if (!m || m.z == null || Math.abs(m.z) < 2 || !EXTREME) return '';
+  const k = Math.abs(m.z) >= 4 ? 4 : Math.abs(m.z) >= 3 ? 3 : 2, dir = m.z < 0 ? 'drops' : 'rallies';
+  const grp = a.group === 'Crypto' ? 'crypto' : 'non_crypto', key = `z${k}_after_${dir}_${grp}`;
+  const late = EXTREME.periods['2020-2026'][key], early = EXTREME.periods['2012-2019'][key];
+  if (!late) return '';
+  const word = (v) => v > 0 ? `kept going ${v.toFixed(1)}%` : `bounced back ${(-v).toFixed(1)}%`;
+  return `<div class="note extreme" title="${late.n} past cases (2020-2026), ${early ? early.n : 0} (2012-2019); one per asset per 5 days; prices only, not a forecast">
+    <b>Extended move:</b> ${m.pct > 0 ? '+' : ''}${m.pct.toFixed(1)}% in 7 days, about ${Math.abs(m.z).toFixed(1)}× a normal week.
+    After ${dir} this large, ${a.group === 'Crypto' ? 'crypto' : 'these non-crypto assets'} on average ${word(late.d3)} over the next 3 days
+    and ${word(late.d10)} over 10 (2020–2026${early ? `; 2012–2019: ${word(early.d3)} / ${word(early.d10)}` : ''}).</div>`;
+}
+
 function card(a, best) {
   const x = a.analysis, lev = state.per[a.symbol] ?? state.lev;
   const head = `<div class="top"><div><div class="sym">${a.name}${a.name !== a.symbol ? ` <span class="muted" style="font-weight:400;font-size:12px">${a.symbol}</span>` : ''}</div>
@@ -459,7 +474,7 @@ function card(a, best) {
     ${chartSvg(a)}
     <div class="legend"><span><i style="background:var(--accent)"></i>12h avg</span><span><i class="dash"></i>48h avg</span><span><i class="chan"></i>24h trend channel</span><span>▲▼● trend changed (hover)</span></div>
     <div class="trendrow"><span class="trend t-${x.trend}">${arrow}</span>
-      <span class="qual">quality ${x.score.toFixed(2)} · R² ${x.r2.toFixed(2)}</span></div>
+      <span class="qual">quality ${x.score.toFixed(2)} · R² ${x.r2.toFixed(2)}</span></div>${extremeNote(a)}
     <div class="meter" title="Trend quality"><i style="width:${Math.min(100, x.score / 0.6 * 100).toFixed(0)}%"></i></div>
     <div class="tf">${['24h', '3d', '7d'].map((k) => { const t = x.tf && x.tf[k]; return t ? `<span class="t-${t.trend}" title="R² ${t.r2}">${k} ${arrow3(t.trend)} ${t.move_pct == null ? '' : (t.move_pct > 0 ? '+' : '') + t.move_pct.toFixed(1) + '%'}</span>` : `<span class="muted">${k} —</span>`; }).join('')}${x.aligned ? '<span class="al">all timeframes agree</span>' : ''}</div>
     ${lastFlip(a)}
@@ -604,8 +619,9 @@ async function load() {
   try {
     const [r, stats] = await Promise.all([
       fetch('bot/data/market/markets.json?t=' + Date.now()),
-      fetch('bot/data/market/touch_stats.json').then(r => r.ok ? r.json() : null).catch(() => null)
-    ]);
+      fetch('bot/data/market/touch_stats.json').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('bot/data/market/extreme_stats.json').then(r => r.ok ? r.json() : null).catch(() => null)
+    ]).then(([m, t, e]) => { EXTREME = e; return [m, t]; });
     DATA = await r.json();
     TOUCH_STATS = stats;
     const ago = Math.round((Date.now() - DATA.updated) / 60000);
