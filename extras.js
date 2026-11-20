@@ -14,7 +14,32 @@
     if (x && x.aligned) s.aligned++;
     return s;
   }, { up: 0, down: 0, sideways: 0, aligned: 0 });
-  window.WaltExtras = { funding, journalMath, summary };
+  // Keep the comparison sample explicit: old snapshots only provide P/L for all
+  // completed episodes, while newer snapshots also provide paired P/L.
+  const backtestLine = (s, label) => {
+    if (!s || !s.paired_episodes) return '';
+    const pct = v => Number.isFinite(v) ? (v * 100).toFixed(1) + '%' : '—';
+    const pnl = v => Number.isFinite(v) ? (v > 0 ? '+' : '') + v.toFixed(2) + '%' : '—';
+    const pairCount = s.paired_episodes;
+    const paired = Number.isFinite(s.paired_avg_pnl_pct) && Number.isFinite(s.random_avg_pnl_pct);
+    const result = paired
+      ? ` · avg P/L ${pnl(s.paired_avg_pnl_pct)} vs ${pnl(s.random_avg_pnl_pct)} random (${pairCount} paired entries)`
+      : (s.episode && Number.isFinite(s.episode.avg_pnl_pct)
+        ? ` · avg P/L ${pnl(s.episode.avg_pnl_pct)} (${s.episode.completed} completed trades)` : '');
+    return `<div class="bt-line mid">${label}: take-profit ${pct(s.paired_tp_rate)} vs ${pct(s.random_tp_rate)} random (${pairCount} paired entries)${result}</div>`;
+  };
+  const backtestPeriod = data => {
+    const coverage = data && data.coverage;
+    if (!coverage || !coverage.from || !coverage.to) return 'Historical snapshot; data dates unavailable.';
+    const date = value => {
+      const d = new Date(value);
+      return Number.isFinite(d.getTime()) ? d.toISOString().slice(0, 10) : null;
+    };
+    const from = date(coverage.from), to = date(coverage.to);
+    const generated = date(data.generated_at);
+    return from && to ? `Historical candle coverage: ${from} to ${to} UTC; individual assets may differ. ${generated ? 'Generated ' + generated + ' UTC.' : 'Generation date unavailable.'}` : 'Historical snapshot; data dates unavailable.';
+  };
+  window.WaltExtras = { funding, journalMath, summary, backtestLine, backtestPeriod };
   if (typeof document === 'undefined') return;
 
   const API = 'https://walt-positions.mrsupetbred.workers.dev/positions';
@@ -147,25 +172,19 @@
   if (DATA) render();
 })();
 
-/* Backtest (bot/data/market/backtest.json, 90 days of hourly history): how the page's 2:1 stop/take-profit rule did on
+/* Backtest (bot/data/market/backtest.json): how the page's 2:1 stop/take-profit rule did on
    each asset vs a random long/short at the same moments. Shown on each card and as one overall line. Past data only. */
 (function () {
+  if (typeof document === 'undefined') return;
   let BT = null;
   fetch('bot/data/market/backtest.json').then((r) => r.ok ? r.json() : null).then((d) => { BT = d; if (window.render) window.render(); }).catch(() => {});
-  const pct = (v) => v == null ? '—' : (v * 100).toFixed(0) + '%';
-  const line = (s, label) => {
-    if (!s || !s.paired_episodes) return '';
-    const edge = s.paired_tp_rate - s.random_tp_rate, pnl = s.episode && s.episode.avg_pnl_pct;
-    const cls = edge > 0.03 && pnl > 0 ? 'ok' : edge < -0.03 || pnl < 0 ? 'bad' : 'mid';
-    return `<div class="bt-line ${cls}" title="${s.paired_episodes} signals over ~90 days; one trade per trend episode; fees included">${label}: `
-      + `take-profit hit ${pct(s.paired_tp_rate)} vs ${pct(s.random_tp_rate)} random · avg ${pnl == null ? '—' : (pnl > 0 ? '+' : '') + pnl.toFixed(2) + '%'} per trade · ${s.paired_episodes} trades</div>`;
-  };
+  const { backtestLine: line, backtestPeriod } = window.WaltExtras;
   const origCard = window.card;
   window.card = function (a, best) {
     const html = origCard(a, best);
     const s = BT && BT.assets && BT.assets[a.symbol];
     if (!s) return html;
-    return html.replace(/<\/div>\s*$/, line(s.all, 'Rule, last 90 days') + '</div>');
+    return html.replace(/<\/div>\s*$/, line(s.all, 'Historical rule') + '</div>');
   };
   const origRender = window.render;
   window.render = function () {
@@ -175,6 +194,6 @@
     if (!el) { el = document.createElement('div'); el.id = 'bt-overall'; const ov = document.querySelector('.overview') || document.getElementById('grid'); ov && ov.parentNode.insertBefore(el, ov); }
     const o = BT.overall.all || BT.overall, al = BT.overall.alignment && (BT.overall.alignment.aligned || BT.overall.alignment.true || BT.overall.alignment['true']);
     el.innerHTML = line(o, 'Backtest, all assets') + (al ? line(al, '★ aligned trends only') : '')
-      + '<div class="note">The rule\'s results on the last ~90 days of hourly history, against a coin-flip long/short at the same moments. Past data; not a forecast.</div>';
+      + `<div class="note">${backtestPeriod(BT)} One entry per trend episode; random is the equal-weight long/short outcome at the same paired entries. P/L is per entry notional after assumed fees, excluding spread, slippage and funding. Historical simulation; not a forecast.</div>`;
   };
 })();

@@ -1,0 +1,634 @@
+{
+  "manifest": {
+    "BTC": {
+      "ticker": "BTC-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "ed198bde694e0c1011a7b7d2e2862d0090483a68a550eb241cad6c6fd5ff48d9"
+    },
+    "ETH": {
+      "ticker": "ETH-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "616718cbdf4331d3ef61ad4a6cb26e4e1699457b851fe6c10f71e41479c1cff6"
+    },
+    "SOL": {
+      "ticker": "SOL-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "5ae19ae84989a20378601d4d11360f8fa8ece840787f84619d2de2baa6dcddde"
+    },
+    "XRP": {
+      "ticker": "XRP-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "c2312d43edd40c832c3232eb5ef9e5114904ca59b07e6998f4172b3b414d395a"
+    },
+    "BNB": {
+      "ticker": "BNB-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "eecdf60d297ca55d681fb7e93ecd14fda4e37de720faa2be7c7920678faca80e"
+    },
+    "DOGE": {
+      "ticker": "DOGE-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "9cf57babe36a9ac62123fef9bf0bbba649947c48c2fcb00bfe35a24d82d4138a"
+    },
+    "HYPE": {
+      "ticker": "HYPE32196-USD",
+      "bars": 17104,
+      "first": "2024-11-29 10:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "57bb82e6da6d0e135894c766edd934dc3ab4ee4a0a5cd2fa94571954f66a6500"
+    },
+    "LINK": {
+      "ticker": "LINK-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "ccadc590413442aa1c58531c94716640f02d04f41e51fe570051ce9fa841df65"
+    },
+    "AVAX": {
+      "ticker": "AVAX-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "95750bbc2b01f44eeb8461017c7e0b1f4e137e1e08e3755fb5650ec6a18c4543"
+    },
+    "ADA": {
+      "ticker": "ADA-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "9873bb3c1a3800f5df1336ec696fc1b781bbd23881f95ada8d8d0e04b657adf2"
+    },
+    "SUI": {
+      "ticker": "SUI20947-USD",
+      "bars": 17282,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "215a556a628c3199baa38f325f5e448beac37c47184b1f95c13be72c0c509055"
+    },
+    "TRX": {
+      "ticker": "TRX-USD",
+      "bars": 17197,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "b89166703a0b23c104ca1739e39dd9575e096504682a962427d2299ec457c6cc"
+    },
+    "XMR": {
+      "ticker": "XMR-USD",
+      "bars": 17197,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "f31c1e5a72c9a1208e0f58d081be2448e0a2452c90ff9bb9ff0eeca63c6d328f"
+    },
+    "XAU": {
+      "ticker": "GC=F",
+      "bars": 11448,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "4a7ccd094d8f1eb9399e77358174be800a1f3319da36bfdfaa7dc3c16c772b0c"
+    },
+    "XAG": {
+      "ticker": "SI=F",
+      "bars": 11444,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "fc9e8e600f442c7a289f68a9f5cc47e9d75fb46748f855d837cd88c7afaecff0"
+    },
+    "XPT": {
+      "ticker": "PL=F",
+      "bars": 11425,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "86c821d874093fe4eac6de6b50befa42a9db9856dce691d145f5f16b00aeb90e"
+    },
+    "XCU": {
+      "ticker": "HG=F",
+      "bars": 11439,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "c86c867ee198402870413d621fdbbd423d8e00da12660f719e3973f5e9258987"
+    },
+    "WTI": {
+      "ticker": "CL=F",
+      "bars": 11293,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "80ca2cab36a056eceeaf9bf3338b0e3e6752d08949bbbeb05e5abb1d85814622"
+    },
+    "BRENTOIL": {
+      "ticker": "BZ=F",
+      "bars": 11390,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "6ca5cd6994eab6d94335a3ec2e5c4de72aea229f362bd24745b1b489bbb23d02"
+    },
+    "NATGAS": {
+      "ticker": "NG=F",
+      "bars": 11165,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "1ab62bed9f8de387cb67c7a73b9b9538e9de5d22d16d2efd83b42c70f5ec4eb4"
+    },
+    "SPY": {
+      "ticker": "SPY",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "2f0e534e2e6abe02ec002bddb0ea32db30f2eb6407cde5285af5aced9281c18b"
+    },
+    "US100": {
+      "ticker": "NQ=F",
+      "bars": 11423,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "571c2db56c41c523be58f339a646caa9d776037421f834ff64c84522b9a15877"
+    },
+    "US10Y": {
+      "ticker": "^TNX",
+      "bars": 3482,
+      "first": "2024-11-22 13:20:00+00:00",
+      "last": "2026-11-19 19:20:00+00:00",
+      "sha256": "16aa4fb063facf86da9c465eefd81ca0c14c46ecdb0adf32163312035e936cea"
+    },
+    "NVDA": {
+      "ticker": "NVDA",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "47dc2f3a6c57c6589c3780d0ce00e3d91cc6721529a8e870106e6fc6fc09a7be"
+    },
+    "TSLA": {
+      "ticker": "TSLA",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "6589f0336af90e75251335bf7fd29f5f29dee87b143fe1ab0cabb2b1d39252fb"
+    },
+    "AAPL": {
+      "ticker": "AAPL",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "21470e60308425b7c1b5a9077f3eb7203707a0b89087687acdc971546675884d"
+    },
+    "MSFT": {
+      "ticker": "MSFT",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "994b6f6ea9a1282830b668bee0835b3a25f4f7a3a94fa3dd024846a2a5f47872"
+    },
+    "AMZN": {
+      "ticker": "AMZN",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "6ef89b7a2295f2ad620d55d0a38fa570faf3d04145920040125338d2bee14014"
+    },
+    "GOOGL": {
+      "ticker": "GOOGL",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "850db01ac9fa7e4d00c65f6e48687e6deb94a92a2f6292912db1ffbc5312c257"
+    },
+    "META": {
+      "ticker": "META",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "ee80d8189a29049d2290bcb2f0ab9a5568439d1807b53838a0676317b44fb029"
+    },
+    "AMD": {
+      "ticker": "AMD",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "f230ed7999658a0292560620cc93cc430cb93e699a4ae08f74a9f5b5f8bda7cd"
+    },
+    "MSTR": {
+      "ticker": "MSTR",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "7cbe33e263e21e403192439346ab637819192051b3c4492ee2a45ca86ca3876b"
+    },
+    "COIN": {
+      "ticker": "COIN",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "dadc66bd45f0fd0de3b6c16713d54d72afa089cf6b726d52aae53c325f35dc57"
+    },
+    "PLTR": {
+      "ticker": "PLTR",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "1f8d38fd355100758e3529bcb228f65b1c8042c20668e01f124070f3aed02da1"
+    },
+    "TSM": {
+      "ticker": "TSM",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "a5f419b29d2b8ea8761048be63be9cb81ca0f721df8b0530ed02747fb8b6ecaf"
+    },
+    "AVGO": {
+      "ticker": "AVGO",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "728cba4a95c22a5122ea4d7711df37ee699a1939254f437bbf5d62292235d29b"
+    },
+    "MU": {
+      "ticker": "MU",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "6c53b6790a8991a38fea14d750dd6323bfe0a670a354daccde37fe23b05b98d6"
+    },
+    "ORCL": {
+      "ticker": "ORCL",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "bf11c29d6d00ad2571d067b690302119a394c97bb101ce54ac61b8515a2ca362"
+    },
+    "INTC": {
+      "ticker": "INTC",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "7578fa469be7f21b5903b7d8be605f3074652d72940cadbac09ffd61d1e2bb88"
+    },
+    "HOOD": {
+      "ticker": "HOOD",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "e269cb59ac6791954883ec023ab3842aa31e91a34d55b4956598c17c26dc2688"
+    },
+    "BABA": {
+      "ticker": "BABA",
+      "bars": 3478,
+      "first": "2024-11-22 14:30:00+00:00",
+      "last": "2026-11-19 21:00:00+00:00",
+      "sha256": "c125c83d2d9b3e50ecfa948dcc343c7abd28487ae0d3c8a765b604cf8e60fdf9"
+    },
+    "EURUSD": {
+      "ticker": "EURUSD=X",
+      "bars": 12300,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "18d6181869614f5651ab64afdf9a3baec554cc8d6654eba5dce40b2e0871a897"
+    },
+    "GBPUSD": {
+      "ticker": "GBPUSD=X",
+      "bars": 12302,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "2a00084865c07150f60e678f7c8f28237d85fc7ca23934ce4db152b9f7a8f585"
+    },
+    "USDJPY": {
+      "ticker": "JPY=X",
+      "bars": 12216,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "d4363289e1f4d6c6ee63d614e78b5022a2c95d2e82e9b962c2a140c670f0e32b"
+    },
+    "USDCHF": {
+      "ticker": "CHF=X",
+      "bars": 12243,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "2aad74d30de643286788ba9ea374e66f5d1f6849ae0ff26fe8bcdb45a7c7724f"
+    },
+    "USDCAD": {
+      "ticker": "CAD=X",
+      "bars": 12368,
+      "first": "2024-11-22 00:00:00+00:00",
+      "last": "2026-11-19 23:00:00+00:00",
+      "sha256": "1f5e6e15467fb655e5b8cf8b0267cfaf3d55bae4a9bbae594054192a3f21565a"
+    }
+  },
+  "failures": {},
+  "selected": "pullback",
+  "validation": {
+    "follow24": {
+      "trades": 29136,
+      "mean_trade": -0.2763,
+      "mean_opportunity": -0.2761,
+      "stress_opportunity": -0.3932,
+      "same_entry_long": -0.1827,
+      "same_entry_short": -0.2973
+    },
+    "follow120": {
+      "trades": 29154,
+      "mean_trade": -0.2583,
+      "mean_opportunity": -0.2582,
+      "stress_opportunity": -0.3754,
+      "same_entry_long": -0.1827,
+      "same_entry_short": -0.2973
+    },
+    "pullback": {
+      "trades": 13071,
+      "mean_trade": -0.2777,
+      "mean_opportunity": -0.1244,
+      "stress_opportunity": -0.1771,
+      "same_entry_long": -0.1647,
+      "same_entry_short": -0.3153
+    },
+    "reverse24": {
+      "trades": 29136,
+      "mean_trade": -0.2037,
+      "mean_opportunity": -0.2034,
+      "stress_opportunity": -0.3206,
+      "same_entry_long": -0.1827,
+      "same_entry_short": -0.2973
+    },
+    "long": {
+      "trades": 29166,
+      "mean_trade": -0.1827,
+      "mean_opportunity": -0.1827,
+      "stress_opportunity": -0.3,
+      "same_entry_long": -0.1827,
+      "same_entry_short": -0.2973
+    }
+  },
+  "test": {
+    "follow24": {
+      "trades": 24030,
+      "mean_trade": -0.2501,
+      "mean_opportunity": -0.2496,
+      "stress_opportunity": -0.3667,
+      "same_entry_long": -0.2348,
+      "same_entry_short": -0.2452
+    },
+    "follow120": {
+      "trades": 24059,
+      "mean_trade": -0.2087,
+      "mean_opportunity": -0.2085,
+      "stress_opportunity": -0.3257,
+      "same_entry_long": -0.2352,
+      "same_entry_short": -0.2448
+    },
+    "pullback": {
+      "trades": 10684,
+      "mean_trade": -0.212,
+      "mean_opportunity": -0.0941,
+      "stress_opportunity": -0.1459,
+      "same_entry_long": -0.2317,
+      "same_entry_short": -0.2483
+    },
+    "reverse24": {
+      "trades": 24030,
+      "mean_trade": -0.2299,
+      "mean_opportunity": -0.2294,
+      "stress_opportunity": -0.3465,
+      "same_entry_long": -0.2348,
+      "same_entry_short": -0.2452
+    },
+    "long": {
+      "trades": 24081,
+      "mean_trade": -0.2354,
+      "mean_opportunity": -0.2354,
+      "stress_opportunity": -0.3527,
+      "same_entry_long": -0.2354,
+      "same_entry_short": -0.2446
+    }
+  },
+  "by_group": {
+    "Crypto": {
+      "trades": 5626,
+      "mean_trade": -0.212,
+      "mean_opportunity": -0.0953,
+      "stress_opportunity": -0.1448,
+      "same_entry_long": -0.2659,
+      "same_entry_short": -0.2141
+    },
+    "Energy": {
+      "trades": 794,
+      "mean_trade": -0.1707,
+      "mean_opportunity": -0.0743,
+      "stress_opportunity": -0.1245,
+      "same_entry_long": -0.0515,
+      "same_entry_short": -0.4285
+    },
+    "FX": {
+      "trades": 1429,
+      "mean_trade": -0.2339,
+      "mean_opportunity": -0.099,
+      "stress_opportunity": -0.1473,
+      "same_entry_long": -0.2291,
+      "same_entry_short": -0.2509
+    },
+    "Indices": {
+      "trades": 426,
+      "mean_trade": -0.242,
+      "mean_opportunity": -0.1093,
+      "stress_opportunity": -0.166,
+      "same_entry_long": -0.2078,
+      "same_entry_short": -0.2722
+    },
+    "Metals": {
+      "trades": 1119,
+      "mean_trade": -0.2159,
+      "mean_opportunity": -0.0991,
+      "stress_opportunity": -0.1521,
+      "same_entry_long": -0.2497,
+      "same_entry_short": -0.2303
+    },
+    "Stocks": {
+      "trades": 1290,
+      "mean_trade": -0.2,
+      "mean_opportunity": -0.0863,
+      "stress_opportunity": -0.1508,
+      "same_entry_long": -0.189,
+      "same_entry_short": -0.291
+    }
+  },
+  "by_month": {
+    "2026-01": {
+      "trades": 1004,
+      "mean_trade": -0.0635,
+      "mean_opportunity": -0.0284,
+      "stress_opportunity": -0.0812,
+      "same_entry_long": -0.2433,
+      "same_entry_short": -0.2367
+    },
+    "2026-02": {
+      "trades": 964,
+      "mean_trade": -0.4144,
+      "mean_opportunity": -0.1916,
+      "stress_opportunity": -0.2461,
+      "same_entry_long": -0.2623,
+      "same_entry_short": -0.2177
+    },
+    "2026-03": {
+      "trades": 1001,
+      "mean_trade": -0.1959,
+      "mean_opportunity": -0.084,
+      "stress_opportunity": -0.1335,
+      "same_entry_long": -0.2322,
+      "same_entry_short": -0.2478
+    },
+    "2026-04": {
+      "trades": 1012,
+      "mean_trade": -0.2869,
+      "mean_opportunity": -0.1273,
+      "stress_opportunity": -0.1791,
+      "same_entry_long": -0.1147,
+      "same_entry_short": -0.3653
+    },
+    "2026-05": {
+      "trades": 942,
+      "mean_trade": -0.2559,
+      "mean_opportunity": -0.1092,
+      "stress_opportunity": -0.1592,
+      "same_entry_long": -0.2374,
+      "same_entry_short": -0.2426
+    },
+    "2026-06": {
+      "trades": 960,
+      "mean_trade": -0.0441,
+      "mean_opportunity": -0.0185,
+      "stress_opportunity": -0.0678,
+      "same_entry_long": -0.3708,
+      "same_entry_short": -0.1092
+    },
+    "2026-07": {
+      "trades": 1016,
+      "mean_trade": -0.1889,
+      "mean_opportunity": -0.0826,
+      "stress_opportunity": -0.1337,
+      "same_entry_long": -0.1492,
+      "same_entry_short": -0.3308
+    },
+    "2026-08": {
+      "trades": 1065,
+      "mean_trade": -0.1996,
+      "mean_opportunity": -0.0932,
+      "stress_opportunity": -0.1477,
+      "same_entry_long": -0.0095,
+      "same_entry_short": -0.4705
+    },
+    "2026-09": {
+      "trades": 1052,
+      "mean_trade": -0.3225,
+      "mean_opportunity": -0.1483,
+      "stress_opportunity": -0.2026,
+      "same_entry_long": -0.0626,
+      "same_entry_short": -0.4174
+    },
+    "2026-10": {
+      "trades": 1061,
+      "mean_trade": -0.1687,
+      "mean_opportunity": -0.0764,
+      "stress_opportunity": -0.1289,
+      "same_entry_long": -0.4626,
+      "same_entry_short": -0.0174
+    },
+    "2026-11": {
+      "trades": 607,
+      "mean_trade": -0.1801,
+      "mean_opportunity": -0.0775,
+      "stress_opportunity": -0.1275,
+      "same_entry_long": -0.5471,
+      "same_entry_short": 0.0671
+    }
+  },
+  "continuous": {
+    "follow24": {
+      "validation": {
+        "trades": 8652,
+        "mean_trade": -0.3471,
+        "mean_opportunity": -0.103,
+        "stress_trade": -0.5054,
+        "median_trade": -0.6239
+      },
+      "test": {
+        "trades": 7232,
+        "mean_trade": -0.2688,
+        "mean_opportunity": -0.0807,
+        "stress_trade": -0.4264,
+        "median_trade": -0.5738
+      }
+    },
+    "follow120": {
+      "validation": {
+        "trades": 4474,
+        "mean_trade": -0.3258,
+        "mean_opportunity": -0.05,
+        "stress_trade": -0.5385,
+        "median_trade": -0.681
+      },
+      "test": {
+        "trades": 3576,
+        "mean_trade": -0.0492,
+        "mean_opportunity": -0.0073,
+        "stress_trade": -0.266,
+        "median_trade": -0.5882
+      }
+    },
+    "pullback": {
+      "validation": {
+        "trades": 7976,
+        "mean_trade": -0.3012,
+        "mean_opportunity": -0.0824,
+        "stress_trade": -0.4299,
+        "median_trade": -0.1709
+      },
+      "test": {
+        "trades": 6546,
+        "mean_trade": -0.1952,
+        "mean_opportunity": -0.0531,
+        "stress_trade": -0.3228,
+        "median_trade": -0.1341
+      }
+    },
+    "reverse24": {
+      "validation": {
+        "trades": 8652,
+        "mean_trade": -0.1333,
+        "mean_opportunity": -0.0395,
+        "stress_trade": -0.2915,
+        "median_trade": 0.1434
+      },
+      "test": {
+        "trades": 7232,
+        "mean_trade": -0.2113,
+        "mean_opportunity": -0.0635,
+        "stress_trade": -0.3689,
+        "median_trade": 0.093
+      }
+    },
+    "long": {
+      "validation": {
+        "trades": 1013,
+        "mean_trade": 1.1781,
+        "mean_opportunity": 0.0409,
+        "stress_trade": 0.5801,
+        "median_trade": 0.5481
+      },
+      "test": {
+        "trades": 855,
+        "mean_trade": -0.215,
+        "mean_opportunity": -0.0076,
+        "stress_trade": -0.8039,
+        "median_trade": -0.4351
+      }
+    }
+  }
+}

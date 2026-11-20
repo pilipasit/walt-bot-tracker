@@ -188,7 +188,8 @@ def analyse(closes: list[float]) -> dict | None:
     resid = [y - (ym + slope * (i - xm)) for i, y in enumerate(win)]
     ss_tot = sum((y - ym) ** 2 for y in win) or 1e-12
     r2 = max(0.0, 1 - sum(r * r for r in resid) / ss_tot)
-    rets = [b - a for a, b in zip(logs[-49:], logs[-48:])]
+    recent = logs[-49:]
+    rets = [b - a for a, b in zip(recent, recent[1:])]
     vol = (sum(r * r for r in rets) / max(1, len(rets))) ** 0.5 or 1e-9   # hourly volatility (log)
     atr = sum(abs(r) for r in rets[-24:]) / max(1, len(rets[-24:]))      # mean hourly move
     band = (sum(r * r for r in resid) / n) ** 0.5                         # channel half-width (log)

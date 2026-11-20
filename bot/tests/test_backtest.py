@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from waltbot.backtest import market_signal, market_trade, run
+from waltbot.markets import analyse
 
 HOUR = 3_600_000
 
@@ -31,6 +32,11 @@ class MarketBacktestTests(unittest.TestCase):
         closes[121:] = [x * 10 for x in closes[121:]]
         self.assertEqual(before, market_signal(closes, 120))
 
+    def test_short_histories_use_actual_consecutive_returns(self):
+        for n in (12, 48, 49):
+            closes = [100 * 1.002 ** i for i in range(n)]
+            self.assertAlmostEqual(analyse(closes)['atr_pct_h'], 0.1998, places=4)
+
     def test_same_candle_stop_first(self):
         candles = [[0, 100, 100, 100, 100, 0], [HOUR, 100, 103, 98, 101, 0]]
         self.assertEqual(market_trade(candles, 0, 1, 1)['outcome'], 'stop')
@@ -46,12 +52,33 @@ class MarketBacktestTests(unittest.TestCase):
             for c in candles[100:]:
                 c[0] += HOUR
             Path(temp, 'TEST.json').write_text(json.dumps({'symbol': 'TEST', 'group': 'test', 'candles': candles}))
-            self.assertEqual(run(temp)['overall']['all']['episodes'], 2)
+            self.assertEqual(run(temp)['overall']['all']['episodes'], 1)
 
     def test_censored_and_timeout(self):
         candles = [[i * HOUR, 100, 100, 100, 100, 0] for i in range(73)]
         self.assertIsNone(market_trade(candles[:-1], 0, 1, 1))
         self.assertEqual(market_trade(candles, 0, 1, 1)['outcome'], 'timeout')
+
+    def test_gap_through_stop_uses_open(self):
+        candles = [[0, 100, 100, 100, 100, 0], [3 * HOUR, 95, 96, 94, 95, 0]]
+        trade = market_trade(candles, 0, 1, 1)
+        self.assertEqual(trade['outcome'], 'stop')
+        self.assertAlmostEqual(trade['pnl_pct'], -5.14)
+
+    def test_timeout_does_not_use_high_after_deadline(self):
+        candles = [[i * HOUR, 100, 100, 100, 100, 0] for i in range(74)]
+        candles[73][2] = 120
+        trade = market_trade(candles, 0, 1, 1)
+        self.assertEqual(trade['outcome'], 'timeout')
+        self.assertAlmostEqual(trade['pnl_pct'], -0.14)
+        self.assertEqual(trade['hours'], 72)
+
+    def test_timeout_during_closure_waits_for_next_open(self):
+        candles = [[0, 100, 100, 100, 100, 0], [80 * HOUR, 97, 98, 96, 97, 0]]
+        trade = market_trade(candles, 0, 1, 10)
+        self.assertEqual(trade['outcome'], 'timeout')
+        self.assertAlmostEqual(trade['pnl_pct'], -3.14)
+        self.assertEqual(trade['hours'], 79)
 
 
 if __name__ == '__main__':

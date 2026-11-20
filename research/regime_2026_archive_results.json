@@ -1,0 +1,15 @@
+{
+  "2026": {
+    "trades": 68,
+    "return_on_starting_capital_pct": 0.016744045232885973,
+    "max_drawdown_pct": 8.24047781787508,
+    "mean_stressed_trade_pct": 0.0009849438372276527,
+    "without_top5_mean_pct": -0.8952814583771548,
+    "weekly_bootstrap_return_95ci": [
+      -18.82306109315337,
+      21.43723613456173
+    ],
+    "profitable_days": 21,
+    "active_days": 55
+  }
+}

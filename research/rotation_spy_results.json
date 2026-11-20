@@ -1,0 +1,1354 @@
+{
+  "start": "2015-01-05",
+  "end": "2026-10-30",
+  "symbols": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "BNB",
+    "DOGE",
+    "LINK",
+    "ADA",
+    "TRX",
+    "XAU",
+    "XAG",
+    "XPT",
+    "XCU",
+    "WTI",
+    "BRENTOIL",
+    "NATGAS",
+    "SPY",
+    "NVDA",
+    "TSLA",
+    "AAPL",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "AMD",
+    "MSTR",
+    "COIN",
+    "PLTR",
+    "TSM",
+    "AVGO",
+    "MU",
+    "ORCL",
+    "INTC",
+    "HOOD",
+    "BABA",
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "USDCHF",
+    "USDCAD"
+  ],
+  "benchmark": {
+    "full": {
+      "total_pct": 354.676,
+      "max_close_dd_pct": 33.717
+    },
+    "early": {
+      "total_pct": 168.209,
+      "max_close_dd_pct": 33.717
+    },
+    "late": {
+      "total_pct": 69.523,
+      "max_close_dd_pct": 24.496
+    },
+    "years": {
+      "2015": {
+        "total_pct": 3.151,
+        "max_close_dd_pct": 11.91
+      },
+      "2016": {
+        "total_pct": 11.998,
+        "max_close_dd_pct": 10.306
+      },
+      "2017": {
+        "total_pct": 21.705,
+        "max_close_dd_pct": 2.61
+      },
+      "2018": {
+        "total_pct": -4.569,
+        "max_close_dd_pct": 19.349
+      },
+      "2019": {
+        "total_pct": 31.224,
+        "max_close_dd_pct": 6.618
+      },
+      "2020": {
+        "total_pct": 18.332,
+        "max_close_dd_pct": 33.717
+      },
+      "2021": {
+        "total_pct": 28.729,
+        "max_close_dd_pct": 5.114
+      },
+      "2022": {
+        "total_pct": -18.175,
+        "max_close_dd_pct": 24.496
+      },
+      "2023": {
+        "total_pct": 26.176,
+        "max_close_dd_pct": 9.974
+      },
+      "2024": {
+        "total_pct": 24.886,
+        "max_close_dd_pct": 8.406
+      },
+      "2025": {
+        "total_pct": 17.719,
+        "max_close_dd_pct": 18.755
+      },
+      "2026": {
+        "total_pct": 11.688,
+        "max_close_dd_pct": 8.885
+      }
+    }
+  },
+  "runs": {
+    "long/0": {
+      "full": {
+        "total_pct": 3009.404,
+        "max_close_dd_pct": 55.207
+      },
+      "early": {
+        "total_pct": 2299.344,
+        "max_close_dd_pct": 33.151
+      },
+      "late": {
+        "total_pct": 29.594,
+        "max_close_dd_pct": 41.488
+      },
+      "years": {
+        "2015": {
+          "total_pct": 6.426,
+          "max_close_dd_pct": 7.554
+        },
+        "2016": {
+          "total_pct": 47.54,
+          "max_close_dd_pct": 9.986
+        },
+        "2017": {
+          "total_pct": 60.587,
+          "max_close_dd_pct": 6.563
+        },
+        "2018": {
+          "total_pct": -26.759,
+          "max_close_dd_pct": 33.151
+        },
+        "2019": {
+          "total_pct": 38.804,
+          "max_close_dd_pct": 27.532
+        },
+        "2020": {
+          "total_pct": 129.148,
+          "max_close_dd_pct": 27.659
+        },
+        "2021": {
+          "total_pct": 308.465,
+          "max_close_dd_pct": 31.151
+        },
+        "2022": {
+          "total_pct": -28.663,
+          "max_close_dd_pct": 30.643
+        },
+        "2023": {
+          "total_pct": 21.08,
+          "max_close_dd_pct": 15.977
+        },
+        "2024": {
+          "total_pct": 45.267,
+          "max_close_dd_pct": 22.783
+        },
+        "2025": {
+          "total_pct": -1.308,
+          "max_close_dd_pct": 24.474
+        },
+        "2026": {
+          "total_pct": 4.652,
+          "max_close_dd_pct": 19.661
+        }
+      },
+      "trades": 851,
+      "liquidations": 0,
+      "max_leverage": 1,
+      "max_gross": 0.8564652642636155,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "SPY",
+        "TRX",
+        "TSLA",
+        "TSM",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 1,
+        "ORCL": 1,
+        "XAU": 1,
+        "META": 1,
+        "AAPL": 1,
+        "USDCAD": 1,
+        "AMZN": 1,
+        "XCU": 1,
+        "SOL": 1,
+        "TSM": 1,
+        "HOOD": 1,
+        "BTC": 1,
+        "NATGAS": 1,
+        "ETH": 1,
+        "LINK": 1,
+        "WTI": 1,
+        "BNB": 1,
+        "GOOGL": 1,
+        "XAG": 1,
+        "AVGO": 1,
+        "DOGE": 1,
+        "COIN": 1,
+        "ADA": 1,
+        "XRP": 1,
+        "USDJPY": 1,
+        "AMD": 1,
+        "MSTR": 1,
+        "TRX": 1,
+        "XPT": 1,
+        "NVDA": 1,
+        "EURUSD": 1,
+        "BABA": 1,
+        "USDCHF": 1,
+        "SPY": 1,
+        "MU": 1,
+        "BRENTOIL": 1,
+        "TSLA": 1,
+        "PLTR": 1
+      },
+      "trade_counts_year": {
+        "2015": 65,
+        "2016": 72,
+        "2017": 72,
+        "2018": 72,
+        "2019": 72,
+        "2020": 72,
+        "2021": 72,
+        "2022": 72,
+        "2023": 72,
+        "2024": 72,
+        "2025": 72,
+        "2026": 66
+      }
+    },
+    "long/1": {
+      "full": {
+        "total_pct": 1055.884,
+        "max_close_dd_pct": 71.169
+      },
+      "early": {
+        "total_pct": 727.895,
+        "max_close_dd_pct": 71.169
+      },
+      "late": {
+        "total_pct": 39.617,
+        "max_close_dd_pct": 59.066
+      },
+      "years": {
+        "2015": {
+          "total_pct": -30.397,
+          "max_close_dd_pct": 40.598
+        },
+        "2016": {
+          "total_pct": 77.132,
+          "max_close_dd_pct": 26.163
+        },
+        "2017": {
+          "total_pct": 66.447,
+          "max_close_dd_pct": 15.496
+        },
+        "2018": {
+          "total_pct": -46.767,
+          "max_close_dd_pct": 59.511
+        },
+        "2019": {
+          "total_pct": 4.174,
+          "max_close_dd_pct": 37.068
+        },
+        "2020": {
+          "total_pct": 81.907,
+          "max_close_dd_pct": 54.734
+        },
+        "2021": {
+          "total_pct": 299.928,
+          "max_close_dd_pct": 31.736
+        },
+        "2022": {
+          "total_pct": -40.175,
+          "max_close_dd_pct": 41.777
+        },
+        "2023": {
+          "total_pct": 29.352,
+          "max_close_dd_pct": 29.694
+        },
+        "2024": {
+          "total_pct": 63.664,
+          "max_close_dd_pct": 23.75
+        },
+        "2025": {
+          "total_pct": 6.972,
+          "max_close_dd_pct": 24.474
+        },
+        "2026": {
+          "total_pct": 3.055,
+          "max_close_dd_pct": 20.799
+        }
+      },
+      "trades": 851,
+      "liquidations": 9,
+      "max_leverage": 17,
+      "max_gross": 5.184747024111734,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "SPY",
+        "TRX",
+        "TSLA",
+        "TSM",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 2,
+        "ORCL": 7,
+        "XAU": 8,
+        "META": 4,
+        "AAPL": 5,
+        "USDCAD": 14,
+        "AMZN": 6,
+        "XCU": 6,
+        "SOL": 1,
+        "TSM": 5,
+        "HOOD": 1,
+        "BTC": 4,
+        "NATGAS": 3,
+        "ETH": 2,
+        "LINK": 1,
+        "WTI": 4,
+        "BNB": 3,
+        "GOOGL": 4,
+        "XAG": 4,
+        "AVGO": 4,
+        "DOGE": 1,
+        "COIN": 1,
+        "ADA": 1,
+        "XRP": 3,
+        "USDJPY": 17,
+        "AMD": 3,
+        "MSTR": 3,
+        "TRX": 4,
+        "XPT": 4,
+        "NVDA": 3,
+        "EURUSD": 10,
+        "BABA": 3,
+        "USDCHF": 12,
+        "SPY": 17,
+        "MU": 3,
+        "BRENTOIL": 5,
+        "TSLA": 2,
+        "PLTR": 2
+      },
+      "trade_counts_year": {
+        "2015": 65,
+        "2016": 72,
+        "2017": 72,
+        "2018": 72,
+        "2019": 72,
+        "2020": 72,
+        "2021": 72,
+        "2022": 72,
+        "2023": 72,
+        "2024": 73,
+        "2025": 71,
+        "2026": 66
+      }
+    },
+    "long/3": {
+      "full": {
+        "total_pct": -99.819,
+        "max_close_dd_pct": 99.906
+      },
+      "early": {
+        "total_pct": -95.719,
+        "max_close_dd_pct": 99.452
+      },
+      "late": {
+        "total_pct": -95.776,
+        "max_close_dd_pct": 97.668
+      },
+      "years": {
+        "2015": {
+          "total_pct": -94.673,
+          "max_close_dd_pct": 96.146
+        },
+        "2016": {
+          "total_pct": -21.049,
+          "max_close_dd_pct": 84.621
+        },
+        "2017": {
+          "total_pct": 221.659,
+          "max_close_dd_pct": 32.175
+        },
+        "2018": {
+          "total_pct": -85.565,
+          "max_close_dd_pct": 91.498
+        },
+        "2019": {
+          "total_pct": -13.748,
+          "max_close_dd_pct": 80.354
+        },
+        "2020": {
+          "total_pct": 71.797,
+          "max_close_dd_pct": 86.867
+        },
+        "2021": {
+          "total_pct": 47.968,
+          "max_close_dd_pct": 84.54
+        },
+        "2022": {
+          "total_pct": -86.963,
+          "max_close_dd_pct": 86.99
+        },
+        "2023": {
+          "total_pct": -66.21,
+          "max_close_dd_pct": 82.114
+        },
+        "2024": {
+          "total_pct": 102.2,
+          "max_close_dd_pct": 73.909
+        },
+        "2025": {
+          "total_pct": -55.466,
+          "max_close_dd_pct": 70.64
+        },
+        "2026": {
+          "total_pct": 6.47,
+          "max_close_dd_pct": 58.55
+        }
+      },
+      "trades": 851,
+      "liquidations": 178,
+      "max_leverage": 50,
+      "max_gross": 15.955103556224266,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "SPY",
+        "TRX",
+        "TSLA",
+        "TSM",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 6,
+        "ORCL": 10,
+        "XAU": 25,
+        "META": 13,
+        "AAPL": 17,
+        "USDCAD": 25,
+        "AMZN": 19,
+        "XCU": 19,
+        "SOL": 5,
+        "TSM": 10,
+        "HOOD": 5,
+        "BTC": 14,
+        "NATGAS": 9,
+        "ETH": 7,
+        "LINK": 5,
+        "WTI": 12,
+        "BNB": 9,
+        "GOOGL": 14,
+        "XAG": 12,
+        "AVGO": 10,
+        "DOGE": 5,
+        "COIN": 4,
+        "ADA": 4,
+        "XRP": 9,
+        "USDJPY": 50,
+        "AMD": 9,
+        "MSTR": 10,
+        "TRX": 10,
+        "XPT": 12,
+        "NVDA": 11,
+        "EURUSD": 32,
+        "BABA": 10,
+        "USDCHF": 25,
+        "SPY": 50,
+        "MU": 9,
+        "BRENTOIL": 15,
+        "TSLA": 7,
+        "PLTR": 6
+      },
+      "trade_counts_year": {
+        "2015": 67,
+        "2016": 70,
+        "2017": 72,
+        "2018": 72,
+        "2019": 73,
+        "2020": 72,
+        "2021": 77,
+        "2022": 66,
+        "2023": 72,
+        "2024": 73,
+        "2025": 72,
+        "2026": 65
+      }
+    },
+    "long_short/0": {
+      "full": {
+        "total_pct": 179.365,
+        "max_close_dd_pct": 55.307
+      },
+      "early": {
+        "total_pct": 321.908,
+        "max_close_dd_pct": 41.397
+      },
+      "late": {
+        "total_pct": -33.785,
+        "max_close_dd_pct": 55.307
+      },
+      "years": {
+        "2015": {
+          "total_pct": 10.448,
+          "max_close_dd_pct": 8.803
+        },
+        "2016": {
+          "total_pct": 10.801,
+          "max_close_dd_pct": 8.487
+        },
+        "2017": {
+          "total_pct": 34.768,
+          "max_close_dd_pct": 7.652
+        },
+        "2018": {
+          "total_pct": -24.997,
+          "max_close_dd_pct": 33.713
+        },
+        "2019": {
+          "total_pct": -1.756,
+          "max_close_dd_pct": 26.334
+        },
+        "2020": {
+          "total_pct": -11.502,
+          "max_close_dd_pct": 23.229
+        },
+        "2021": {
+          "total_pct": 292.291,
+          "max_close_dd_pct": 30.731
+        },
+        "2022": {
+          "total_pct": 13.602,
+          "max_close_dd_pct": 18.216
+        },
+        "2023": {
+          "total_pct": -40.677,
+          "max_close_dd_pct": 45.39
+        },
+        "2024": {
+          "total_pct": -11.998,
+          "max_close_dd_pct": 29.172
+        },
+        "2025": {
+          "total_pct": 6.375,
+          "max_close_dd_pct": 13.097
+        },
+        "2026": {
+          "total_pct": 4.958,
+          "max_close_dd_pct": 24.246
+        }
+      },
+      "trades": 847,
+      "liquidations": 5,
+      "max_leverage": 1,
+      "max_gross": 1.1848859450384837,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GBPUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "TRX",
+        "TSLA",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 1,
+        "ORCL": 1,
+        "XAU": 1,
+        "META": 1,
+        "AAPL": 1,
+        "USDCAD": 1,
+        "AMZN": 1,
+        "XCU": 1,
+        "SOL": 1,
+        "HOOD": 1,
+        "BTC": 1,
+        "NATGAS": 1,
+        "GBPUSD": 1,
+        "ETH": 1,
+        "LINK": 1,
+        "WTI": 1,
+        "BNB": 1,
+        "GOOGL": 1,
+        "XAG": 1,
+        "AVGO": 1,
+        "DOGE": 1,
+        "COIN": 1,
+        "ADA": 1,
+        "XRP": 1,
+        "USDJPY": 1,
+        "AMD": 1,
+        "MSTR": 1,
+        "XPT": 1,
+        "TRX": 1,
+        "NVDA": 1,
+        "EURUSD": 1,
+        "BABA": 1,
+        "USDCHF": 1,
+        "MU": 1,
+        "BRENTOIL": 1,
+        "TSLA": 1,
+        "PLTR": 1
+      },
+      "trade_counts_year": {
+        "2015": 66,
+        "2016": 72,
+        "2017": 70,
+        "2018": 72,
+        "2019": 72,
+        "2020": 72,
+        "2021": 69,
+        "2022": 72,
+        "2023": 72,
+        "2024": 72,
+        "2025": 72,
+        "2026": 66
+      }
+    },
+    "long_short/1": {
+      "full": {
+        "total_pct": -42.365,
+        "max_close_dd_pct": 74.111
+      },
+      "early": {
+        "total_pct": 61.975,
+        "max_close_dd_pct": 63.332
+      },
+      "late": {
+        "total_pct": -64.418,
+        "max_close_dd_pct": 73.572
+      },
+      "years": {
+        "2015": {
+          "total_pct": 8.994,
+          "max_close_dd_pct": 12.527
+        },
+        "2016": {
+          "total_pct": 21.506,
+          "max_close_dd_pct": 18.586
+        },
+        "2017": {
+          "total_pct": -15.78,
+          "max_close_dd_pct": 23.853
+        },
+        "2018": {
+          "total_pct": -39.566,
+          "max_close_dd_pct": 49.871
+        },
+        "2019": {
+          "total_pct": -1.846,
+          "max_close_dd_pct": 27.963
+        },
+        "2020": {
+          "total_pct": -19.396,
+          "max_close_dd_pct": 27.977
+        },
+        "2021": {
+          "total_pct": 203.729,
+          "max_close_dd_pct": 44.551
+        },
+        "2022": {
+          "total_pct": 0.422,
+          "max_close_dd_pct": 19.692
+        },
+        "2023": {
+          "total_pct": -49.744,
+          "max_close_dd_pct": 55.54
+        },
+        "2024": {
+          "total_pct": -20.155,
+          "max_close_dd_pct": 36.991
+        },
+        "2025": {
+          "total_pct": -4.991,
+          "max_close_dd_pct": 25.667
+        },
+        "2026": {
+          "total_pct": -7.061,
+          "max_close_dd_pct": 34.937
+        }
+      },
+      "trades": 847,
+      "liquidations": 14,
+      "max_leverage": 16,
+      "max_gross": 4.888177989018764,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GBPUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "TRX",
+        "TSLA",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 3,
+        "ORCL": 1,
+        "XAU": 6,
+        "META": 3,
+        "AAPL": 5,
+        "USDCAD": 15,
+        "AMZN": 6,
+        "XCU": 6,
+        "SOL": 1,
+        "HOOD": 1,
+        "BTC": 4,
+        "NATGAS": 4,
+        "GBPUSD": 11,
+        "ETH": 2,
+        "LINK": 1,
+        "WTI": 3,
+        "BNB": 4,
+        "GOOGL": 4,
+        "XAG": 5,
+        "AVGO": 2,
+        "DOGE": 2,
+        "COIN": 1,
+        "ADA": 3,
+        "XRP": 3,
+        "USDJPY": 9,
+        "AMD": 3,
+        "MSTR": 5,
+        "XPT": 7,
+        "TRX": 1,
+        "NVDA": 3,
+        "EURUSD": 16,
+        "BABA": 3,
+        "USDCHF": 15,
+        "MU": 3,
+        "BRENTOIL": 3,
+        "TSLA": 3,
+        "PLTR": 2
+      },
+      "trade_counts_year": {
+        "2015": 66,
+        "2016": 72,
+        "2017": 70,
+        "2018": 72,
+        "2019": 72,
+        "2020": 72,
+        "2021": 69,
+        "2022": 72,
+        "2023": 72,
+        "2024": 72,
+        "2025": 72,
+        "2026": 66
+      }
+    },
+    "long_short/3": {
+      "full": {
+        "total_pct": -99.999,
+        "max_close_dd_pct": 99.999
+      },
+      "early": {
+        "total_pct": -99.7,
+        "max_close_dd_pct": 99.902
+      },
+      "late": {
+        "total_pct": -99.579,
+        "max_close_dd_pct": 99.579
+      },
+      "years": {
+        "2015": {
+          "total_pct": -67.947,
+          "max_close_dd_pct": 78.602
+        },
+        "2016": {
+          "total_pct": -51.134,
+          "max_close_dd_pct": 84.827
+        },
+        "2017": {
+          "total_pct": -62.713,
+          "max_close_dd_pct": 69.292
+        },
+        "2018": {
+          "total_pct": -92.076,
+          "max_close_dd_pct": 93.848
+        },
+        "2019": {
+          "total_pct": -43.554,
+          "max_close_dd_pct": 70.793
+        },
+        "2020": {
+          "total_pct": -51.437,
+          "max_close_dd_pct": 70.324
+        },
+        "2021": {
+          "total_pct": 136.232,
+          "max_close_dd_pct": 57.79
+        },
+        "2022": {
+          "total_pct": -50.9,
+          "max_close_dd_pct": 59.109
+        },
+        "2023": {
+          "total_pct": -90.715,
+          "max_close_dd_pct": 92.568
+        },
+        "2024": {
+          "total_pct": -55.435,
+          "max_close_dd_pct": 77.723
+        },
+        "2025": {
+          "total_pct": -63.413,
+          "max_close_dd_pct": 65.785
+        },
+        "2026": {
+          "total_pct": -43.406,
+          "max_close_dd_pct": 76.674
+        }
+      },
+      "trades": 847,
+      "liquidations": 205,
+      "max_leverage": 50,
+      "max_gross": 11.831653658085946,
+      "assets_traded": [
+        "AAPL",
+        "ADA",
+        "AMD",
+        "AMZN",
+        "AVGO",
+        "BABA",
+        "BNB",
+        "BRENTOIL",
+        "BTC",
+        "COIN",
+        "DOGE",
+        "ETH",
+        "EURUSD",
+        "GBPUSD",
+        "GOOGL",
+        "HOOD",
+        "INTC",
+        "LINK",
+        "META",
+        "MSTR",
+        "MU",
+        "NATGAS",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "SOL",
+        "TRX",
+        "TSLA",
+        "USDCAD",
+        "USDCHF",
+        "USDJPY",
+        "WTI",
+        "XAG",
+        "XAU",
+        "XCU",
+        "XPT",
+        "XRP"
+      ],
+      "leverage_by_asset": {
+        "INTC": 10,
+        "ORCL": 5,
+        "XAU": 20,
+        "META": 10,
+        "AAPL": 17,
+        "USDCAD": 25,
+        "AMZN": 19,
+        "XCU": 18,
+        "SOL": 5,
+        "HOOD": 5,
+        "BTC": 14,
+        "NATGAS": 10,
+        "GBPUSD": 33,
+        "ETH": 7,
+        "LINK": 4,
+        "WTI": 11,
+        "BNB": 14,
+        "GOOGL": 12,
+        "XAG": 16,
+        "AVGO": 8,
+        "DOGE": 8,
+        "COIN": 4,
+        "ADA": 9,
+        "XRP": 9,
+        "USDJPY": 29,
+        "AMD": 9,
+        "MSTR": 10,
+        "XPT": 20,
+        "TRX": 4,
+        "NVDA": 11,
+        "EURUSD": 50,
+        "BABA": 9,
+        "USDCHF": 25,
+        "MU": 9,
+        "BRENTOIL": 11,
+        "TSLA": 9,
+        "PLTR": 6
+      },
+      "trade_counts_year": {
+        "2015": 68,
+        "2016": 71,
+        "2017": 69,
+        "2018": 75,
+        "2019": 70,
+        "2020": 72,
+        "2021": 72,
+        "2022": 68,
+        "2023": 74,
+        "2024": 70,
+        "2025": 73,
+        "2026": 65
+      }
+    }
+  },
+  "ranked_cagr_pct": {
+    "full": 33.75829961034007,
+    "late": 5.514351479751389
+  },
+  "random_placebo": {
+    "seeds": 64,
+    "percentiles_full_late": [
+      [
+        480.3578213305212,
+        -18.235402104896494
+      ],
+      [
+        987.9804988525367,
+        33.20992400887164
+      ],
+      [
+        2714.8943642154027,
+        112.76671556558524
+      ]
+    ],
+    "fraction_random_beating_ranked": [
+      0.03125,
+      0.53125
+    ],
+    "fraction_random_beating_spy": [
+      1.0,
+      0.15625
+    ]
+  },
+  "largest_winners": [
+    {
+      "symbol": "DOGE",
+      "entry": "2021-04-05",
+      "exit": "2021-05-03",
+      "entry_px": 0.0596960000693798,
+      "exit_px": 0.4417069852352142,
+      "pnl_initial_equity": 9.352218013538025,
+      "max_calendar_gap": 1,
+      "max_abs_one_bar": 1.0079908699138556,
+      "raw_bars": 29
+    },
+    {
+      "symbol": "SOL",
+      "entry": "2021-08-03",
+      "exit": "2021-09-01",
+      "entry_px": 33.99644088745117,
+      "exit_px": 111.0330047607422,
+      "pnl_initial_equity": 5.3631285988883715,
+      "max_calendar_gap": 1,
+      "max_abs_one_bar": 0.21835607807353208,
+      "raw_bars": 30
+    },
+    {
+      "symbol": "INTC",
+      "entry": "2026-04-02",
+      "exit": "2026-05-01",
+      "entry_px": 50.380001068115234,
+      "exit_px": 99.62000274658205,
+      "pnl_initial_equity": 3.1492440477373056,
+      "max_calendar_gap": 4,
+      "max_abs_one_bar": 0.2359988383395475,
+      "raw_bars": 21
+    },
+    {
+      "symbol": "MU",
+      "entry": "2026-05-04",
+      "exit": "2026-06-01",
+      "entry_px": 576.4500122070312,
+      "exit_px": 1035.5,
+      "pnl_initial_equity": 3.052681267199481,
+      "max_calendar_gap": 4,
+      "max_abs_one_bar": 0.19291611835261313,
+      "raw_bars": 20
+    },
+    {
+      "symbol": "MSTR",
+      "entry": "2024-02-02",
+      "exit": "2024-03-01",
+      "entry_px": 50.0099983215332,
+      "exit_px": 107.93900299072266,
+      "pnl_initial_equity": 2.9501585197985354,
+      "max_calendar_gap": 4,
+      "max_abs_one_bar": 0.1586174619723355,
+      "raw_bars": 20
+    },
+    {
+      "symbol": "MSTR",
+      "entry": "2024-11-04",
+      "exit": "2024-12-02",
+      "entry_px": 222.9900054931641,
+      "exit_px": 380.2999877929688,
+      "pnl_initial_equity": 2.3274631395893866,
+      "max_calendar_gap": 3,
+      "max_abs_one_bar": 0.2573033914550109,
+      "raw_bars": 20
+    },
+    {
+      "symbol": "PLTR",
+      "entry": "2024-11-04",
+      "exit": "2024-12-02",
+      "entry_px": 41.40999984741211,
+      "exit_px": 66.38999938964844,
+      "pnl_initial_equity": 1.9850620192778572,
+      "max_calendar_gap": 3,
+      "max_abs_one_bar": 0.23472594195893404,
+      "raw_bars": 20
+    },
+    {
+      "symbol": "ADA",
+      "entry": "2021-02-02",
+      "exit": "2021-03-01",
+      "entry_px": 0.4262470006942749,
+      "exit_px": 1.2923879623413086,
+      "pnl_initial_equity": 1.9388741193350505,
+      "max_calendar_gap": 1,
+      "max_abs_one_bar": 0.32238355542300945,
+      "raw_bars": 28
+    },
+    {
+      "symbol": "AMD",
+      "entry": "2026-05-04",
+      "exit": "2026-06-01",
+      "entry_px": 341.5400085449219,
+      "exit_px": 510.1300048828125,
+      "pnl_initial_equity": 1.8725677391720819,
+      "max_calendar_gap": 4,
+      "max_abs_one_bar": 0.1861453669565576,
+      "raw_bars": 20
+    },
+    {
+      "symbol": "SOL",
+      "entry": "2021-02-02",
+      "exit": "2021-03-01",
+      "entry_px": 5.267508029937744,
+      "exit_px": 14.955588340759276,
+      "pnl_initial_equity": 1.7547523937344947,
+      "max_calendar_gap": 1,
+      "max_abs_one_bar": 0.30393471164795804,
+      "raw_bars": 28
+    }
+  ],
+  "group_omission": {
+    "Stocks": {
+      "full": {
+        "total_pct": 660.842,
+        "max_close_dd_pct": 45.311
+      },
+      "early": {
+        "total_pct": 805.459,
+        "max_close_dd_pct": 37.461
+      },
+      "late": {
+        "total_pct": -15.972,
+        "max_close_dd_pct": 40.092
+      },
+      "years": {
+        "2015": {
+          "total_pct": 2.481,
+          "max_close_dd_pct": 4.581
+        },
+        "2016": {
+          "total_pct": 4.889,
+          "max_close_dd_pct": 5.055
+        },
+        "2017": {
+          "total_pct": 37.715,
+          "max_close_dd_pct": 6.215
+        },
+        "2018": {
+          "total_pct": -29.102,
+          "max_close_dd_pct": 30.8
+        },
+        "2019": {
+          "total_pct": 30.101,
+          "max_close_dd_pct": 29.876
+        },
+        "2020": {
+          "total_pct": 58.829,
+          "max_close_dd_pct": 23.513
+        },
+        "2021": {
+          "total_pct": 317.515,
+          "max_close_dd_pct": 30.172
+        },
+        "2022": {
+          "total_pct": -18.926,
+          "max_close_dd_pct": 23.009
+        },
+        "2023": {
+          "total_pct": 0.021,
+          "max_close_dd_pct": 15.824
+        },
+        "2024": {
+          "total_pct": 29.791,
+          "max_close_dd_pct": 15.691
+        },
+        "2025": {
+          "total_pct": 5.061,
+          "max_close_dd_pct": 15.711
+        },
+        "2026": {
+          "total_pct": -24.009,
+          "max_close_dd_pct": 40.092
+        }
+      }
+    },
+    "Crypto": {
+      "full": {
+        "total_pct": 185.018,
+        "max_close_dd_pct": 40.208
+      },
+      "early": {
+        "total_pct": 62.114,
+        "max_close_dd_pct": 40.208
+      },
+      "late": {
+        "total_pct": 75.813,
+        "max_close_dd_pct": 30.126
+      },
+      "years": {
+        "2015": {
+          "total_pct": -0.768,
+          "max_close_dd_pct": 7.554
+        },
+        "2016": {
+          "total_pct": 28.525,
+          "max_close_dd_pct": 9.226
+        },
+        "2017": {
+          "total_pct": 12.942,
+          "max_close_dd_pct": 5.117
+        },
+        "2018": {
+          "total_pct": -18.113,
+          "max_close_dd_pct": 28.758
+        },
+        "2019": {
+          "total_pct": 4.912,
+          "max_close_dd_pct": 11.76
+        },
+        "2020": {
+          "total_pct": 30.91,
+          "max_close_dd_pct": 24.553
+        },
+        "2021": {
+          "total_pct": 0.072,
+          "max_close_dd_pct": 21.218
+        },
+        "2022": {
+          "total_pct": -16.698,
+          "max_close_dd_pct": 21.585
+        },
+        "2023": {
+          "total_pct": 9.985,
+          "max_close_dd_pct": 11.251
+        },
+        "2024": {
+          "total_pct": 45.604,
+          "max_close_dd_pct": 13.892
+        },
+        "2025": {
+          "total_pct": 22.043,
+          "max_close_dd_pct": 20.273
+        },
+        "2026": {
+          "total_pct": 7.988,
+          "max_close_dd_pct": 18.549
+        }
+      }
+    }
+  },
+  "assumptions": {
+    "rule": "Rank trailing 252-to-21 observed bar price changes. Pick at most six positive names, max three per asset class. Long/short picks at most three winners and three losers. Each position has 12% of free equity as isolated margin. Close at first SPY session close each month, open at next session close with two calendar days of signal lag.",
+    "leverage": "0 means 1x contract leverage. Dynamic integer = multiplier times 0.06 / trailing 60-bar daily vol (0.03 if trailing 63-bar sign disagrees), clipped to [1, snapshot contract cap].",
+    "costs": "0.12% of traded notional on entry and exit, 0.03% daily of prior marked notional in adverse funding. Full collateral loss at modeled maintenance breach.",
+    "limitations": "Spot/future proxies with no dividends credited to derivatives. Reinvested dividends in SPY. Current listing/contract snapshot, survivorship bias, daily extremes, stale marks on holidays, uniform cost assumptions, calendar synchronization across venues. No exchange margin mode replay."
+  }
+}

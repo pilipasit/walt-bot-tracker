@@ -1,0 +1,110 @@
+[
+  {
+    "offset": 0,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 119,
+    "stress_mean": -0.188224893470445
+  },
+  {
+    "offset": 12,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 119,
+    "stress_mean": -0.17944879338891231
+  },
+  {
+    "offset": 24,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 119,
+    "stress_mean": -0.10050460994809436
+  },
+  {
+    "offset": 36,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 119,
+    "stress_mean": -0.22569923881670903
+  },
+  {
+    "offset": 48,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 118,
+    "stress_mean": -0.1418551899273908
+  },
+  {
+    "offset": 60,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 72,
+    "mode": "momentum",
+    "n": 118,
+    "stress_mean": -0.038572787388820494
+  },
+  {
+    "offset": 0,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 51,
+    "stress_mean": -0.30280418251861224
+  },
+  {
+    "offset": 12,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 51,
+    "stress_mean": -1.4222080638844221
+  },
+  {
+    "offset": 24,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 51,
+    "stress_mean": -1.4731301397091325
+  },
+  {
+    "offset": 36,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 51,
+    "stress_mean": -0.2817611960905303
+  },
+  {
+    "offset": 48,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 50,
+    "stress_mean": 0.6201868890943112
+  },
+  {
+    "offset": 60,
+    "year": 2024,
+    "lookback": 168,
+    "hold": 168,
+    "mode": "momentum",
+    "n": 50,
+    "stress_mean": 0.08486779483925395
+  }
+]

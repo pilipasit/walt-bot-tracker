@@ -1,0 +1,129 @@
+{
+  "dates": [
+    "2025-01-02 00:00:00-05:00",
+    "2026-11-19 00:00:00-05:00"
+  ],
+  "source": "https://www.reddit.com/r/RealDayTrading/comments/qo1gr6/the_biggest_tip_i_can_give_to_day_traders/",
+  "universe": [
+    "NVDA",
+    "TSLA",
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "AMD",
+    "MSTR",
+    "COIN",
+    "PLTR",
+    "TSM",
+    "AVGO",
+    "MU",
+    "ORCL",
+    "INTC",
+    "HOOD",
+    "BABA"
+  ],
+  "results": {
+    "follow": {
+      "2025": {
+        "total_return_pct": -57.882,
+        "daily_max_dd_pct": 60.408,
+        "trades": 749,
+        "spy": {
+          "total_return_pct": 17.719,
+          "daily_max_dd_pct": 18.755
+        }
+      },
+      "2026": {
+        "total_return_pct": -43.919,
+        "daily_max_dd_pct": 46.535,
+        "trades": 669,
+        "spy": {
+          "total_return_pct": 5.799,
+          "daily_max_dd_pct": 8.885
+        }
+      },
+      "before_costs": {
+        "total_return_pct": -25.517,
+        "daily_max_dd_pct": 34.786
+      },
+      "full": {
+        "total_return_pct": -76.379,
+        "daily_max_dd_pct": 78.149,
+        "trades": 1418,
+        "spy": {
+          "total_return_pct": 24.545,
+          "daily_max_dd_pct": 18.755
+        }
+      }
+    },
+    "fade": {
+      "2025": {
+        "total_return_pct": -31.991,
+        "daily_max_dd_pct": 34.526,
+        "trades": 749,
+        "spy": {
+          "total_return_pct": 17.719,
+          "daily_max_dd_pct": 18.755
+        }
+      },
+      "2026": {
+        "total_return_pct": -42.155,
+        "daily_max_dd_pct": 42.667,
+        "trades": 669,
+        "spy": {
+          "total_return_pct": 5.799,
+          "daily_max_dd_pct": 8.885
+        }
+      },
+      "before_costs": {
+        "total_return_pct": 23.897,
+        "daily_max_dd_pct": 16.288
+      },
+      "full": {
+        "total_return_pct": -60.66,
+        "daily_max_dd_pct": 62.116,
+        "trades": 1418,
+        "spy": {
+          "total_return_pct": 24.545,
+          "daily_max_dd_pct": 18.755
+        }
+      }
+    },
+    "follow_long_only": {
+      "2025": {
+        "total_return_pct": -36.997,
+        "daily_max_dd_pct": 38.99,
+        "trades": 395,
+        "spy": {
+          "total_return_pct": 17.719,
+          "daily_max_dd_pct": 18.755
+        }
+      },
+      "2026": {
+        "total_return_pct": -19.161,
+        "daily_max_dd_pct": 23.345,
+        "trades": 345,
+        "spy": {
+          "total_return_pct": 5.799,
+          "daily_max_dd_pct": 8.885
+        }
+      },
+      "before_costs": {
+        "total_return_pct": -7.276,
+        "daily_max_dd_pct": 20.221
+      },
+      "full": {
+        "total_return_pct": -49.069,
+        "daily_max_dd_pct": 50.554,
+        "trades": 740,
+        "spy": {
+          "total_return_pct": 24.545,
+          "daily_max_dd_pct": 18.755
+        }
+      }
+    }
+  },
+  "notes": "Present-day constituents; Yahoo regular-session stock candles; SPY adjusted close prior session to final close. Daily start flat; score at first-hour close, execution next bar open, assumed 12bps per side + 3bps/day funding; max 3 concurrent one-third-equity slots. Pooled daily returns compound. Drawdown on daily closes. Approximates discretionary practitioner idea. Exit uses next available open at/after 12:30, including possible delayed exits. No volume trigger or historical Walt quotes."
+}

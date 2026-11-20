@@ -1,0 +1,274 @@
+{
+  "method": {
+    "target": "24h next-open to next-open return; 0.14 percentage points round-trip",
+    "signals": "all eligible continuous hourly windows; at most one position per symbol per 24h",
+    "split": "training before Oct 1; validation Oct 1-31; test Nov 1 onward; 25h embargo at boundaries",
+    "features": "trailing returns, volatility, normalized slope and price channel; no asset identifiers",
+    "limitations": "proxy OHLC, idealized open fills, no spread/slippage/funding; no stop loss or position portfolio constraints; data previously inspected so test not pristine"
+  },
+  "counts": {
+    "train": 10696,
+    "validation": 10066,
+    "test": 6174
+  },
+  "models": {
+    "ridge": {
+      "selected_threshold_pct": 1,
+      "validation": {
+        "n": 209,
+        "mean": -0.3385,
+        "median": -0.2147,
+        "win_rate": 0.4737,
+        "by_group": {
+          "Crypto": {
+            "n": 209,
+            "mean": -0.3385
+          }
+        }
+      },
+      "test": {
+        "n": 166,
+        "mean": -1.1953,
+        "median": -1.1184,
+        "win_rate": 0.2771,
+        "by_group": {
+          "Crypto": {
+            "n": 163,
+            "mean": -1.214
+          },
+          "Metals": {
+            "n": 3,
+            "mean": -0.1777
+          }
+        }
+      },
+      "baseline_test_long": {
+        "n": 266,
+        "mean": -1.1927,
+        "median": -1.0078,
+        "win_rate": 0.312,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -1.2416
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.5575
+          }
+        }
+      },
+      "baseline_test_short": {
+        "n": 266,
+        "mean": 0.9127,
+        "median": 0.7278,
+        "win_rate": 0.6466,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": 0.9616
+          },
+          "Metals": {
+            "n": 19,
+            "mean": 0.2775
+          }
+        }
+      }
+    },
+    "forest": {
+      "selected_threshold_pct": 0,
+      "validation": {
+        "n": 420,
+        "mean": -0.1761,
+        "median": -0.0447,
+        "win_rate": 0.4762,
+        "by_group": {
+          "Crypto": {
+            "n": 390,
+            "mean": -0.1886
+          },
+          "Metals": {
+            "n": 30,
+            "mean": -0.0126
+          }
+        }
+      },
+      "test": {
+        "n": 266,
+        "mean": -1.0339,
+        "median": -0.718,
+        "win_rate": 0.3759,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -1.0549
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.7616
+          }
+        }
+      },
+      "baseline_test_long": {
+        "n": 266,
+        "mean": -1.1927,
+        "median": -1.0078,
+        "win_rate": 0.312,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -1.2416
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.5575
+          }
+        }
+      },
+      "baseline_test_short": {
+        "n": 266,
+        "mean": 0.9127,
+        "median": 0.7278,
+        "win_rate": 0.6466,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": 0.9616
+          },
+          "Metals": {
+            "n": 19,
+            "mean": 0.2775
+          }
+        }
+      }
+    },
+    "tree": {
+      "selected_threshold_pct": 1,
+      "validation": {
+        "n": 135,
+        "mean": -0.0383,
+        "median": 0.0276,
+        "win_rate": 0.5185,
+        "by_group": {
+          "Crypto": {
+            "n": 135,
+            "mean": -0.0383
+          }
+        }
+      },
+      "test": {
+        "n": 111,
+        "mean": -0.9829,
+        "median": -0.9829,
+        "win_rate": 0.3063,
+        "by_group": {
+          "Crypto": {
+            "n": 111,
+            "mean": -0.9829
+          }
+        }
+      },
+      "baseline_test_long": {
+        "n": 266,
+        "mean": -1.1927,
+        "median": -1.0078,
+        "win_rate": 0.312,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -1.2416
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.5575
+          }
+        }
+      },
+      "baseline_test_short": {
+        "n": 266,
+        "mean": 0.9127,
+        "median": 0.7278,
+        "win_rate": 0.6466,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": 0.9616
+          },
+          "Metals": {
+            "n": 19,
+            "mean": 0.2775
+          }
+        }
+      },
+      "rules": "|--- vol_72h <= 0.01\n|   |--- vol_168h <= 0.01\n|   |   |--- value: [0.23]\n|   |--- vol_168h >  0.01\n|   |   |--- value: [-2.01]\n|--- vol_72h >  0.01\n|   |--- vol_168h <= 0.01\n|   |   |--- value: [1.96]\n|   |--- vol_168h >  0.01\n|   |   |--- value: [0.50]\n"
+    },
+    "boost": {
+      "selected_threshold_pct": 0,
+      "validation": {
+        "n": 420,
+        "mean": 0.1279,
+        "median": 0.0467,
+        "win_rate": 0.5071,
+        "by_group": {
+          "Crypto": {
+            "n": 390,
+            "mean": 0.1544
+          },
+          "Metals": {
+            "n": 30,
+            "mean": -0.2168
+          }
+        }
+      },
+      "test": {
+        "n": 266,
+        "mean": -0.7383,
+        "median": -0.3665,
+        "win_rate": 0.4361,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -0.7665
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.3721
+          }
+        }
+      },
+      "baseline_test_long": {
+        "n": 266,
+        "mean": -1.1927,
+        "median": -1.0078,
+        "win_rate": 0.312,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": -1.2416
+          },
+          "Metals": {
+            "n": 19,
+            "mean": -0.5575
+          }
+        }
+      },
+      "baseline_test_short": {
+        "n": 266,
+        "mean": 0.9127,
+        "median": 0.7278,
+        "win_rate": 0.6466,
+        "by_group": {
+          "Crypto": {
+            "n": 247,
+            "mean": 0.9616
+          },
+          "Metals": {
+            "n": 19,
+            "mean": 0.2775
+          }
+        }
+      }
+    }
+  },
+  "selected_model": "boost"
+}

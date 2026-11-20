@@ -1,0 +1,9 @@
+[
+  {
+    "year": 2025,
+    "window": 720,
+    "rule": "match_direction",
+    "n": 78,
+    "stress_mean": 0.5808695038898753
+  }
+]

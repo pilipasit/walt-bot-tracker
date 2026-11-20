@@ -1,0 +1,272 @@
+[
+  {
+    "threshold": 3,
+    "hold": 12,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": 1.938514262639762
+      },
+      "2023": {
+        "n": 7,
+        "stress_mean": -0.5719568223421356
+      }
+    }
+  },
+  {
+    "threshold": 3,
+    "hold": 24,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": 1.8812627337290648
+      },
+      "2023": {
+        "n": 4,
+        "stress_mean": -0.7769661307419676
+      }
+    }
+  },
+  {
+    "threshold": 3,
+    "hold": 24,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": 1.780042440819163
+      },
+      "2023": {
+        "n": 3,
+        "stress_mean": -0.7185274039910133
+      }
+    }
+  },
+  {
+    "threshold": 3,
+    "hold": 12,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": 1.6106286027618708
+      },
+      "2023": {
+        "n": 6,
+        "stress_mean": -0.6677964108667114
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 24,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 63,
+        "stress_mean": 0.24253886070663083
+      },
+      "2023": {
+        "n": 42,
+        "stress_mean": -0.5531485109469284
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 24,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 46,
+        "stress_mean": 0.09607549052039457
+      },
+      "2023": {
+        "n": 30,
+        "stress_mean": -0.42342150592407396
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 12,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 61,
+        "stress_mean": -0.0767855200462571
+      },
+      "2023": {
+        "n": 44,
+        "stress_mean": -0.4393481799350797
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 12,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 91,
+        "stress_mean": -0.10174326409184518
+      },
+      "2023": {
+        "n": 62,
+        "stress_mean": -0.5509133881086511
+      }
+    }
+  },
+  {
+    "threshold": 3,
+    "hold": 48,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": -0.295836763395888
+      },
+      "2023": {
+        "n": 3,
+        "stress_mean": -1.0392652778152487
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 12,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 669,
+        "stress_mean": -0.5180179934581198
+      },
+      "2023": {
+        "n": 455,
+        "stress_mean": -0.32738794429107576
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 12,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 562,
+        "stress_mean": -0.5880722627491566
+      },
+      "2023": {
+        "n": 370,
+        "stress_mean": -0.5285179715006337
+      }
+    }
+  },
+  {
+    "threshold": 3,
+    "hold": 48,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 3,
+        "stress_mean": -0.6589175197669582
+      },
+      "2023": {
+        "n": 2,
+        "stress_mean": -1.7170212394657045
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 24,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 381,
+        "stress_mean": -0.659995902101974
+      },
+      "2023": {
+        "n": 273,
+        "stress_mean": -0.23711264739440882
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 24,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 333,
+        "stress_mean": -0.8281297720944226
+      },
+      "2023": {
+        "n": 227,
+        "stress_mean": -0.5011007978520403
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 48,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 231,
+        "stress_mean": -0.8595773532308995
+      },
+      "2023": {
+        "n": 172,
+        "stress_mean": -0.27499554170433455
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 48,
+    "rebound": false,
+    "scores": {
+      "2022": {
+        "n": 51,
+        "stress_mean": -1.0500940657130367
+      },
+      "2023": {
+        "n": 32,
+        "stress_mean": -0.6001360843567464
+      }
+    }
+  },
+  {
+    "threshold": 1,
+    "hold": 48,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 213,
+        "stress_mean": -1.233991437999472
+      },
+      "2023": {
+        "n": 150,
+        "stress_mean": -0.33788673554917026
+      }
+    }
+  },
+  {
+    "threshold": 2,
+    "hold": 48,
+    "rebound": true,
+    "scores": {
+      "2022": {
+        "n": 39,
+        "stress_mean": -1.323232244209017
+      },
+      "2023": {
+        "n": 21,
+        "stress_mean": -0.5168207465879703
+      }
+    }
+  }
+]

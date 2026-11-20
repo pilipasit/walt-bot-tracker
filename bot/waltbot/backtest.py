@@ -141,30 +141,39 @@ def market_signal(closes: list[float], t: int) -> dict:
 
 
 def market_trade(candles: list, t: int, direction: int, stop_pct: float) -> dict | None:
-    """Return a completed trade, or None when the data ends before its outcome is known."""
-    entry, start = candles[t][4], candles[t][0]
+    """Simulate a close entry; candle timestamps are bar opens, not close times."""
+    entry, start = candles[t][4], candles[t][0] + _MARKET_HOUR
     stop = entry * (1 - direction * stop_pct / 100)
     target = entry * (1 + direction * 2 * stop_pct / 100)
     deadline = start + 72 * _MARKET_HOUR
-    last = None
     for candle in candles[t + 1:]:
-        if candle[0] > deadline:
-            break
-        last = candle
+        ts, opening = candle[0], candle[1]
+        # A timeout during a closure can only be executed when trading resumes.
+        if ts >= deadline:
+            return {'outcome': 'timeout', 'pnl_pct': direction * (opening / entry - 1) * 100 - 0.14,
+                    'hours': (ts - start) / _MARKET_HOUR}
+        # The full range of a bar extending beyond the deadline is not observable
+        # at the deadline; wait for the next bar rather than use future prices.
+        if ts + _MARKET_HOUR > deadline:
+            continue
+        hours = (ts + _MARKET_HOUR - start) / _MARKET_HOUR
+        # A stop crossed during a gap fills at the adverse open, not the stop.
+        if (opening <= stop if direction == 1 else opening >= stop):
+            return {'outcome': 'stop', 'pnl_pct': direction * (opening / entry - 1) * 100 - 0.14,
+                    'hours': (ts - start) / _MARKET_HOUR}
+        if (opening >= target if direction == 1 else opening <= target):
+            return {'outcome': 'tp', 'pnl_pct': 2 * stop_pct - 0.14,
+                    'hours': (ts - start) / _MARKET_HOUR}
         stopped = candle[3] <= stop if direction == 1 else candle[2] >= stop
         hit = candle[2] >= target if direction == 1 else candle[3] <= target
-        hours = (candle[0] - start) / _MARKET_HOUR
         if stopped:
             return {'outcome': 'stop', 'pnl_pct': -stop_pct - 0.14, 'hours': hours}
         if hit:
             return {'outcome': 'tp', 'pnl_pct': 2 * stop_pct - 0.14, 'hours': hours}
-    if candles[-1][0] < deadline:
-        return None
-    # A market closure can leave no candle exactly at the deadline. Exit at the last
-    # observed close at or before it, and count the full elapsed holding period.
-    exit_price = last[4] if last else entry
-    return {'outcome': 'timeout', 'pnl_pct': direction * (exit_price / entry - 1) * 100 - 0.14,
-            'hours': 72}
+        if ts + _MARKET_HOUR == deadline:
+            return {'outcome': 'timeout', 'pnl_pct': direction * (candle[4] / entry - 1) * 100 - 0.14,
+                    'hours': 72}
+    return None
 
 
 def _market_summary(rows: list[dict]) -> dict:
@@ -190,7 +199,8 @@ def _market_summary(rows: list[dict]) -> dict:
               'signals': {k: signal_stats[k] for k in ('completed', 'tp_rate', 'stop_rate', 'timeout_rate', 'avg_pnl_pct')},
               'episode': trade_stats(episodes, 'trade'),
               'paired_tp_rate': paired_stats['tp_rate'], 'paired_episodes': len(paired),
-              'random_tp_rate': baseline_stats['tp_rate']}
+              'paired_avg_pnl_pct': paired_stats['avg_pnl_pct'],
+              'random_tp_rate': baseline_stats['tp_rate'], 'random_avg_pnl_pct': baseline_stats['avg_pnl_pct']}
     result['forward'] = {}
     for h in _MARKET_HORIZONS:
         values = [r['forward'][h] for r in rows if r['forward'][h] is not None]
@@ -208,7 +218,7 @@ def _market_groups(rows: list[dict]) -> dict:
 
 def run(data_dir: str | Path) -> dict:
     """Backtest all candle files, retaining aggregate statistics only."""
-    all_rows, assets = [], {}
+    all_rows, assets, coverage = [], {}, {}
     files = sorted(Path(data_dir).glob('*.json'))
     if not files:
         raise ValueError(f'No JSON candle files found in {data_dir}')
@@ -218,14 +228,17 @@ def run(data_dir: str | Path) -> dict:
         if any(c[0] >= d[0] for c, d in zip(candles, candles[1:])):
             raise ValueError(f'{path}: candle timestamps must be strictly increasing')
         closes = [c[4] for c in candles]
+        coverage[data['symbol']] = {'first_bar_open_ms': candles[0][0] if candles else None,
+                                    'last_bar_open_ms': candles[-1][0] if candles else None,
+                                    'bars': len(candles)}
         by_time = {c[0]: c[4] for c in candles}
-        rows, previous, previous_time = [], None, None
+        rows, previous = [], None
         for t in range(47, len(candles)):
             signal = market_signal(closes, t)
             trend = signal['trend']
             ts = candles[t][0]
             if trend not in ('up', 'down'):
-                previous, previous_time = trend, ts
+                previous = trend
                 continue
             direction = 1 if trend == 'up' else -1
             stop = 2.5 * signal['atr_pct_h'] + signal['band_pct']
@@ -237,17 +250,25 @@ def run(data_dir: str | Path) -> dict:
             for h in _MARKET_HORIZONS:
                 price = by_time.get(ts + h * _MARKET_HOUR)
                 forward[h] = direction * (price / closes[t] - 1) * 100 if price is not None else None
-            rows.append({'episode': trend != previous or previous_time != ts - _MARKET_HOUR,
+            rows.append({'episode': trend != previous,
                          'bucket': bucket, 'aligned': signal['aligned'], 'forward': forward,
                          'long': long, 'short': short, 'trade': long if direction == 1 else short})
-            previous, previous_time = trend, ts
+            previous = trend
         assets[data['symbol']] = {'group': data['group'], **_market_groups(rows)}
         all_rows.extend(rows)
-    return {'method': {'history_min_candles': 48, 'trade_horizon_elapsed_hours': 72, 'fee_per_side_pct': 0.07,
-                       'episodes': 'Consecutive hourly candles with the same directional trend; gaps break episodes.',
+    starts = [v['first_bar_open_ms'] for v in coverage.values() if v['first_bar_open_ms'] is not None]
+    ends = [v['last_bar_open_ms'] for v in coverage.values() if v['last_bar_open_ms'] is not None]
+    iso = lambda ts: datetime.fromtimestamp(ts / 1000, timezone.utc).isoformat() if ts is not None else None
+    return {'generated_at': datetime.now(timezone.utc).isoformat(),
+            'coverage': {'from': iso(min(starts) if starts else None), 'to': iso(max(ends) if ends else None)},
+            'method': {'history_min_candles': 48, 'trade_horizon_elapsed_hours': 72, 'fee_per_side_pct': 0.07,
+                       'asset_coverage': coverage,
+                       'episodes': 'One entry when the directional trend changes; timestamp gaps do not create new episodes.',
                        'bucket_assignment': 'Each signal hour by its own score/alignment; episodes by their first hour.',
                        'forward_returns': 'Exact elapsed-hour close; missing timestamps excluded. Signal hours, not episodes.',
                        'censoring': 'Unresolved trades at end of data excluded; baseline and paired rule use only entries with both directions resolved.',
                        'baseline': 'Equal-weight long and short outcomes at each eligible episode entry.',
-                       'timeout': 'At 72 elapsed hours, exit at the last close at or before the deadline.'},
+                       'timeout': 'Exit at 72 elapsed hours, or next observed open if the deadline falls in a gap.',
+                       'execution': 'Signal at bar close; adverse opening gaps fill at the open, other stops at stop; same-bar stop before target.',
+                       'limitations': 'Assumes timestamps mark hourly bar opens and bars last one hour. Partial/irregular bars require source-specific handling; spread, slippage and funding excluded.'},
             'overall': _market_groups(all_rows), 'assets': assets}

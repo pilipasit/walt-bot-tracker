@@ -1,0 +1,54 @@
+{
+  "2022": {
+    "trades": 80,
+    "return_on_starting_capital_pct": 11.795774243113266,
+    "max_drawdown_pct": 13.57210264608667,
+    "mean_stressed_trade_pct": 0.589788712155664,
+    "without_top5_mean_pct": -0.24728728760573782,
+    "weekly_bootstrap_return_95ci": [
+      -2.7334033147781023,
+      27.28222270108904
+    ],
+    "profitable_days": 36,
+    "active_days": 82
+  },
+  "2023": {
+    "trades": 82,
+    "return_on_starting_capital_pct": 5.301219872101592,
+    "max_drawdown_pct": 11.267496911222864,
+    "mean_stressed_trade_pct": 0.2585960913220292,
+    "without_top5_mean_pct": -0.4325729828660733,
+    "weekly_bootstrap_return_95ci": [
+      -15.384568171314049,
+      26.03747349058886
+    ],
+    "profitable_days": 45,
+    "active_days": 96
+  },
+  "2024": {
+    "trades": 70,
+    "return_on_starting_capital_pct": 16.036074850989944,
+    "max_drawdown_pct": 13.040640371298263,
+    "mean_stressed_trade_pct": 0.916347134342283,
+    "without_top5_mean_pct": 0.14418457558284695,
+    "weekly_bootstrap_return_95ci": [
+      -1.637585126957322,
+      35.50486998055128
+    ],
+    "profitable_days": 43,
+    "active_days": 83
+  },
+  "2025": {
+    "trades": 75,
+    "return_on_starting_capital_pct": 13.299823152729795,
+    "max_drawdown_pct": 6.139257910250029,
+    "mean_stressed_trade_pct": 0.7093239014789222,
+    "without_top5_mean_pct": 0.08974158378346522,
+    "weekly_bootstrap_return_95ci": [
+      1.2689026703996837,
+      26.90034519600773
+    ],
+    "profitable_days": 41,
+    "active_days": 75
+  }
+}

@@ -1,0 +1,254 @@
+[
+  {
+    "year": 2022,
+    "window": 168,
+    "rule": "up_only",
+    "n": 39,
+    "stress_mean": -0.753711482210998
+  },
+  {
+    "year": 2022,
+    "window": 168,
+    "rule": "match_direction",
+    "n": 102,
+    "stress_mean": -0.14638859558196884
+  },
+  {
+    "year": 2022,
+    "window": 168,
+    "rule": "fade_against_regime",
+    "n": 3,
+    "stress_mean": -1.9803759001752574
+  },
+  {
+    "year": 2022,
+    "window": 168,
+    "rule": "both_in_up",
+    "n": 40,
+    "stress_mean": -0.8255104288815588
+  },
+  {
+    "year": 2022,
+    "window": 720,
+    "rule": "up_only",
+    "n": 27,
+    "stress_mean": -0.24367373111494087
+  },
+  {
+    "year": 2022,
+    "window": 720,
+    "rule": "match_direction",
+    "n": 82,
+    "stress_mean": 0.19088544940054267
+  },
+  {
+    "year": 2022,
+    "window": 720,
+    "rule": "fade_against_regime",
+    "n": 24,
+    "stress_mean": -1.1574895267790761
+  },
+  {
+    "year": 2022,
+    "window": 720,
+    "rule": "both_in_up",
+    "n": 36,
+    "stress_mean": -0.5326729492022103
+  },
+  {
+    "year": 2022,
+    "window": 2160,
+    "rule": "up_only",
+    "n": 6,
+    "stress_mean": -2.8457423102468016
+  },
+  {
+    "year": 2022,
+    "window": 2160,
+    "rule": "match_direction",
+    "n": 49,
+    "stress_mean": -0.058224953120671205
+  },
+  {
+    "year": 2022,
+    "window": 2160,
+    "rule": "fade_against_regime",
+    "n": 24,
+    "stress_mean": -0.721193925292229
+  },
+  {
+    "year": 2022,
+    "window": 2160,
+    "rule": "both_in_up",
+    "n": 13,
+    "stress_mean": -1.253334018663509
+  },
+  {
+    "year": 2023,
+    "window": 168,
+    "rule": "up_only",
+    "n": 72,
+    "stress_mean": 1.0920650739042566
+  },
+  {
+    "year": 2023,
+    "window": 168,
+    "rule": "match_direction",
+    "n": 113,
+    "stress_mean": 0.5096196948112173
+  },
+  {
+    "year": 2023,
+    "window": 168,
+    "rule": "fade_against_regime",
+    "n": 2,
+    "stress_mean": -1.024976182839312
+  },
+  {
+    "year": 2023,
+    "window": 168,
+    "rule": "both_in_up",
+    "n": 74,
+    "stress_mean": 1.034847742640917
+  },
+  {
+    "year": 2023,
+    "window": 720,
+    "rule": "up_only",
+    "n": 53,
+    "stress_mean": 0.9484836738535377
+  },
+  {
+    "year": 2023,
+    "window": 720,
+    "rule": "match_direction",
+    "n": 83,
+    "stress_mean": 0.2607930493000228
+  },
+  {
+    "year": 2023,
+    "window": 720,
+    "rule": "fade_against_regime",
+    "n": 18,
+    "stress_mean": 0.28720031199446944
+  },
+  {
+    "year": 2023,
+    "window": 720,
+    "rule": "both_in_up",
+    "n": 65,
+    "stress_mean": 0.739069808595055
+  },
+  {
+    "year": 2023,
+    "window": 2160,
+    "rule": "up_only",
+    "n": 33,
+    "stress_mean": 0.5808392506279616
+  },
+  {
+    "year": 2023,
+    "window": 2160,
+    "rule": "match_direction",
+    "n": 47,
+    "stress_mean": 0.05022581550269213
+  },
+  {
+    "year": 2023,
+    "window": 2160,
+    "rule": "fade_against_regime",
+    "n": 14,
+    "stress_mean": 1.1198212860605845
+  },
+  {
+    "year": 2023,
+    "window": 2160,
+    "rule": "both_in_up",
+    "n": 41,
+    "stress_mean": 0.5062141593023489
+  },
+  {
+    "year": 2024,
+    "window": 168,
+    "rule": "up_only",
+    "n": 79,
+    "stress_mean": 0.7258380125695509
+  },
+  {
+    "year": 2024,
+    "window": 168,
+    "rule": "match_direction",
+    "n": 106,
+    "stress_mean": 0.4301672897486768
+  },
+  {
+    "year": 2024,
+    "window": 168,
+    "rule": "fade_against_regime",
+    "n": 2,
+    "stress_mean": 1.1552949200422526
+  },
+  {
+    "year": 2024,
+    "window": 168,
+    "rule": "both_in_up",
+    "n": 79,
+    "stress_mean": 0.7258380125695509
+  },
+  {
+    "year": 2024,
+    "window": 720,
+    "rule": "up_only",
+    "n": 59,
+    "stress_mean": 1.4104514051853048
+  },
+  {
+    "year": 2024,
+    "window": 720,
+    "rule": "match_direction",
+    "n": 72,
+    "stress_mean": 1.0819940671819703
+  },
+  {
+    "year": 2024,
+    "window": 720,
+    "rule": "fade_against_regime",
+    "n": 31,
+    "stress_mean": -0.6266795362772191
+  },
+  {
+    "year": 2024,
+    "window": 720,
+    "rule": "both_in_up",
+    "n": 69,
+    "stress_mean": 1.1898095766361816
+  },
+  {
+    "year": 2024,
+    "window": 2160,
+    "rule": "up_only",
+    "n": 56,
+    "stress_mean": 1.1568157875729206
+  },
+  {
+    "year": 2024,
+    "window": 2160,
+    "rule": "match_direction",
+    "n": 72,
+    "stress_mean": 0.8714873646630737
+  },
+  {
+    "year": 2024,
+    "window": 2160,
+    "rule": "fade_against_regime",
+    "n": 13,
+    "stress_mean": -0.5004725212021127
+  },
+  {
+    "year": 2024,
+    "window": 2160,
+    "rule": "both_in_up",
+    "n": 63,
+    "stress_mean": 1.0599117027092715
+  }
+]

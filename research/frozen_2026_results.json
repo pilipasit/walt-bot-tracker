@@ -1,0 +1,360 @@
+{
+  "manifest": [
+    {
+      "symbol": "BTC",
+      "month": 1,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-01.zip",
+      "sha256": "1fc1014c8cdc27172f54906bc3326b7609794fe6accf5663b2238080c45b8e3b"
+    },
+    {
+      "symbol": "BTC",
+      "month": 2,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-02.zip",
+      "sha256": "eb02e946e69dc5bbbbadb1827b8479869425f2b9aab73dc21a4e9681fa7dff53"
+    },
+    {
+      "symbol": "BTC",
+      "month": 3,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-03.zip",
+      "sha256": "ad529c6e566654857ea42403883d4717e11e4a6c9641b08e118fb4364048670b"
+    },
+    {
+      "symbol": "BTC",
+      "month": 4,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-04.zip",
+      "sha256": "57b428a38b962bc78a8551e3fcff2bd806c64b6839605f396cb1732fe8debbb7"
+    },
+    {
+      "symbol": "BTC",
+      "month": 5,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-05.zip",
+      "sha256": "9f87e717a3b713ba6861c947a23fb8428c55e168ad42490f3830670251ec7e6b"
+    },
+    {
+      "symbol": "BTC",
+      "month": 6,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-06.zip",
+      "sha256": "34d3a8b9121bf5e2ed5929e49fa383c8d0876835a24183d623ee9dc24f95d04b"
+    },
+    {
+      "symbol": "BTC",
+      "month": 7,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-07.zip",
+      "sha256": "e51786ad8ac90ce733ffcf6d03352ff6a4a256f22447e02238931b7c53534f8b"
+    },
+    {
+      "symbol": "BTC",
+      "month": 8,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-08.zip",
+      "sha256": "20d4c54659b418e928b5283ca8834fec33fcbccd8701d52a7be94566d6483449"
+    },
+    {
+      "symbol": "BTC",
+      "month": 9,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-09.zip",
+      "sha256": "c4283dab2dfbd8ae492c7de8088e16cdd2cdab34b9fd6ce2deb01b97e2a03886"
+    },
+    {
+      "symbol": "BTC",
+      "month": 10,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-10.zip",
+      "sha256": "95d2239c2b6a17f0e9305a022867badda98e61877f9919183ae5c7b5fa850968"
+    },
+    {
+      "symbol": "ETH",
+      "month": 1,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-01.zip",
+      "sha256": "039725ef8d655855ab0f6a38e5351564364e2cd1b560afa2f85dbce7413ea190"
+    },
+    {
+      "symbol": "ETH",
+      "month": 2,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-02.zip",
+      "sha256": "5b464b2293a233dc4b41bc0678e85d0ff1d949ad592153d04e9c6e1509ce9019"
+    },
+    {
+      "symbol": "ETH",
+      "month": 3,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-03.zip",
+      "sha256": "38bf36aad633b4c4fce4d42c522d11b0a32f26caa86f78f5857daf5bb9b5cb85"
+    },
+    {
+      "symbol": "ETH",
+      "month": 4,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-04.zip",
+      "sha256": "97f96273adc91f6863cdde3285f675e667405a31a38cc2e85dc200b2e317ccca"
+    },
+    {
+      "symbol": "ETH",
+      "month": 5,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-05.zip",
+      "sha256": "1b94e1a76eee0dcd69026167e7842a93e1c7ac2adb2524279b8c77e97c9c18c9"
+    },
+    {
+      "symbol": "ETH",
+      "month": 6,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-06.zip",
+      "sha256": "0d644cfce53cc567c9d0a1d2186f3898886642b00ad1240a378c9e087298956e"
+    },
+    {
+      "symbol": "ETH",
+      "month": 7,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-07.zip",
+      "sha256": "cd9199f45b80ccbd7f0d76ff41b190edb1a7afb9090b03445c88e956f5facc27"
+    },
+    {
+      "symbol": "ETH",
+      "month": 8,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-08.zip",
+      "sha256": "b54024ef5cf0fda17555e9ece5ae36ac8fe9f93393e950f5e8942ea42aa8ac12"
+    },
+    {
+      "symbol": "ETH",
+      "month": 9,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-09.zip",
+      "sha256": "e05983eb48792dceafec067f5bf110c31f53305ebc0df6288248bedbe06cc246"
+    },
+    {
+      "symbol": "ETH",
+      "month": 10,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2026-10.zip",
+      "sha256": "60fe6e06ab60e3fe746e5ef75c5d5863e5269b73e8f6cc3bd6fc5e4217032a5e"
+    },
+    {
+      "symbol": "SOL",
+      "month": 1,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-01.zip",
+      "sha256": "523e917b1fe77d03c3b454ed69fb8b0791f1b7d2746c5ca0d5a6b455b04ae38a"
+    },
+    {
+      "symbol": "SOL",
+      "month": 2,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-02.zip",
+      "sha256": "f55ad21b8f8c034d9b0a5361308fb88a648a27c2db8834dda617fd5dafe65442"
+    },
+    {
+      "symbol": "SOL",
+      "month": 3,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-03.zip",
+      "sha256": "cc043c60e6a5bb1908d7b5829131183d898b815853e0dbc736d13271f0465050"
+    },
+    {
+      "symbol": "SOL",
+      "month": 4,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-04.zip",
+      "sha256": "8e88525e787dfb04793e833c8972e4d8df693597d3ca90fde7228ffbb51f01f5"
+    },
+    {
+      "symbol": "SOL",
+      "month": 5,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-05.zip",
+      "sha256": "4ec6a33334fd5462229d81dfbd4140e94a7381ffd9adc773b376f54f5807e8d7"
+    },
+    {
+      "symbol": "SOL",
+      "month": 6,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-06.zip",
+      "sha256": "ba9147407db93c2584dfc498a1ccef286b67c8377b07d91955a4f2ad399d7091"
+    },
+    {
+      "symbol": "SOL",
+      "month": 7,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-07.zip",
+      "sha256": "030c3a8244a300d5d93f87d893e7eaf4889261ca85b7099a17e5c78e7626021c"
+    },
+    {
+      "symbol": "SOL",
+      "month": 8,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-08.zip",
+      "sha256": "8622ba2bf4c5515a2087a23b634d0637448d96545698d8fe052d254dbab9866d"
+    },
+    {
+      "symbol": "SOL",
+      "month": 9,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-09.zip",
+      "sha256": "e07556f66b636e7c83db1bc11f98d7306d3a014c07160e95107b9bc53e63ccb8"
+    },
+    {
+      "symbol": "SOL",
+      "month": 10,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/SOLUSDT/1h/SOLUSDT-1h-2026-10.zip",
+      "sha256": "9b9697f38c6743d87afc34b6d0afb934963ff11c3c916199060bc3bf070d00eb"
+    },
+    {
+      "symbol": "XRP",
+      "month": 1,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-01.zip",
+      "sha256": "067265c359adb29517248aa575878ddb6082a5609a10a79e2de3f76c45671d1f"
+    },
+    {
+      "symbol": "XRP",
+      "month": 2,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-02.zip",
+      "sha256": "34c052e0c50c5539732b9ab4423578f64d3e4ea0c021aaff20a74ec55e12e7f2"
+    },
+    {
+      "symbol": "XRP",
+      "month": 3,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-03.zip",
+      "sha256": "69b69125a039513d9347b7b8df2c156ed693f3708c1a26113d0931b89321758c"
+    },
+    {
+      "symbol": "XRP",
+      "month": 4,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-04.zip",
+      "sha256": "6a83a25c6a604fe9c29915241b76fd33a65812f91cca8ffd390f7fa42a738ab5"
+    },
+    {
+      "symbol": "XRP",
+      "month": 5,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-05.zip",
+      "sha256": "c432a0443aa1d77e24f388dc69ef7b3bc6fd36f003efa41b1ed5c5e1273fb91b"
+    },
+    {
+      "symbol": "XRP",
+      "month": 6,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-06.zip",
+      "sha256": "ac5f74a26a7aff2dd1d81d8bc7a6eb6774874e28faef1cc6980c3d6fa5a90f25"
+    },
+    {
+      "symbol": "XRP",
+      "month": 7,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-07.zip",
+      "sha256": "0150afa48bfb28b357c1d9d7eaf66d4c3f7cb775cf8ff0c0f0eee13e79174f9e"
+    },
+    {
+      "symbol": "XRP",
+      "month": 8,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-08.zip",
+      "sha256": "85071312cf991f10cbf5b4716311430f3426736beaf7c14375ba18fe54e3f325"
+    },
+    {
+      "symbol": "XRP",
+      "month": 9,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-09.zip",
+      "sha256": "805118cd0adb6591f5faf6d1149898e9b7a93b149421f5ba0c442ab4f513203a"
+    },
+    {
+      "symbol": "XRP",
+      "month": 10,
+      "url": "https://data.binance.vision/data/spot/monthly/klines/XRPUSDT/1h/XRPUSDT-1h-2026-10.zip",
+      "sha256": "7dcbfd9efecae90491bd481cb8426787d07dd155c589cb719700d2fa8baf6a64"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "trend72",
+      "hold": 72,
+      "strength": 1,
+      "cap": 0.02,
+      "mode": "trend"
+    },
+    {
+      "name": "strong_move_long24",
+      "hold": 24,
+      "strength": 2,
+      "cap": 0.02,
+      "mode": "long"
+    },
+    {
+      "name": "low_vol_long120",
+      "hold": 120,
+      "strength": 0,
+      "cap": 0.005,
+      "mode": "long"
+    }
+  ],
+  "results": {
+    "trend72": {
+      "n": 104,
+      "mean": 0.6055969209963894,
+      "stress": 0.4155969209963896,
+      "median": -0.4074083181680719,
+      "win_rate": 0.46153846153846156,
+      "weekly_block_95ci": [
+        -0.9309227874240135,
+        2.1074995615435004
+      ],
+      "without_top5": -0.05980872454698988,
+      "symbols": {
+        "BTC": {
+          "count": 30,
+          "mean": 0.18984060441420259
+        },
+        "ETH": {
+          "count": 25,
+          "mean": 0.30508164172061675
+        },
+        "SOL": {
+          "count": 25,
+          "mean": 1.460573860481647
+        },
+        "XRP": {
+          "count": 24,
+          "mean": 0.5477280873392424
+        }
+      }
+    },
+    "strong_move_long24": {
+      "n": 41,
+      "mean": -0.14781698536613072,
+      "stress": -0.2778169853661306,
+      "median": 0.16561095149567184,
+      "win_rate": 0.5365853658536586,
+      "weekly_block_95ci": [
+        -1.0343336047902922,
+        0.8255375329501049
+      ],
+      "without_top5": -1.0784264470860723,
+      "symbols": {
+        "BTC": {
+          "count": 12,
+          "mean": 0.3062528980245823
+        },
+        "ETH": {
+          "count": 13,
+          "mean": -0.6659344234907516
+        },
+        "SOL": {
+          "count": 10,
+          "mean": -0.6053544749281332
+        },
+        "XRP": {
+          "count": 6,
+          "mean": 0.8291935130591263
+        }
+      }
+    },
+    "low_vol_long120": {
+      "n": 121,
+      "mean": -0.7904270955256886,
+      "stress": -1.0404270955256885,
+      "median": -1.0582997549535997,
+      "win_rate": 0.35537190082644626,
+      "weekly_block_95ci": [
+        -2.987966802133675,
+        1.5151988336006732
+      ],
+      "without_top5": -1.635388251850213,
+      "symbols": {
+        "BTC": {
+          "count": 46,
+          "mean": -0.4222696497488809
+        },
+        "ETH": {
+          "count": 28,
+          "mean": -1.2267916358192892
+        },
+        "SOL": {
+          "count": 21,
+          "mean": -1.1880630844384918
+        },
+        "XRP": {
+          "count": 26,
+          "mean": -0.6506840036158223
+        }
+      }
+    }
+  },
+  "limitations": "2026 crypto spot proxies, present-day asset selection, previously used rules. No venue funding or liquidation data. Weekly bootstrap retains shared market weeks."
+}

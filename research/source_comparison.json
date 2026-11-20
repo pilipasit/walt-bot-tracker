@@ -1,0 +1,30 @@
+{
+  "BTC": {
+    "matched_hours": 7262,
+    "median_abs_difference_pct": 0.06733094896446135,
+    "p99_abs_difference_pct": 0.21610414930862828,
+    "max_abs_difference_pct": 0.4085937646090221,
+    "hours_over_1pct": 0
+  },
+  "ETH": {
+    "matched_hours": 7262,
+    "median_abs_difference_pct": 0.06737197301358022,
+    "p99_abs_difference_pct": 0.23018232721786872,
+    "max_abs_difference_pct": 0.5430263291636095,
+    "hours_over_1pct": 0
+  },
+  "SOL": {
+    "matched_hours": 7262,
+    "median_abs_difference_pct": 0.07078346116170531,
+    "p99_abs_difference_pct": 0.29505141779475397,
+    "max_abs_difference_pct": 0.6102556132867476,
+    "hours_over_1pct": 0
+  },
+  "XRP": {
+    "matched_hours": 7262,
+    "median_abs_difference_pct": 0.06536865578304907,
+    "p99_abs_difference_pct": 0.29475797554701283,
+    "max_abs_difference_pct": 1.3568127138717578,
+    "hours_over_1pct": 2
+  }
+}
