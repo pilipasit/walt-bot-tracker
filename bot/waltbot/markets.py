@@ -72,12 +72,12 @@ async def sample(client) -> int:
     return n
 
 
-def _hourly_from_samples(samples: list[list[float]]) -> list[tuple[int, float]]:
-    """Last price in each clock hour."""
-    by_hour: dict[int, float] = {}
+def _hourly_from_samples(samples: list[list[float]]) -> list[tuple[int, float, float, float, float]]:
+    """Hourly candles (ts, open, high, low, close) built from Walt's 10-minute samples."""
+    by_hour: dict[int, list[float]] = {}
     for ts, px in samples:
-        by_hour[int(ts) // HOUR * HOUR] = px
-    return sorted(by_hour.items())
+        by_hour.setdefault(int(ts) // HOUR * HOUR, []).append(px)
+    return [(h, v[0], max(v), min(v), v[-1]) for h, v in sorted(by_hour.items())]
 
 
 def _hourly_binance(symbol: str) -> list[tuple[int, float]]:
@@ -85,7 +85,7 @@ def _hourly_binance(symbol: str) -> list[tuple[int, float]]:
 
     now = int(time.time() * 1000)
     try:
-        return [(c.ts, c.c) for c in _download(symbol, "1h", now - KEEP_MS, now)]
+        return [(c.ts, c.o, c.h, c.l, c.c) for c in _download(symbol, "1h", now - KEEP_MS, now)]
     except Exception:  # noqa: BLE001
         return []
 
@@ -138,6 +138,46 @@ def _maintenance() -> dict[str, float]:
             for c in raw.get("contracts", [])}
 
 
+def _ema_series(xs: list[float], n: int) -> list[float]:
+    k, e, out = 2 / (n + 1), xs[0], []
+    for x in xs:
+        e = x * k + e * (1 - k)
+        out.append(e)
+    return out
+
+
+def _chart(hourly: list[tuple]) -> dict:
+    """What the page draws: the last 72 hourly candles, the 12h/48h averages, the 24h trend channel, and every hour
+    in the window where the trend call (up / down / sideways) changed — computed as it would have been AT that hour."""
+    closes = [h[4] for h in hourly]
+    show = 72
+    start = max(0, len(hourly) - show)
+    e12, e48 = _ema_series(closes, 12), _ema_series(closes, 48)
+    flips, prev = [], None
+    for i in range(max(12, start), len(closes)):
+        a = analyse(closes[: i + 1])
+        t = a["trend"] if a else None
+        if prev is not None and t != prev:
+            flips.append({"i": i - start, "from": prev, "to": t, "price": closes[i]})
+        prev = t
+    # trend channel over the last 24 bars: fitted line ± 2 residual standard deviations (log scale → prices)
+    n = min(24, len(closes))
+    logs = [math.log(c) for c in closes[-n:]]
+    xm, ym = (n - 1) / 2, sum(logs) / n
+    sxx = sum((i - xm) ** 2 for i in range(n)) or 1
+    b = sum((i - xm) * (y - ym) for i, y in enumerate(logs)) / sxx
+    sd = (sum((y - (ym + b * (i - xm))) ** 2 for i, y in enumerate(logs)) / n) ** 0.5
+    first = len(closes) - n - start
+    line = lambda i, k: round(math.exp(ym + b * (i - xm) + k * sd), 10)  # noqa: E731
+    return {
+        "candles": [[h[0], *(round(v, 10) for v in h[1:5])] for h in hourly[start:]],
+        "ema_fast": [round(v, 10) for v in e12[start:]], "ema_slow": [round(v, 10) for v in e48[start:]],
+        "channel": {"from": first, "mid": [line(0, 0), line(n - 1, 0)], "hi": [line(0, 2), line(n - 1, 2)],
+                    "lo": [line(0, -2), line(n - 1, -2)]},
+        "flips": flips,
+    }
+
+
 def build() -> Path:
     contracts = load_contracts()
     maint = _maintenance()
@@ -152,8 +192,10 @@ def build() -> Path:
         walt = store.get(sym, [])
         if len(hourly) < 12:
             hourly, source = _hourly_from_samples(walt), "Walt price, sampled every 10 min"
-        closes = [p for _, p in hourly]
+        closes = [h[4] for h in hourly]
         a = analyse(closes)
+        if a:
+            a["chart"] = _chart(hourly)
         last_walt = walt[-1] if walt else None
         # Levels are computed from the price the owner actually trades at: Walt's, when a recent sample exists.
         if a and last_walt and last_walt[0] > time.time() * 1000 - 30 * 60_000:
