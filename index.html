@@ -45,7 +45,19 @@ td { padding:2px 0; } td:last-child { text-align:right; } td:first-child { font-
 .warn { color:var(--warn); font-size:12px; line-height:1.35; }
 .note { font-size:12px; color:var(--muted); line-height:1.4; }
 footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5; }
-.empty { opacity:.7; } tr.bad td { color:var(--down); font-weight:700; }
+.empty { opacity:.7; }
+#mypos { display:grid; gap:12px; margin-bottom:14px; }
+.pos { background:var(--panel); border:2px solid var(--accent); border-radius:12px; padding:12px; display:grid; gap:10px; }
+.pos h2 { margin:0; font-size:17px; } .pos .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+.pos .kpi { border:1px solid var(--line); border-radius:8px; padding:8px; } .pos .kpi span { display:block; font-size:11px; color:var(--muted); }
+.pos .kpi b { font:600 16px ui-monospace,Consolas,monospace; } .pos ul { margin:0; padding-left:18px; display:grid; gap:3px; }
+.pos .ok { color:var(--up); } .pos .bad { color:var(--down); } .pos .mid { color:var(--warn); }
+.pos .rm { justify-self:start; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:6px; padding:2px 8px; cursor:pointer; font:inherit; }
+.addpos { margin:0 0 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; }
+.addpos summary { cursor:pointer; color:var(--accent); } .addpos form { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:8px; margin-top:10px; }
+.addpos label { display:grid; gap:3px; font-size:12px; color:var(--muted); }
+.addpos input, .addpos select { font:inherit; background:var(--chip); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:5px 7px; }
+.addpos button { align-self:end; background:var(--accent); color:#fff; border:0; border-radius:8px; padding:7px 12px; font:inherit; cursor:pointer; } tr.bad td { color:var(--down); font-weight:700; }
 .fixlev { margin-left:6px; border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:6px; padding:1px 6px; font:inherit; cursor:pointer; }
 .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--up); margin-right:6px; vertical-align:middle; animation:pulse 2s infinite; }
 @keyframes pulse { 50% { opacity:.3; } }
@@ -65,6 +77,23 @@ footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5;
     <b style="color:var(--best)">highlighted</b> one has the strongest, cleanest (narrowest) trend right now.</div>
 </div>
 
+<section id="mypos"></section>
+<details class="addpos"><summary>+ Add a position (kept only in this browser)</summary>
+  <form id="posform">
+    <label>Asset <select name="sym" id="possym"></select></label>
+    <label>Side <select name="side"><option value="-1">Short</option><option value="1">Long</option></select></label>
+    <label>Leverage <input name="lev" type="number" step="any" required></label>
+    <label>Entry price <input name="entry" type="number" step="any" required></label>
+    <label>Size (USD, at entry) <input name="size" type="number" step="any" required></label>
+    <label>Margin (USD) <input name="margin" type="number" step="any" required></label>
+    <label>Stop-loss price <input name="sl" type="number" step="any"></label>
+    <label>Take-profit price <input name="tp" type="number" step="any"></label>
+    <label>Liquidation price <input name="liq" type="number" step="any"></label>
+    <label>Opened <input name="opened" type="datetime-local"></label>
+    <label>Opening fee (USD) <input name="fee" type="number" step="any"></label>
+    <button type="submit">Add position</button>
+  </form>
+</details>
 <div class="grid" id="grid"></div>
 
 <footer>
@@ -84,7 +113,17 @@ const state = { lev: 3, group: 'All', per: {} };
 try { Object.assign(state, JSON.parse(localStorage.getItem('waltMarkets') || '{}')); } catch {}
 const save = () => { try { localStorage.setItem('waltMarkets', JSON.stringify(state)); } catch {} };
 let DATA = null;
-const LIVE = {};   // symbol → live price from Binance's public stream (crypto only)
+const LIVE = {};   // symbol → live price from Binance's public stream (crypto; gold via PAXG's % change)
+/* The owner's positions: stored ONLY in this browser (localStorage), never in the public repo. A link of the form
+   …/#add=<base64 JSON> adds one; the part after # is never sent to any server. */
+let POS = [];
+try { POS = JSON.parse(localStorage.getItem('waltPositions') || '[]'); } catch {}
+const savePos = () => { try { localStorage.setItem('waltPositions', JSON.stringify(POS)); } catch {} };
+if (location.hash.startsWith('#add=')) {
+  try { const p = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(5)))));
+    if (!POS.some((q) => q.sym === p.sym && q.entry === p.entry && q.opened === p.opened)) { POS.push({ id: Date.now(), ...p }); savePos(); } } catch {}
+  history.replaceState(null, '', location.pathname);
+}
 
 const fmtPx = (p) => p == null ? '—' : p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 2 })
   : p >= 1 ? p.toLocaleString('en-US', { maximumFractionDigits: 4 }) : p.toPrecision(5);
@@ -97,7 +136,9 @@ function chartSvg(a) {
   const ch = a.analysis.chart; if (!ch || ch.candles.length < 2) return '';
   const C = ch.candles, n = C.length, W = 600, H = 200, pad = { l: 4, r: 62, t: 12, b: 16 };
   const live = LIVE[a.symbol];
-  const vals = C.flatMap((c) => [c[2], c[3]]).concat(ch.channel.hi, ch.channel.lo, ch.ema_fast, ch.ema_slow, live ? [live] : []);
+  const mine = POS.filter((p) => p.sym === a.symbol);
+  const posLv = mine.flatMap((p) => [p.entry, p.sl, p.tp].filter((v) => v > 0));
+  const vals = C.flatMap((c) => [c[2], c[3]]).concat(ch.channel.hi, ch.channel.lo, ch.ema_fast, ch.ema_slow, live ? [live] : [], posLv);
   let lo = Math.min(...vals), hi = Math.max(...vals); const m = (hi - lo) * 0.06 || hi * 0.001; lo -= m; hi += m;
   const bw = (W - pad.l - pad.r) / n, X = (i) => pad.l + bw * (i + 0.5), Y = (v) => pad.t + (hi - v) / (hi - lo) * (H - pad.t - pad.b);
   const up = 'var(--up)', dn = 'var(--down)';
@@ -119,6 +160,16 @@ function chartSvg(a) {
     if (p.to === 'up') g += `<path d="M${x},${Y(c[3]) + 3} l6,11 h-12 z" fill="${up}" stroke="var(--panel)">${tip}</path>`;
     else if (p.to === 'down') g += `<path d="M${x},${Y(c[2]) - 3} l6,-11 h-12 z" fill="${dn}" stroke="var(--panel)">${tip}</path>`;
     else g += `<circle cx="${x}" cy="${Y(c[2]) - 8}" r="4" fill="var(--side)" stroke="var(--panel)">${tip}</circle>`; });
+  mine.forEach((p) => {
+    const lvl = (v, col, label, dash) => { if (!(v > 0)) return; const y = Y(v);
+      g += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.4" ${dash}/><text x="${pad.l + 4}" y="${y - 3}" class="ax" style="fill:${col};font-weight:700">${label} ${fmtPx(v)}</text>`; };
+    lvl(p.entry, 'var(--ink)', p.side < 0 ? 'SHORT entry' : 'LONG entry', '');
+    lvl(p.sl, 'var(--down)', 'your stop', 'stroke-dasharray="6 3"');
+    lvl(p.tp, 'var(--up)', 'your take-profit', 'stroke-dasharray="6 3"');
+    if (p.liq > lo && p.liq < hi) lvl(p.liq, 'var(--warn)', 'liquidation', 'stroke-dasharray="2 2"');
+    const t0 = p.opened ? Date.parse(p.opened) : NaN; const i0 = C.findIndex((c) => c[0] + 3600000 > t0);
+    if (i0 >= 0) g += `<circle cx="${X(i0)}" cy="${Y(p.entry)}" r="5" fill="var(--ink)" stroke="var(--panel)" stroke-width="2"><title>Opened ${new Date(t0).toLocaleString()}</title></circle>`;
+  });
   if (live) { const y = Y(live); g += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}" stroke="var(--accent)" stroke-dasharray="3 3"/><text x="${W - pad.r + 4}" y="${y + 4}" class="ax" style="fill:var(--accent);font-weight:700">${fmtPx(live)}</text>`; }
   const d0 = new Date(C[0][0]);
   g += `<text x="${pad.l}" y="${H - 3}" class="ax">${d0.toLocaleDateString([], { day: 'numeric', month: 'short' })} ${d0.getHours()}:00</text><text x="${W - pad.r}" y="${H - 3}" class="ax" text-anchor="end">now</text>`;
@@ -188,8 +239,59 @@ function card(a, best) {
     <div class="note">${a.source}</div></div>`;
 }
 
+/** One of the owner's positions: P/L now, distances to their own levels, and a rule check against the trend model.
+ *  The checks are arithmetic on the owner's levels and the page's trend rules — not advice. */
+function posCard(p) {
+  const a = DATA.assets.find((x) => x.symbol === p.sym); if (!a) return '';
+  const x = a.analysis, price = LIVE[p.sym] ?? (x ? x.price : a.walt_price);
+  const qty = p.size / p.entry, pnl = p.side * qty * (price - p.entry), closeFee = qty * price * DATA.fee_pct / 100;
+  const net = pnl - (p.fee || 0) - closeFee, pct = (v) => (v / p.margin * 100);
+  const dist = (lvl) => lvl > 0 ? (p.side * (price - lvl) / price * 100) : null;   // % the price can still move before it is hit
+  const toSl = p.sl ? Math.abs(price - p.sl) / price * 100 : null, toTp = p.tp ? Math.abs(p.tp - price) / price * 100 : null;
+  const toLiq = p.liq ? Math.abs(p.liq - price) / price * 100 : null;
+  const slPnl = p.sl ? p.side * qty * (p.sl - p.entry) : null, tpPnl = p.tp ? p.side * qty * (p.tp - p.entry) : null;
+  const checks = [];
+  if (x) {
+    const agree = (x.trend === 'down' && p.side < 0) || (x.trend === 'up' && p.side > 0);
+    checks.push(x.trend === 'sideways' ? `<li class="mid">Trend rule: sideways (R² ${x.r2.toFixed(2)}) — no direction supporting the position right now.</li>`
+      : agree ? `<li class="ok">Trend rule: ${x.trend} (quality ${x.score.toFixed(2)}) — in the same direction as your ${p.side < 0 ? 'short' : 'long'}.</li>`
+      : `<li class="bad">Trend rule: ${x.trend} — against your ${p.side < 0 ? 'short' : 'long'}.</li>`);
+    const fl = (x.chart?.flips || []).filter((f) => x.chart.candles[f.i][0] >= Date.parse(p.opened || 0));
+    if (fl.length) checks.push(`<li class="mid">The trend call changed ${fl.length}× since you opened (latest: ${fl[fl.length - 1].from} → ${fl[fl.length - 1].to}).</li>`);
+    const noise = 2.5 * x.atr_pct_h + x.band_pct;
+    if (toSl != null) checks.push(toSl < noise
+      ? `<li class="mid">Your stop is ${toSl.toFixed(2)}% away; this asset's normal swing against a trend is about ${noise.toFixed(2)}%, so ordinary noise can reach it.</li>`
+      : `<li class="ok">Your stop is ${toSl.toFixed(2)}% away, outside the normal swing of about ${noise.toFixed(2)}%.</li>`);
+    if (toTp != null && Math.abs(x.slope_pct_h) > 1e-6) {
+      const withTrend = (x.slope_pct_h < 0) === (p.side < 0);
+      checks.push(`<li>${withTrend ? `At the current trend pace the take-profit is about ${Math.round(toTp / Math.abs(x.slope_pct_h))} h away.` : 'The current trend pace is moving away from your take-profit.'}</li>`);
+    }
+  }
+  if (p.sl && p.tp) { const rr = Math.abs(p.tp - p.entry) / Math.abs(p.sl - p.entry);
+    checks.push(`<li>Your reward:risk from entry is ${rr.toFixed(2)} : 1 (the page's rule uses 2 : 1).</li>`); }
+  if (toLiq != null && toSl != null) checks.push(toSl < toLiq ? `<li class="ok">Stop sits before liquidation (liquidation ${toLiq.toFixed(2)}% away).</li>`
+    : `<li class="bad">Liquidation (${toLiq.toFixed(2)}% away) comes BEFORE your stop.</li>`);
+  const opened = p.opened ? new Date(p.opened) : null, hrs = opened ? (Date.now() - opened) / 3600000 : null;
+  const col = (v) => v >= 0 ? 'ok' : 'bad', money = (v) => `${v < 0 ? '−' : '+'}$${Math.abs(v).toFixed(2)}`;
+  return `<div class="pos"><h2>Your position: ${a.name} ${p.side < 0 ? 'SHORT' : 'LONG'} ${p.lev}×</h2>
+    <div class="kpis">
+      <div class="kpi"><span>Price now${LIVE[p.sym] ? ' (live)' : ''}</span><b>${fmtPx(price)}</b></div>
+      <div class="kpi"><span>Entry</span><b>${fmtPx(p.entry)}</b></div>
+      <div class="kpi"><span>P/L now (before fees)</span><b class="${col(pnl)}">${money(pnl)} · ${pct(pnl) >= 0 ? '+' : ''}${pct(pnl).toFixed(1)}%</b></div>
+      <div class="kpi"><span>After open + close fees</span><b class="${col(net)}">${money(net)}</b></div>
+      <div class="kpi"><span>Stop ${fmtPx(p.sl)}</span><b class="bad">${toSl != null ? toSl.toFixed(2) + '% away' : '—'}</b>${slPnl != null ? `<span>${money(slPnl)} (${pct(slPnl).toFixed(1)}%)</span>` : ''}</div>
+      <div class="kpi"><span>Take-profit ${fmtPx(p.tp)}</span><b class="ok">${toTp != null ? toTp.toFixed(2) + '% away' : '—'}</b>${tpPnl != null ? `<span>${money(tpPnl)} (+${pct(tpPnl).toFixed(1)}%)</span>` : ''}</div>
+      <div class="kpi"><span>Liquidation ${fmtPx(p.liq)}</span><b class="mid">${toLiq != null ? toLiq.toFixed(2) + '% away' : '—'}</b></div>
+      <div class="kpi"><span>Open for</span><b>${hrs != null ? (hrs < 48 ? hrs.toFixed(1) + ' h' : (hrs / 24).toFixed(1) + ' d') : '—'}</b><span>margin $${p.margin}</span></div>
+    </div>
+    <div><b style="font-size:13px">Rule check</b> <span class="muted" style="font-size:12px">(arithmetic on your levels and the page's trend rules — not advice)</span><ul>${checks.join('')}</ul></div>
+    <button class="rm" data-rm="${p.id}">Remove this position</button></div>`;
+}
+
 function render() {
   if (!DATA) return;
+  document.getElementById('mypos').innerHTML = POS.map(posCard).join('');
+  const ps = document.getElementById('possym'); if (ps && !ps.options.length) ps.innerHTML = DATA.assets.map((a) => `<option value="${a.symbol}">${a.name} (${a.symbol})</option>`).join('');
   const groups = ['All', ...new Set(DATA.assets.map((a) => a.group))];
   document.getElementById('groups').innerHTML = groups.map((g) => `<button class="${g === state.group ? 'on' : ''}" data-g="${g}">${g}</button>`).join('');
   document.getElementById('lev').innerHTML = LEVS.map((l) => `<button class="${l === state.lev ? 'on' : ''}" data-l="${l}">${l}×</button>`).join('');
@@ -202,6 +304,8 @@ function render() {
 }
 
 document.addEventListener('click', (e) => {
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { if (confirm('Remove this position from the page?')) { POS = POS.filter((p) => String(p.id) !== rm.dataset.rm); savePos(); render(); } return; }
   const f = e.target.closest('.fixlev');
   if (f) { state.per[f.dataset.sym] = +f.dataset.v; save(); render(); return; }
   const l = e.target.closest('[data-l]'), g = e.target.closest('[data-g]');
@@ -211,6 +315,14 @@ document.addEventListener('click', (e) => {
 document.addEventListener('change', (e) => {
   const s = e.target.closest('select[data-sym]');
   if (s) { state.per[s.dataset.sym] = +s.value; save(); render(); }
+});
+
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'posform') return; e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target)); const n = (k) => d[k] === '' ? null : +d[k];
+  POS.push({ id: Date.now(), sym: d.sym, side: +d.side, lev: n('lev'), entry: n('entry'), size: n('size'), margin: n('margin'),
+    sl: n('sl'), tp: n('tp'), liq: n('liq'), fee: n('fee') || 0, opened: d.opened ? new Date(d.opened).toISOString() : null });
+  savePos(); e.target.reset(); render();
 });
 
 async function load() {
@@ -224,16 +336,18 @@ async function load() {
   } catch (e) { document.getElementById('meta').textContent = 'Could not load the market data yet.'; }
 }
 /* Live prices: Binance's public mini-ticker stream for the crypto assets; the cards re-render at most twice a second. */
-let ws = null, wsKey = '', pending = false;
+let ws = null, wsKey = '', pending = false; const PROXY0 = {};
 function stream() {
-  const pairs = DATA.assets.filter((a) => a.binance).map((a) => [a.binance.toLowerCase(), a.symbol]);
+  const pairs = DATA.assets.filter((a) => a.binance || a.proxy).map((a) => [(a.binance || a.proxy).toLowerCase(), a.symbol]);
   const key = pairs.map((p) => p[0]).join('/');
   if (!pairs.length || (ws && ws.readyState <= 1 && key === wsKey)) return;
   wsKey = key; const map = Object.fromEntries(pairs);
   const hosts = ['wss://data-stream.binance.vision', 'wss://stream.binance.com:9443'];
   const open = (i) => {
     ws = new WebSocket(`${hosts[i % 2]}/stream?streams=${pairs.map((p) => p[0] + '@miniTicker').join('/')}`);
-    ws.onmessage = (m) => { const d = JSON.parse(m.data).data; if (!d) return; LIVE[map[d.s.toLowerCase()]] = +d.c;
+    ws.onmessage = (m) => { const d = JSON.parse(m.data).data; if (!d) return; const sym = map[d.s.toLowerCase()], a = DATA.assets.find((x) => x.symbol === sym);
+      if (a && a.proxy) { const ref = a.analysis ? a.analysis.price : a.walt_price; PROXY0[sym] ??= +d.c; LIVE[sym] = ref * (+d.c / PROXY0[sym]); }
+      else LIVE[sym] = +d.c;
       if (!pending) { pending = true; setTimeout(() => { pending = false; render(); }, 500); } };
     ws.onclose = () => setTimeout(() => open(i + 1), 3000);
   };

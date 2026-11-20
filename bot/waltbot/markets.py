@@ -234,6 +234,8 @@ def build() -> Path:
             "walt_price": last_walt[1] if last_walt else None, "walt_at": last_walt[0] if last_walt else None,
             "max_leverage": c.max_leverage, "closeout": c.closeout_margin_fraction, "maintenance": maint.get(sym),
             "binance": binance if binance and sym != "XAU" else None,  # live stream on the page (PAXG != Walt gold)
+            # Gold has no direct live feed; the page moves Walt's last gold price by PAXG's live % change.
+            "proxy": "PAXGUSDT" if sym == "XAU" else None,
             "funding_h": c.funding_rate_hourly, "analysis": a,
         })
     OUT.mkdir(parents=True, exist_ok=True)
