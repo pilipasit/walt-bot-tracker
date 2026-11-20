@@ -418,7 +418,8 @@ def build() -> Path:
         x["symbol"]: [{"up": 1, "down": -1}.get(x["analysis"]["trend"], 0), round(x["analysis"]["score"], 3),
                       int(bool(x["analysis"].get("aligned"))), x["analysis"]["price"],
                       round(2.5 * x["analysis"]["atr_pct_h"] + x["analysis"]["band_pct"], 3),
-                      round((x.get("funding_h") or 0) * 8e6)]   # raw Walt value (8h rate) x 1e6
+                      round((x.get("funding_h") or 0) * 8e6),   # raw Walt value (8h rate) x 1e6
+                      (x["analysis"].get("move7") or {}).get("z")]   # 7-day move size (z), from 20 Nov 2026
         for x in assets if x.get("analysis")})
     path.write_text(json.dumps({"updated": int(time.time() * 1000), "fee_pct": 0.07, "assets": assets},
                                separators=(",", ":")), encoding="utf-8")

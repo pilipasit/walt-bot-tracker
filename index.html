@@ -268,7 +268,8 @@ footer b { color:var(--ink-2); }
   </form>
 </details>
 <details class="overview" open><summary>Overview — all assets</summary><div id="ov"></div></details>
-<details class="overview" open><summary>Funding — who pays whom on Walt right now</summary><div id="fund"></div></details>
+<details class="overview" open><summary>Strategy watch — rules that held up in the research</summary><div id="watch"></div></details>
+<details class="overview"><summary>Funding — who pays whom on Walt right now</summary><div id="fund"></div></details>
 <h2 class="sec">Markets <small>sorted by trend quality · recent direction, not a signal</small></h2>
 <div class="grid" id="grid"></div>
 
@@ -402,6 +403,22 @@ function touchChance(dist, atrH, asset, side) {
   return Math.min(1, 2 * tail);
 }
 const pctChance = (p) => p == null ? '—' : p < 0.005 ? '<1%' : (p * 100).toFixed(0) + '%';
+
+/** Live status of the one candidate that beat random entries (research/CRYPTO_UPWEEK_FINDINGS.md). */
+function strategyWatch(assets) {
+  const c = assets.filter((a) => a.group === 'Crypto' && a.analysis && a.analysis.move7 && a.analysis.move7.z != null)
+    .map((a) => ({ a, z: a.analysis.move7.z, pct: a.analysis.move7.pct })).sort((p, q) => q.z - p.z);
+  const on = c.filter((x) => x.z >= 2), near = c.filter((x) => x.z >= 1.5 && x.z < 2);
+  const list = (xs) => xs.map(({ a, z, pct }) => `<b data-go="${a.symbol}" style="cursor:pointer">${a.name}</b> ${pct > 0 ? '+' : ''}${pct.toFixed(1)}% (${z.toFixed(1)}×)`).join(' · ');
+  return `<div style="padding:4px 10px 10px">
+    <p><b>Crypto big up-week:</b> buy a coin whose 7-day rise is at least 2× its normal week, hold 3 days, 1× leverage.
+    Back-tested 2017–2026 on 12 coins: +300%, max drawdown 12.5%, against +13% for random entries; but flat in 2025–2026.</p>
+    <p>${on.length ? `<span class="ok">Signal now:</span> ${list(on)}` : 'No signal now.'}
+    ${near.length ? ` Close (1.5–2×): ${list(near)}.` : ''}
+    Most up-moving coin: ${c.length ? list(c.slice(0, 1)) : '—'}.</p>
+    <div class="note">Paper-test only: the edge faded in 2025–2026, the coin list is today's survivors, and gains came from a minority of big
+    winners (median trade +0.45%). Historical simulation, not advice.</div></div>`;
+}
 
 /** Funding table: Walt's current hourly rate (fraction; positive = longs pay shorts), per day and per year. */
 function fundingTable(assets) {
@@ -580,6 +597,7 @@ function render() {
   document.getElementById('grid').innerHTML = list.map((a) => card(a, false)).join('');
   document.getElementById('ov').innerHTML = overview(list);
   document.getElementById('fund').innerHTML = fundingTable(DATA.assets);
+  document.getElementById('watch').innerHTML = strategyWatch(DATA.assets);
 }
 
 document.addEventListener('click', (e) => {

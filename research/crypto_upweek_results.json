@@ -1,0 +1,100 @@
+{
+ "assets": [
+  "ADA-USD",
+  "BCH-USD",
+  "BNB-USD",
+  "BTC-USD",
+  "DOGE-USD",
+  "DOT-USD",
+  "ETH-USD",
+  "LINK-USD",
+  "SOL-USD",
+  "TRX-USD",
+  "XLM-USD",
+  "XRP-USD"
+ ],
+ "buy_and_hold_equal_weight": {
+  "total_pct": 76165.4,
+  "max_dd_pct": 88.3,
+  "years": {
+   "2017": 5893.9,
+   "2018": -68.1,
+   "2019": 32.3,
+   "2020": 291.2,
+   "2021": 826.1,
+   "2022": -69.2,
+   "2023": 149.0,
+   "2024": 125.2,
+   "2025": -23.4,
+   "2026": -37.1
+  }
+ },
+ "rules": {
+  "z>=2_hold3d": {
+   "trades": 613,
+   "avg_trade_pct": 2.84,
+   "win_rate": 0.507,
+   "median_trade_pct": 0.45,
+   "total_pct": 300.4,
+   "max_dd_pct": 12.5,
+   "years": {
+    "2017": 4.5,
+    "2018": 18.7,
+    "2019": 2.0,
+    "2020": 45.0,
+    "2021": 38.2,
+    "2022": -0.3,
+    "2023": 13.8,
+    "2024": 44.4,
+    "2025": -1.8,
+    "2026": -1.9
+   },
+   "random_same_count_median_total_pct": 13.0,
+   "no_funding_total_pct": 319.2
+  },
+  "z>=2_hold10d": {
+   "trades": 386,
+   "avg_trade_pct": 6.39,
+   "win_rate": 0.528,
+   "median_trade_pct": 1.16,
+   "total_pct": 523.9,
+   "max_dd_pct": 23.6,
+   "years": {
+    "2017": 5.6,
+    "2018": 5.9,
+    "2019": 6.8,
+    "2020": 54.3,
+    "2021": 91.8,
+    "2022": -7.1,
+    "2023": 17.6,
+    "2024": 87.4,
+    "2025": -1.7,
+    "2026": -12.2
+   },
+   "random_same_count_median_total_pct": 35.1,
+   "no_funding_total_pct": 587.0
+  },
+  "z>=3_hold10d": {
+   "trades": 170,
+   "avg_trade_pct": 8.54,
+   "win_rate": 0.518,
+   "median_trade_pct": 0.81,
+   "total_pct": 200.6,
+   "max_dd_pct": 11.0,
+   "years": {
+    "2017": 1.3,
+    "2018": 7.6,
+    "2019": 2.1,
+    "2020": 24.9,
+    "2021": 37.7,
+    "2022": -0.3,
+    "2023": 10.2,
+    "2024": 52.6,
+    "2025": -3.3,
+    "2026": -3.1
+   },
+   "random_same_count_median_total_pct": 14.6,
+   "no_funding_total_pct": 213.6
+  }
+ }
+}
