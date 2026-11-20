@@ -513,6 +513,9 @@ function posCard(p) {
     checks.push(`<li>Your reward:risk from entry is ${rr.toFixed(2)} : 1 (the page's rule uses 2 : 1).</li>`); }
   if (toLiq != null && toSl != null) checks.push(toSl < toLiq ? `<li class="ok">Stop sits before liquidation (liquidation ${toLiq.toFixed(2)}% away).</li>`
     : `<li class="bad">Liquidation (${toLiq.toFixed(2)}% away) comes BEFORE your stop.</li>`);
+  if (p.sl) checks.push(`<li>Walt's stops fill as market orders: in a fast move they fill past the level (20 Nov: a MicroStrategy
+    stop at 87.00 filled at 87.64, 0.7% worse, at the US open). Plan the loss with some extra room.${a && a.group === 'Stocks'
+    ? ' Stocks jump most at the 15:30 Prague open.' : ''}</li>`);
   const opened = p.opened ? new Date(p.opened) : null, hrs = opened ? (Date.now() - opened) / 3600000 : null;
   const col = (v) => v >= 0 ? 'ok' : 'bad';
   return `<div class="poscard"><h2>Your position: ${a.name} <span class="side ${p.side < 0 ? 'short' : 'long'}">${p.side < 0 ? 'SHORT' : 'LONG'} ${p.lev}×</span></h2>
