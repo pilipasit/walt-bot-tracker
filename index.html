@@ -2,672 +2,179 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1117">
-<title>Walt Bot Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walt markets — short-term trends</title>
 <style>
-  /* Layout: sticky range bar on top, account strip, one card per coin, activity log. Trading-terminal feel, calm palette. */
-  :root {
-    --bg: #f4f6f9; --panel: #ffffff; --panel-2: #f8fafc; --line: #e2e7ee; --grid: #edf1f5;
-    --fg: #121722; --muted: #5f6b7d; --faint: #8b96a7;
-    --accent: #3b6cf6; --fast: #3b6cf6; --slow: #e08a1e; --price: #121722;
-    --up: #13a26b; --down: #e0484f; --up-bg: rgba(19,162,107,.08); --down-bg: rgba(224,72,79,.08);
-    --chip: #eef2f8; --shadow: 0 1px 2px rgba(16,24,40,.05), 0 4px 16px rgba(16,24,40,.04);
-    --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --display: "Space Grotesk", "Inter", system-ui, sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0b0f15; --panel: #121821; --panel-2: #0f141c; --line: #222c39; --grid: #19212c;
-      --fg: #e6ebf2; --muted: #93a0b2; --faint: #66727f;
-      --accent: #6d95ff; --fast: #6d95ff; --slow: #f2a64a; --price: #e6ebf2;
-      --up: #2fcf8e; --down: #ff6b70; --up-bg: rgba(47,207,142,.09); --down-bg: rgba(255,107,112,.09);
-      --chip: #1a2230; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0b0f15; --panel: #121821; --panel-2: #0f141c; --line: #222c39; --grid: #19212c;
-    --fg: #e6ebf2; --muted: #93a0b2; --faint: #66727f;
-    --accent: #6d95ff; --fast: #6d95ff; --slow: #f2a64a; --price: #e6ebf2;
-    --up: #2fcf8e; --down: #ff6b70; --up-bg: rgba(47,207,142,.09); --down-bg: rgba(255,107,112,.09);
-    --chip: #1a2230; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding-block: 18px 40px;
-          padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
-  .muted { color: var(--muted); } .faint { color: var(--faint); }
-  .up { color: var(--up); } .down { color: var(--down); }
-  h1 { font: 600 24px/1.15 var(--display); margin: 0; letter-spacing: -.01em; }
-  h2 { font: 600 17px/1.2 var(--display); margin: 0; }
-  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 500; }
-
-  /* header */
-  .top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin-bottom: 14px; }
-  .status { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); align-items: center; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--up); display: inline-block; margin-right: 6px; box-shadow: 0 0 0 3px var(--up-bg); }
-  .dot.stale { background: var(--down); box-shadow: 0 0 0 3px var(--down-bg); }
-  .theme-btn { border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; cursor: pointer; }
-
-  /* account strip */
-  .acct { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
-  @media (max-width: 760px) { .acct { grid-template-columns: 1fr; } }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px 16px; align-content: start; }
-  .kpi .v { font: 500 22px/1.2 var(--mono); font-variant-numeric: tabular-nums; margin-top: 3px; }
-  .kpi.big .v { font: 600 34px/1.05 var(--display); letter-spacing: -.02em; }
-  .kpi .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  #acctChart { position: relative; min-height: 150px; }
-
-  /* toolbar */
-  .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin: 14px 0; background: color-mix(in srgb, var(--bg) 88%, transparent);
-         backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 10px 0 8px; }
-  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--bg); }
-  .bar-row { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
-  .seg { display: inline-flex; background: var(--chip); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
-  .seg button { border: 0; background: transparent; color: var(--muted); font: 500 12.5px var(--font); padding: 6px 10px; border-radius: 8px; cursor: pointer; min-width: 38px; }
-  .seg button:hover { color: var(--fg); }
-  .seg button.on { background: var(--panel); color: var(--fg); box-shadow: var(--shadow); }
-  .seg button:focus-visible, .theme-btn:focus-visible, .dates input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .dates { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
-  .dates input { max-width: 140px; font: 12px var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px; }
-  .toggles { display: inline-flex; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
-  .toggles label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
-  .toggles input { accent-color: var(--accent); }
-  #nav { position: relative; height: 46px; margin-top: 8px; }
-  #nav svg { display: block; width: 100%; height: 46px; }
-  .rangeinfo { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-  /* coin cards */
-  .coins { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 14px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 10px; box-shadow: var(--shadow); min-width: 0; display: flex; flex-direction: column; gap: 10px; }
-  .card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
-  .sym { font: 600 20px var(--display); }
-  .px { font: 500 18px var(--mono); }
-  .chg { font: 500 12.5px var(--mono); }
-  .pill { font: 600 11px var(--font); letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
-  .pill.long { background: var(--up-bg); color: var(--up); } .pill.short { background: var(--down-bg); color: var(--down); }
-  .pos { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; }
-  .pos b { font-weight: 600; }
-  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 10px; font-size: 12px; }
-  @media (max-width: 460px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .stats .k { color: var(--muted); font-size: 11px; } .stats .val { font: 500 13px var(--mono); }
-  .chart { position: relative; height: 270px; touch-action: pan-y; }
-  .chart svg { display: block; width: 100%; height: 100%; }
-  .chart text, #nav text, #acctChart text { fill: var(--faint); font: 10.5px var(--mono); }
-  .tip { position: absolute; pointer-events: none; z-index: 5; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow);
-         border-radius: 9px; padding: 7px 9px; font: 11.5px/1.5 var(--mono); white-space: nowrap; }
-  .tip .t { color: var(--muted); font-family: var(--font); font-size: 11px; }
-  .hint { font-size: 11.5px; color: var(--faint); }
-
-  /* activity */
-  .section { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
-  .feed { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; }
-  .feed li { display: grid; grid-template-columns: 112px 52px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; align-items: baseline; }
-  .feed li:first-child { border-top: 0; }
-  .feed .when { font: 12px var(--mono); color: var(--muted); }
-  .feed .what { min-width: 0; overflow-wrap: anywhere; }
-  .tag { display: inline-block; font: 600 10.5px var(--font); text-transform: uppercase; letter-spacing: .05em; padding: 1px 7px; border-radius: 6px; background: var(--chip); color: var(--muted); margin-right: 6px; }
-  .tag.open { background: var(--up-bg); color: var(--up); } .tag.close { background: var(--down-bg); color: var(--down); }
-  details.rule summary { cursor: pointer; font: 600 15px var(--display); }
-  details.rule ol { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 4px; max-width: 75ch; color: var(--fg); }
-  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 10px; }
-  .sw { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
-  .foot { margin-top: 16px; font-size: 12px; color: var(--faint); }
-  .warn { color: var(--down); }
-
-  /* tabs and tool pages */
-  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 14px; border-bottom: 1px solid var(--line); }
-  .tabs a { color: var(--muted); text-decoration: none; font: 500 14px var(--font); padding: 8px 12px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-  .tabs a.on { color: var(--fg); border-bottom-color: var(--accent); }
-  .tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .form { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
-  .form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
-  .form label.check { flex-direction: row; align-items: center; gap: 6px; padding-bottom: 6px; }
-  .form input[type=number], .form input[type=date], .form select { font: 13px var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; min-width: 0; max-width: 100%; }
-  .form select { font-family: var(--font); max-width: min(100%, 420px); }
-  .form input[type=number] { width: 110px; }
-  .coinpick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--chip); border-radius: 999px; padding: 5px 10px; font-size: 12.5px; cursor: pointer; }
-  .run { background: var(--accent); color: #fff; border: 0; border-radius: 9px; padding: 8px 18px; font: 600 13.5px var(--font); cursor: pointer; }
-  .run.ghost { background: var(--chip); color: var(--fg); }
-  .run:disabled { opacity: .6; cursor: progress; }
-  .kpis.wide { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-  .tablewrap { overflow-x: auto; margin-top: 12px; }
-  .tbl { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
-  .tbl th, .tbl td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
-  .tbl th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--panel); }
-  .tbl.heat td { padding: 6px 8px; } .tbl.heat td:first-child { white-space: normal; min-width: 180px; }
-  @media (prefers-reduced-motion: no-preference) { .card, .section, .acct { transition: border-color .2s; } }
+:root { --bg:#f6f4ef; --panel:#fff; --ink:#1d1b22; --muted:#6b6672; --line:#e4dfd6; --up:#1f8a5b; --down:#c2453a;
+  --side:#8a7f6b; --accent:#e8601f; --warn:#9a6a0b; --best:#e8601f; --chip:#efeae2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) { --bg:#15131a; --panel:#1e1b24; --ink:#efeaf3;
+  --muted:#a59fae; --line:#332e3c; --up:#52c98f; --down:#ff8a7e; --side:#b5aa94; --accent:#ff8a4c; --warn:#f2c368;
+  --best:#ff8a4c; --chip:#2a2631; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.wrap { max-width:1400px; margin:0 auto; padding:16px; }
+header { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 16px; }
+h1 { margin:0; font-size:22px; } .muted { color:var(--muted); } a { color:var(--accent); }
+.bar { display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; margin:14px 0; padding:10px 12px;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px; }
+.seg { display:flex; flex-wrap:wrap; gap:4px; } .seg button, .chips button { border:1px solid var(--line); background:var(--chip);
+  color:var(--ink); border-radius:999px; padding:4px 11px; font:inherit; cursor:pointer; }
+.seg button.on, .chips button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+.chips { display:flex; flex-wrap:wrap; gap:4px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; display:grid; gap:8px; position:relative; }
+.card.best { border:2px solid var(--best); box-shadow:0 0 0 3px color-mix(in srgb, var(--best) 18%, transparent); }
+.badge { position:absolute; top:-10px; right:10px; background:var(--best); color:#fff; font-size:11px; font-weight:700;
+  padding:2px 8px; border-radius:999px; }
+.top { display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+.sym { font-weight:700; font-size:16px; } .grp { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.px { font:600 15px ui-monospace,Consolas,monospace; text-align:right; }
+.trend { font-weight:700; } .t-up { color:var(--up); } .t-down { color:var(--down); } .t-sideways { color:var(--side); }
+.chg { display:flex; gap:10px; font:12px ui-monospace,Consolas,monospace; color:var(--muted); }
+.chg b { font-weight:600; } .pos { color:var(--up); } .neg { color:var(--down); }
+svg.spark { width:100%; height:42px; display:block; }
+.meter { height:6px; background:var(--chip); border-radius:3px; overflow:hidden; } .meter i { display:block; height:100%; background:var(--accent); }
+.lv { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:12px; }
+.lv select { font:inherit; background:var(--chip); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:2px 4px; }
+table { width:100%; border-collapse:collapse; font:12.5px ui-monospace,Consolas,monospace; }
+td { padding:2px 0; } td:last-child { text-align:right; } td:first-child { font-family:system-ui,sans-serif; color:var(--muted); }
+.warn { color:var(--warn); font-size:12px; line-height:1.35; }
+.note { font-size:12px; color:var(--muted); line-height:1.4; }
+footer { margin:22px 0 8px; font-size:12px; color:var(--muted); line-height:1.5; }
+.empty { opacity:.7; }
 </style>
 </head>
 <body>
-<script>window.BOT = {"updated": 1795165207748, "events": [{"ts": 1794731912000, "symbol": "BTC", "kind": "execute error", "price": null, "note": "{\"error\":{\"code\":\"agent.account.not_ready\",\"message\":\"Account is not ready yet. Please try again later.\",\"retryable\":fal"}, {"ts": 1794731919000, "symbol": "ETH", "kind": "opened short", "price": 1797.13}, {"ts": 1794731923000, "symbol": "SOL", "kind": "opened short", "price": 70.456}, {"ts": 1794731927000, "symbol": "XRP", "kind": "opened short", "price": 0.950162}, {"ts": 1794733407000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734009000, "symbol": "BTC", "kind": "skip open", "price": null, "note": "Walt rate and data feed disagree"}, {"ts": 1794734611000, "symbol": "BTC", "kind": "giving up on bar", "price": null, "note": ""}, {"ts": 1794742435000, "symbol": "SOL", "kind": "closed by Walt (stop-loss or liquidation)", "price": null}, {"ts": 1794744243000, "symbol": "BTC", "kind": "opened short", "price": 65313.1}, {"ts": 1794840009000, "symbol": "ETH", "kind": "closed by Walt (stop-loss or liquidation)", "price": null}], "account": [[1794731912000, 100.0092], [1794732528000, 99.6954], [1794732805000, 99.3751], [1794733407000, 97.443], [1794734009000, 95.8173], [1794734611000, 96.1079], [1794735213000, 96.3377], [1794735814000, 96.5294], [1794736416000, 97.0497], [1794737018000, 96.6295], [1794737619000, 96.0146], [1794738221000, 96.8047], [1794738823000, 96.7398], [1794739425000, 96.85], [1794740027000, 96.7955], [1794740629000, 96.4589], [1794741231000, 96.9183], [1794741833000, 96.3484], [1794742434000, 95.8297], [1794743036000, 95.7334], [1794743638000, 96.0412], [1794744239000, 96.4614], [1794744844000, 96.1717], [1794745446000, 95.6624], [1794746051000, 95.3916], [1794746653000, 95.6351], [1794747254000, 95.5115], [1794747856000, 95.3452], [1794748458000, 95.1916], [1794749060000, 94.758], [1794749661000, 95.2238], [1794750263000, 95.3003], [1794750865000, 95.2881], [1794751466000, 96.1446], [1794752068000, 96.1918], [1794752670000, 96.0636], [1794753272000, 97.0435], [1794753874000, 98.1224], [1794754475000, 97.4158], [1794755077000, 98.2553], [1794755679000, 97.8738], [1794756281000, 97.8372], [1794756883000, 97.5904], [1794757485000, 97.8222], [1794758087000, 97.5489], [1794758689000, 97.9644], [1794759291000, 97.9951], [1794759893000, 98.4682], [1794760495000, 97.8925], [1794761096000, 97.6792], [1794761698000, 98.4168], [1794762300000, 98.0099], [1794762903000, 98.075], [1794763506000, 97.6781], [1794764107000, 98.1642], [1794764709000, 98.3054], [1794765311000, 98.2593], [1794765913000, 97.9226], [1794766515000, 98.2468], [1794767117000, 97.894], [1794767719000, 98.0132], [1794768321000, 98.0139], [1794768923000, 98.0724], [1794769525000, 97.5002], [1794770126000, 97.0431], [1794770728000, 97.0475], [1794771330000, 96.7806], [1794771932000, 96.7426], [1794772534000, 96.6437], [1794773136000, 97.2543], [1794773738000, 97.6047], [1794774340000, 96.9121], [1794774942000, 96.375], [1794775544000, 96.6505], [1794776146000, 96.4707], [1794776748000, 96.5909], [1794777350000, 96.8962], [1794777951000, 97.1357], [1794778553000, 97.0117], [1794779155000, 96.4326], [1794779758000, 96.3331], [1794780360000, 96.5604], [1794780962000, 96.286], [1794781564000, 96.0402], [1794782166000, 96.0685], [1794782768000, 96.0506], [1794783370000, 96.1295], [1794783971000, 95.2744], [1794784573000, 96.109], [1794785175000, 96.0344], [1794785777000, 95.8326], [1794786378000, 95.184], [1794786980000, 95.4677], [1794787582000, 95.6196], [1794788184000, 96.2706], [1794788786000, 96.5695], [1794789387000, 96.8926], [1794789989000, 97.2665], [1794790591000, 96.861], [1794791193000, 97.2565], [1794791794000, 97.4393], [1794792396000, 97.7481], [1794792998000, 97.4816], [1794793600000, 97.4975], [1794794202000, 97.7694], [1794794803000, 97.2826], [1794795405000, 96.7707], [1794796007000, 95.5886], [1794796609000, 95.8843], [1794797210000, 96.262], [1794797812000, 96.4426], [1794798414000, 96.3107], [1794799016000, 96.5192], [1794799618000, 96.5198], [1794800220000, 97.0474], [1794800822000, 96.9241], [1794801423000, 96.4188], [1794802025000, 97.0483], [1794802627000, 96.9907], [1794803229000, 96.4675], [1794803831000, 96.7813], [1794804433000, 97.2187], [1794805036000, 97.2211], [1794805638000, 97.5355], [1794806240000, 97.6732], [1794806842000, 97.0568], [1794807444000, 97.5779], [1794808046000, 98.0492], [1794808648000, 98.4819], [1794809250000, 98.3401], [1794809852000, 98.3861], [1794810454000, 98.3504], [1794810842000, 98.2281], [1794811208000, 98.1086], [1794811808000, 97.9286], [1794812407000, 97.6207], [1794813008000, 97.6689], [1794813608000, 98.526], [1794814208000, 97.3968], [1794814808000, 96.9865], [1794815408000, 97.0049], [1794816008000, 96.9445], [1794816608000, 97.7566], [1794817208000, 98.1655], [1794817808000, 98.2326], [1794818408000, 97.8842], [1794819009000, 97.8841], [1794819608000, 98.4086], [1794820209000, 99.1013], [1794820808000, 99.5634], [1794821409000, 99.2649], [1794822007000, 99.4597], [1794822609000, 99.2856], [1794823208000, 99.3244], [1794823808000, 98.8475], [1794824408000, 98.9106], [1794825009000, 98.441], [1794825608000, 98.1948], [1794826209000, 98.3012], [1794826808000, 98.0979], [1794827409000, 97.7694], [1794828008000, 97.702], [1794828608000, 97.8936], [1794829208000, 97.9549], [1794829808000, 98.1152], [1794830408000, 98.2015], [1794830430000, 98.3513], [1794831008000, 98.9516], [1794831608000, 99.3764], [1794832208000, 99.9186], [1794832807000, 99.1538], [1794833408000, 99.1078], [1794834007000, 99.0408], [1794834607000, 98.9004], [1794835207000, 98.9847], [1794835808000, 98.9515], [1794836407000, 98.7184], [1794837007000, 98.5049], [1794837608000, 98.825], [1794838208000, 99.2361], [1794838808000, 97.727], [1794839408000, 97.5468], [1794840008000, 94.6715], [1794840608000, 94.9688], [1794841208000, 95.5043], [1794841807000, 96.7927], [1794842408000, 97.2708], [1794843007000, 97.3047], [1794843607000, 97.4112], [1794844208000, 96.6922], [1794844808000, 96.8369], [1794845408000, 96.9362], [1794846007000, 96.9354], [1794846607000, 96.3221], [1794847207000, 96.4761], [1794847808000, 96.4962], [1794848407000, 95.927], [1794849007000, 95.9606], [1794849607000, 95.6666], [1794850207000, 95.7983], [1794850240000, 95.9286], [1794850807000, 95.7718], [1794851408000, 95.8685], [1794852008000, 96.1483], [1794852608000, 96.3276], [1794853208000, 96.0817], [1794853808000, 96.2082], [1794854407000, 96.1143], [1794855008000, 95.7781], [1794855608000, 95.8404], [1794856209000, 96.1899], [1794856808000, 96.3091], [1794857408000, 96.1951], [1794858007000, 96.3984], [1794858608000, 96.3449], [1794859207000, 95.8184], [1794859808000, 95.6647], [1794860407000, 95.7976], [1794861008000, 95.8946], [1794861608000, 96.2709], [1794862208000, 96.08], [1794862807000, 96.0652], [1794863408000, 96.1872], [1794864008000, 96.2132], [1794864608000, 95.7936], [1794865208000, 95.6462], [1794865807000, 95.5157], [1794866408000, 95.6895], [1794867008000, 95.3859], [1794867607000, 95.407], [1794868209000, 95.4684], [1794868807000, 95.5817], [1794869407000, 95.3953], [1794870008000, 95.6846], [1794870032000, 95.8884], [1794870607000, 95.8068], [1794871207000, 95.8697], [1794871807000, 96.022], [1794872407000, 96.5944], [1794873007000, 96.2846], [1794873607000, 96.2964], [1794874207000, 96.3448], [1794874807000, 96.7174], [1794875407000, 96.6668], [1794876007000, 96.7609], [1794876607000, 96.6683], [1794877207000, 96.6223], [1794877808000, 96.4353], [1794878407000, 96.5307], [1794879007000, 96.6151], [1794879608000, 96.3126], [1794880207000, 96.3633], [1794880807000, 96.238], [1794881407000, 96.1309], [1794882007000, 96.2329], [1794882607000, 96.7924], [1794883207000, 96.5011], [1794883807000, 96.538], [1794884407000, 96.5947], [1794885007000, 96.1608], [1794885607000, 95.9193], [1794886207000, 95.6159], [1794886807000, 95.4812], [1794887407000, 95.5749], [1794888007000, 95.372], [1794888607000, 95.6424], [1794889207000, 95.6083], [1794889807000, 95.6986], [1794889826000, 95.8108], [1794890407000, 95.5791], [1794891007000, 95.5718], [1794891607000, 95.4302], [1794892207000, 95.8512], [1794892807000, 95.7295], [1794893407000, 95.5607], [1794894007000, 95.6929], [1794894607000, 95.754], [1794895207000, 95.8681], [1794895807000, 95.9068], [1794896407000, 96.2009], [1794897007000, 96.2313], [1794897607000, 96.8053], [1794898207000, 96.6371], [1794898807000, 96.3653], [1794899408000, 96.0275], [1794900007000, 96.2406], [1794900607000, 96.0909], [1794901207000, 96.1208], [1794901808000, 96.2247], [1794902407000, 95.9809], [1794903007000, 96.1088], [1794903607000, 96.3344], [1794904208000, 96.2701], [1794904808000, 96.6553], [1794905407000, 96.5926], [1794906007000, 96.644], [1794906607000, 96.7095], [1794907207000, 96.9572], [1794907807000, 96.8056], [1794908407000, 96.5158], [1794909007000, 96.6986], [1794909607000, 96.4709], [1794909645000, 96.5361], [1794910208000, 96.7195], [1794910807000, 96.65], [1794911408000, 96.7786], [1794912007000, 96.6435], [1794912608000, 96.685], [1794913208000, 96.915], [1794913807000, 96.5664], [1794914407000, 96.0816], [1794915008000, 96.1447], [1794915607000, 95.5161], [1794916208000, 95.4489], [1794916807000, 95.1909], [1794917408000, 95.5397], [1794918007000, 95.3666], [1794918608000, 95.1676], [1794919208000, 95.2554], [1794919808000, 95.2556], [1794920408000, 95.0804], [1794921008000, 94.8386], [1794921607000, 94.8971], [1794922208000, 94.7145], [1794922807000, 95.1294], [1794923408000, 95.1111], [1794924008000, 94.6767], [1794924608000, 94.7929], [1794925208000, 94.8261], [1794925808000, 95.1196], [1794926408000, 94.679], [1794927008000, 95.2165], [1794927608000, 95.0931], [1794928209000, 95.8902], [1794928809000, 95.6248], [1794929409000, 95.1895], [1794929435000, 95.2971], [1794930008000, 95.7509], [1794930609000, 97.7003], [1794931208000, 96.6552], [1794931808000, 95.9744], [1794932408000, 96.3682], [1794933009000, 96.7973], [1794933608000, 96.974], [1794934208000, 97.1824], [1794934808000, 97.2284], [1794935408000, 97.0237], [1794936008000, 96.491], [1794936608000, 97.123], [1794937208000, 97.3793], [1794937808000, 96.9575], [1794938408000, 97.0327], [1794939008000, 97.1805], [1794939607000, 97.1849], [1794940208000, 96.7162], [1794940808000, 97.1046], [1794941408000, 97.2024], [1794942008000, 97.1252], [1794942608000, 97.0904], [1794943208000, 96.9064]], "positions": {"XRP": {"side": "short", "entry": 0.950162, "size": 62.0, "margin": 19.659021, "leverage": 3, "stop": 0.979196, "liquidation": 1.2303329940494832, "ts": 1794731927000}, "BTC": {"side": "short", "entry": 65313.1, "size": 0.00091, "margin": 19.812207, "leverage": 3, "stop": 67282.4, "liquidation": 86052.13047821744, "ts": 1794744243000}}, "config": {"symbols": ["BTC", "ETH", "SOL", "XRP"], "interval": "4h", "leverage": 3, "margin_per_position": 20, "stop_loss_pct": 0.03, "max_drawdown_pct": 0.5, "end_utc": "2026-12-13T00:00:00Z", "budget": 100}, "fast": 20, "slow": 100, "freeBalance": 56.682637};</script>
 <div class="wrap">
-  <header class="top">
-    <div>
-      <h1>Walt Bot Tracker</h1>
-      <div class="status" style="margin-top:6px">
-        <span><span class="dot" id="liveDot"></span><span id="clock">Loading prices…</span></span>
-        <span>Next decision in <b class="num" id="countdown">–</b></span>
-        <span id="recordAge"></span>
-      </div>
-    </div>
-    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch light or dark theme">Theme</button>
-  </header>
+<header>
+  <div><h1>Walt markets — short-term trends</h1>
+    <div class="muted" id="meta">Loading…</div></div>
+  <a href="bot.html">Autonomous bot tracker →</a>
+</header>
 
-  <nav class="tabs" aria-label="Pages">
-    <a href="#live" data-view="live">Live bot</a><a href="#whatif" data-view="whatif">What if</a><a href="#lab" data-view="lab">Strategy lab</a><a href="#research" data-view="research">Research</a>
-  </nav>
-  <div id="view-live">
-
-  <section class="acct" aria-label="Account">
-    <div class="kpis">
-      <div class="kpi big"><div class="label">Account value</div><div class="v" id="kValue">–</div><div class="s" id="kValueSub">bot's last check</div></div>
-      <div class="kpi"><div class="label">Since start</div><div class="v" id="kPnl">–</div><div class="s" id="kPnlPct"></div></div>
-      <div class="kpi"><div class="label">Open positions, live</div><div class="v" id="kLive">–</div><div class="s" id="kOpen"></div></div>
-      <div class="kpi"><div class="label">Free balance</div><div class="v" id="kFree">–</div><div class="s">not in positions</div></div>
-    </div>
-    <div>
-      <div class="label">Account value at each bot check</div>
-      <div id="acctChart" role="img" aria-label="Account value over time"></div>
-    </div>
-  </section>
-
-  <div class="bar" id="bar">
-    <div class="bar-row">
-      <div class="seg" id="presets" role="group" aria-label="Chart period">
-        <button data-p="1d">1D</button><button data-p="3d">3D</button><button data-p="7d">1W</button><button data-p="14d">2W</button>
-        <button data-p="30d">1M</button><button data-p="90d">3M</button><button data-p="180d">6M</button><button data-p="365d">1Y</button><button data-p="all">All</button>
-      </div>
-      <div class="dates"><label for="from">From</label><input type="date" id="from"><label for="to">to</label><input type="date" id="to"></div>
-      <div class="toggles">
-        <label><input type="checkbox" id="tAvg" checked> Averages</label>
-        <label><input type="checkbox" id="tZones" checked> Long/short zones</label>
-        <label><input type="checkbox" id="tCandles" checked> Candles</label>
-        <label><input type="checkbox" id="tBot" checked> Bot orders</label>
-      </div>
-    </div>
-    <div id="nav" aria-label="Drag the window to choose the period"></div>
-    <div class="rangeinfo" id="rangeInfo"></div>
-  </div>
-
-  <div class="coins" id="coins"></div>
-
-  <section class="section">
-    <h2>What the bot did</h2>
-    <ul class="feed" id="feed"></ul>
-  </section>
-
-  <section class="section">
-    <details class="rule">
-      <summary>How the bot decides</summary>
-      <ol>
-        <li>Once every 4 hours, when a 4-hour bar closes (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC).</li>
-        <li>It compares the <b style="color:var(--fast)">fast average</b> (last <span id="nFast">20</span> closes) with the <b style="color:var(--slow)">slow average</b> (last <span id="nSlow">100</span> closes).</li>
-        <li>Fast above slow: it holds a long. Fast below slow: it holds a short.</li>
-        <li>When the lines cross, it closes the old position and opens the opposite one. Crossings are the only moments it trades.</li>
-        <li>Each entry: <span id="rMargin">20</span> USD margin at <span id="rLev">3</span>x, stop-loss <span id="rStop">3</span> % away, held by Walt; no take-profit. After a stop-loss it waits for the next crossing.</li>
-      </ol>
-      <div class="legend">
-        <span><i class="sw" style="background:var(--price)"></i>price</span>
-        <span><i class="sw" style="background:var(--fast)"></i>fast average</span>
-        <span><i class="sw" style="background:var(--slow)"></i>slow average</span>
-        <span><i class="sw" style="background:var(--up);height:9px;opacity:.35"></i>rule says long</span>
-        <span><i class="sw" style="background:var(--down);height:9px;opacity:.35"></i>rule says short</span>
-        <span>▲▼ crossing (a trade)</span><span>● bot opened · ✕ bot closed</span><span>dashed: entry and stop-loss</span>
-      </div>
-    </details>
-  </section>
-
-  </div>
-  <div id="view-whatif" hidden></div>
-  <div id="view-lab" hidden></div>
-  <div id="view-research" hidden></div>
-  <div class="foot">Prices: Binance spot, refreshed every minute by this page; Walt's own price can differ slightly. Positions, orders and account value: the bot's own log, published about every 10 minutes. Strategy lab and Research: daily history from Yahoo Finance and the alternative.me Fear &amp; Greed index. This page only displays; it cannot trade.</div>
+<div class="bar">
+  <div><div class="muted" style="font-size:12px">Leverage for every asset</div><div class="seg" id="lev"></div></div>
+  <div><div class="muted" style="font-size:12px">Show</div><div class="chips" id="groups"></div></div>
+  <div class="note" style="max-width:420px">Each card's own leverage menu overrides this. Cards are sorted by trend quality; the
+    <b style="color:var(--best)">highlighted</b> one has the strongest, cleanest (narrowest) trend right now.</div>
 </div>
 
-<script src="whatif.js"></script>
-<script src="lab.js"></script>
+<div class="grid" id="grid"></div>
+
+<footer>
+  <b>How it's computed.</b> Trend = the slope of the last 24 hourly closes (log scale) and how tightly prices follow it
+  (R²), confirmed by a 12-hour average above/below a 48-hour one. Quality = drift per hour ÷ hourly noise × R², so a high
+  score means a strong <i>and</i> narrow channel. Stop distance = 2.5 × the average hourly move + the channel's width;
+  take-profit = 2 × the stop (reward:risk 2:1). Liquidation distance at leverage L ≈ 1/L + fee − Walt's close-out
+  margin. Fees use your Walt Silver tier: 0.07% per side on perpetuals (0.14% per round trip); funding isn't included.
+  Prices: Binance hourly candles for crypto (PAXG for gold), and Walt's own price, sampled every 10 minutes, for
+  everything else. Rule-based arithmetic on past prices — not financial advice, and not instructions to the bot.
+</footer>
+</div>
+
 <script>
-(() => {
-  const BOT = window.BOT || { events: [], account: [], positions: {}, config: { symbols: ['BTC', 'ETH', 'SOL', 'XRP'], budget: 100, leverage: 3, margin_per_position: 20, stop_loss_pct: 0.03 }, fast: 20, slow: 100, updated: 0 };
-  const H4 = 4 * 3600e3, DAY = 86400e3;
-  const SYMS = BOT.config.symbols;
-  const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
-  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  const fmtP = (x) => { if (x == null || !isFinite(x)) return '–'; const a = Math.abs(x); const d = a >= 1000 ? 1 : a >= 10 ? 2 : a >= 1 ? 4 : 5; return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); };
-  const fmtUsd = (x, sign) => (x == null ? '–' : (sign && x > 0 ? '+' : '') + x.toFixed(2));
-  const fmtPct = (x) => (x == null || !isFinite(x) ? '–' : (x > 0 ? '+' : '') + x.toFixed(2) + '%');
-  const utc = d3.utcFormat('%d %b %H:%M');
-  const cls = (el, x) => { el.classList.toggle('up', x > 0); el.classList.toggle('down', x < 0); };
+const LEVS = [1, 2, 3, 5, 10, 20, 30, 50];
+const state = { lev: 3, group: 'All', per: {} };
+try { Object.assign(state, JSON.parse(localStorage.getItem('waltMarkets') || '{}')); } catch {}
+const save = () => { try { localStorage.setItem('waltMarkets', JSON.stringify(state)); } catch {} };
+let DATA = null;
 
-  // ---------- data ----------
-  const D = {}; // sym -> {h4: [...closed bars with fast/slow/sig/flip], live, detail: {interval: bars}}
-  async function klines(sym, interval, opts = {}) {
-    const q = new URLSearchParams({ symbol: sym + 'USDT', interval, limit: opts.limit || 1000 });
-    if (opts.end) q.set('endTime', opts.end);
-    if (opts.start) q.set('startTime', opts.start);
-    const r = await fetch('https://api.binance.com/api/v3/klines?' + q);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return (await r.json()).map((k) => ({ ts: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[5] }));
-  }
-  function withAverages(bars) {
-    const cs = bars.map((b) => b.c); let sf = 0, ss = 0, prev = 0;
-    bars.forEach((b, i) => {
-      sf += cs[i]; ss += cs[i];
-      if (i >= BOT.fast) sf -= cs[i - BOT.fast];
-      if (i >= BOT.slow) ss -= cs[i - BOT.slow];
-      b.fast = i >= BOT.fast - 1 ? sf / BOT.fast : null;
-      b.slow = i >= BOT.slow - 1 ? ss / BOT.slow : null;
-      b.sig = b.slow == null ? 0 : b.fast > b.slow ? 1 : -1;
-      b.flip = !!(prev && b.sig && b.sig !== prev);
-      if (b.sig) prev = b.sig;
-      b.t = b.ts + H4; // the moment the bar closes, when the bot sees it
-    });
-    return bars;
-  }
-  async function loadAll() {
-    await Promise.all(SYMS.map(async (s) => {
-      const recent = await klines(s, '4h');
-      const older = await klines(s, '4h', { end: recent[0].ts - 1 });
-      const now = Date.now();
-      const all = older.concat(recent);
-      const closed = all.filter((b) => b.ts + H4 <= now);
-      D[s] = { h4: withAverages(closed), live: all[all.length - 1].c, forming: all[all.length - 1], detail: {} };
-    }));
-  }
-  async function refreshLive() {
-    try {
-      const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=' + encodeURIComponent(JSON.stringify(SYMS.map((s) => s + 'USDT'))));
-      const arr = await r.json();
-      arr.forEach((x) => { const s = x.symbol.replace(/USDT$/, ''); if (D[s]) D[s].live = +x.price; });
-      // pick up a newly closed 4-hour bar
-      await Promise.all(SYMS.map(async (s) => {
-        const last = await klines(s, '4h', { limit: 3 });
-        const d = D[s], now = Date.now(), have = new Set(d.h4.map((b) => b.ts));
-        const fresh = last.filter((b) => b.ts + H4 <= now && !have.has(b.ts));
-        if (fresh.length) d.h4 = withAverages(d.h4.concat(fresh));
-        d.forming = last[last.length - 1];
-        Object.keys(d.detail).forEach((iv) => delete d.detail[iv]);
-      }));
-      setDot(true);
-    } catch { setDot(false); }
-  }
-  function detailInterval(span) { return span <= 2.5 * DAY ? '15m' : span <= 16 * DAY ? '1h' : null; }
-  async function ensureDetail(range) {
-    const iv = detailInterval(range[1] - range[0]);
-    if (!iv) return;
-    await Promise.all(SYMS.map(async (s) => {
-      const d = D[s], have = d.detail[iv];
-      if (have && have.from <= range[0]) return;
-      const step = iv === '15m' ? 900e3 : 3600e3;
-      const bars = await klines(s, iv, { start: Math.max(range[0] - step * 4, Date.now() - 999 * step), limit: 1000 });
-      bars.forEach((b) => { b.t = b.ts + step; });
-      d.detail[iv] = { from: bars.length ? bars[0].ts : Infinity, bars };
-    }));
-  }
+const fmtPx = (p) => p == null ? '—' : p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 2 })
+  : p >= 1 ? p.toLocaleString('en-US', { maximumFractionDigits: 4 }) : p.toPrecision(5);
+const pc = (v, d = 2) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(d)}%`;
+const cls = (v) => v == null ? '' : v > 0 ? 'pos' : v < 0 ? 'neg' : '';
 
-  // ---------- range state ----------
-  const PRESETS = { '1d': 1, '3d': 3, '7d': 7, '14d': 14, '30d': 30, '90d': 90, '180d': 180, '365d': 365 };
-  let preset = store.get('wbt-preset') || '30d';
-  let range = null; // [from, to] in ms
-  const extent = () => { const all = SYMS.flatMap((s) => (D[s] ? [D[s].h4.find((b) => b.slow != null)?.t, Date.now()] : [])).filter(Boolean); return [d3.max(all.filter((_, i) => i % 2 === 0)), Date.now()]; };
-  function presetRange(p) {
-    const now = Date.now(), ext = extent();
-    if (p === 'all' || !PRESETS[p]) return [ext[0], now];
-    return [Math.max(ext[0], now - PRESETS[p] * DAY), now];
-  }
-  async function setRange(r, source) {
-    const ext = extent();
-    range = [Math.max(ext[0], Math.min(r[0], r[1] - 3 * 3600e3)), Math.min(Date.now(), r[1])];
-    if (source !== 'preset') { preset = 'custom'; }
-    store.set('wbt-preset', preset);
-    if (preset === 'custom') store.set('wbt-range', JSON.stringify(range));
-    document.querySelectorAll('#presets button').forEach((b) => b.classList.toggle('on', b.dataset.p === preset));
-    const f = d3.utcFormat('%Y-%m-%d');
-    document.getElementById('from').value = f(new Date(range[0]));
-    document.getElementById('to').value = f(new Date(range[1]));
-    const days = (range[1] - range[0]) / DAY;
-    const iv = detailInterval(range[1] - range[0]);
-    document.getElementById('rangeInfo').textContent =
-      `${utc(new Date(range[0]))} – ${utc(new Date(range[1]))} UTC · ${days < 2 ? (days * 24).toFixed(0) + ' hours' : days.toFixed(days < 10 ? 1 : 0) + ' days'} · price shown in ${iv || '4h'} candles, averages always on 4-hour closes`;
-    if (source !== 'brush') navSync();
-    await ensureDetail(range).catch(() => {});
-    drawCoins();
-  }
+function spark(xs, trend) {
+  if (!xs || xs.length < 2) return '';
+  const lo = Math.min(...xs), hi = Math.max(...xs), W = 300, H = 42, r = hi - lo || 1;
+  const pts = xs.map((v, i) => `${(i / (xs.length - 1) * W).toFixed(1)},${(H - 3 - (v - lo) / r * (H - 6)).toFixed(1)}`).join(' ');
+  const col = trend === 'up' ? 'var(--up)' : trend === 'down' ? 'var(--down)' : 'var(--side)';
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.8"/></svg>`;
+}
 
-  // ---------- account ----------
-  function drawAccount() {
-    const acc = BOT.account, budget = BOT.config.budget || 100;
-    const last = acc.length ? acc[acc.length - 1][1] : null;
-    document.getElementById('kValue').textContent = last == null ? '–' : last.toFixed(2);
-    const pnl = last == null ? null : last - budget;
-    const kp = document.getElementById('kPnl'); kp.textContent = fmtUsd(pnl, true); cls(kp, pnl);
-    document.getElementById('kPnlPct').textContent = pnl == null ? '' : fmtPct(pnl / budget * 100) + ' of ' + budget + ' USD';
-    document.getElementById('kValueSub').textContent = acc.length ? 'USD · bot check at ' + utc(new Date(acc[acc.length - 1][0])) + ' UTC' : 'no record yet';
-    let live = 0, n = 0;
-    Object.entries(BOT.positions).forEach(([s, p]) => { if (D[s]) { live += (p.side === 'long' ? 1 : -1) * (D[s].live - p.entry) * p.size; n++; } });
-    const kl = document.getElementById('kLive'); kl.textContent = n ? fmtUsd(live, true) : '–'; cls(kl, live);
-    document.getElementById('kOpen').textContent = Object.keys(BOT.positions).length + ' open: ' + (Object.entries(BOT.positions).map(([s, p]) => s + ' ' + p.side).join(', ') || 'none');
-    const free = BOT.freeBalance;
-    document.getElementById('kFree').textContent = free == null ? '–' : free.toFixed(2);
+/** Leverage scenario: stop/TP levels, liquidation distance, P/L on margin incl. fees (all in %). */
+function scenario(a, lev) {
+  const x = a.analysis, fee = DATA.fee_pct, L = Math.min(lev, a.max_leverage);
+  const stop = 2.5 * x.atr_pct_h + x.band_pct, tp = 2 * stop;
+  const liq = (1 / L) * 100 + fee - a.closeout * 100;
+  const safe = 0.75 * liq;
+  const maxSensible = Math.max(1, Math.min(a.max_leverage, Math.floor(100 / (stop / 0.75 + a.closeout * 100 - fee))));
+  const side = x.trend === 'down' ? -1 : 1, p = x.price;
+  return { L, side, stop, tp, liq, ok: stop <= safe, maxSensible,
+    stopPx: p * (1 - side * stop / 100), tpPx: p * (1 + side * tp / 100), liqPx: p * (1 - side * liq / 100),
+    lossM: L * (stop + 2 * fee), gainM: L * (tp - 2 * fee),
+    hoursToTp: Math.abs(x.slope_pct_h) > 1e-6 ? tp / Math.abs(x.slope_pct_h) : null };
+}
 
-    const el = document.getElementById('acctChart'); el.replaceChildren();
-    if (acc.length < 2) { el.textContent = 'Not enough checks yet.'; return; }
-    const W = el.clientWidth || 400, H = 150, m = { t: 10, r: 46, b: 20, l: 4 };
-    const pts = acc.map(([t, v]) => ({ t: new Date(t), v }));
-    const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.t)).range([m.l, W - m.r]);
-    const y = d3.scaleLinear().domain(d3.extent(pts.map((p) => p.v).concat([budget]))).nice(4).range([H - m.b, m.t]);
-    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('width', '100%').attr('height', H);
-    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', css('--grid'));
-    svg.append('g').selectAll('text').data(y.ticks(4)).join('text').attr('x', W - m.r + 6).attr('y', (v) => y(v) + 3.5).text((v) => v.toFixed(1));
-    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, W / 110)).tickSize(0).tickFormat(d3.utcFormat('%H:%M'))).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.2em');
-    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(budget)).attr('y2', y(budget)).attr('stroke', css('--faint')).attr('stroke-dasharray', '4 4');
-    const below = last < budget, col = below ? css('--down') : css('--up');
-    svg.append('path').datum(pts).attr('d', d3.area().x((p) => x(p.t)).y0(y(budget)).y1((p) => y(p.v))).attr('fill', col).attr('fill-opacity', 0.12);
-    svg.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.t)).y((p) => y(p.v))).attr('fill', 'none').attr('stroke', col).attr('stroke-width', 2);
-    svg.append('circle').attr('cx', x(pts[pts.length - 1].t)).attr('cy', y(last)).attr('r', 3.5).attr('fill', col);
-    hoverLine(el, svg, W, H, m, x, (t) => { const p = pts[Math.min(pts.length - 1, d3.bisector((q) => q.t).center(pts, t))]; return { x: x(p.t), html: `<div class="t">${utc(p.t)} UTC</div>${p.v.toFixed(2)} USD` }; });
-  }
+function card(a, best) {
+  const x = a.analysis, lev = state.per[a.symbol] ?? state.lev;
+  const head = `<div class="top"><div><div class="sym">${a.name}${a.name !== a.symbol ? ` <span class="muted" style="font-weight:400;font-size:12px">${a.symbol}</span>` : ''}</div>
+    <div class="grp">${a.group} · up to ${a.max_leverage}×</div></div>
+    <div class="px">${fmtPx(x ? x.price : a.walt_price)}</div></div>`;
+  if (!x) return `<div class="card empty">${head}<div class="note">Building history from Walt's price (sampled every 10 minutes) —
+    the trend appears after about 12 hours of samples.</div></div>`;
+  const s = scenario(a, lev);
+  const arrow = { up: '▲ Up', down: '▼ Down', sideways: '◆ Sideways' }[x.trend];
+  const opts = LEVS.filter((l) => l <= a.max_leverage).concat(LEVS.includes(a.max_leverage) ? [] : [a.max_leverage])
+    .map((l) => `<option value="${l}" ${l === s.L ? 'selected' : ''}>${l}×</option>`).join('');
+  const body = x.trend === 'sideways'
+    ? `<div class="note">No clean direction (R² ${x.r2.toFixed(2)}). Levels aren't offered for a trend that isn't there;
+       a range trade would need its own rules.</div>`
+    : `<table>
+        <tr><td>${s.side > 0 ? 'Long' : 'Short'} at ${s.L}× — stop</td><td>${fmtPx(s.stopPx)} (${(s.side > 0 ? '−' : '+') + s.stop.toFixed(2)}%)</td></tr>
+        <tr><td>Take profit</td><td>${fmtPx(s.tpPx)} (${(s.side > 0 ? '+' : '−') + s.tp.toFixed(2)}%)</td></tr>
+        <tr><td>Liquidation ≈</td><td>${fmtPx(s.liqPx)} (${s.liq.toFixed(2)}% away)</td></tr>
+        <tr><td>On margin, after fees</td><td><span class="neg">−${s.lossM.toFixed(1)}%</span> / <span class="pos">+${s.gainM.toFixed(1)}%</span></td></tr>
+        <tr><td>At the current pace, TP in</td><td>${s.hoursToTp ? (s.hoursToTp < 48 ? s.hoursToTp.toFixed(0) + ' h' : (s.hoursToTp / 24).toFixed(1) + ' days') : '—'}</td></tr>
+      </table>
+      ${s.ok ? '' : `<div class="warn">⚠ At ${s.L}× the stop sits too close to liquidation for this volatility. Highest sensible leverage: ${s.maxSensible}×.</div>`}`;
+  return `<div class="card${best ? ' best' : ''}">${best ? '<span class="badge">Cleanest trend</span>' : ''}${head}
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="trend t-${x.trend}">${arrow}</span>
+      <span class="muted" style="font-size:12px">quality ${x.score.toFixed(2)} · R² ${x.r2.toFixed(2)}</span></div>
+    <div class="meter" title="Trend quality"><i style="width:${Math.min(100, x.score / 0.6 * 100).toFixed(0)}%"></i></div>
+    ${spark(x.spark, x.trend)}
+    <div class="chg"><span>1h <b class="${cls(x.chg_1h)}">${pc(x.chg_1h)}</b></span><span>4h <b class="${cls(x.chg_4h)}">${pc(x.chg_4h)}</b></span>
+      <span>24h <b class="${cls(x.chg_24h)}">${pc(x.chg_24h)}</b></span><span>7d <b class="${cls(x.chg_7d)}">${pc(x.chg_7d, 1)}</b></span></div>
+    <div class="lv"><span class="muted">Typical hourly move ${x.atr_pct_h.toFixed(2)}%</span>
+      <label>Leverage <select data-sym="${a.symbol}">${opts}</select></label></div>
+    ${body}
+    <div class="note">${a.source}</div></div>`;
+}
 
-  function hoverLine(el, svg, W, H, m, x, at) {
-    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
-    const g = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', css('--faint')).style('display', 'none');
-    svg.append('rect').attr('x', m.l).attr('width', W - m.l - m.r).attr('height', H).attr('fill', 'transparent')
-      .on('pointermove', (ev) => {
-        const [mx] = d3.pointer(ev), r = at(x.invert(mx));
-        g.attr('x1', r.x).attr('x2', r.x).style('display', null);
-        const px = r.x / W * el.clientWidth;
-        tip.html(r.html).style('display', null);
-        const tw = tip.node().offsetWidth;
-        tip.style('left', (px + 12 + tw > el.clientWidth ? px - tw - 12 : px + 12) + 'px').style('top', '4px');
-      })
-      .on('pointerleave', () => { tip.style('display', 'none'); g.style('display', 'none'); });
-  }
+function render() {
+  if (!DATA) return;
+  const groups = ['All', ...new Set(DATA.assets.map((a) => a.group))];
+  document.getElementById('groups').innerHTML = groups.map((g) => `<button class="${g === state.group ? 'on' : ''}" data-g="${g}">${g}</button>`).join('');
+  document.getElementById('lev').innerHTML = LEVS.map((l) => `<button class="${l === state.lev ? 'on' : ''}" data-l="${l}">${l}×</button>`).join('');
+  const list = DATA.assets.filter((a) => state.group === 'All' || a.group === state.group);
+  const rank = (a) => !a.analysis ? -2 : a.analysis.trend === 'sideways' ? -1 + a.analysis.score / 100 : a.analysis.score;
+  list.sort((a, b) => rank(b) - rank(a));
+  const trending = DATA.assets.filter((a) => a.analysis && a.analysis.trend !== 'sideways');
+  const best = trending.sort((a, b) => b.analysis.score - a.analysis.score)[0];
+  document.getElementById('grid').innerHTML = list.map((a) => card(a, best && a.symbol === best.symbol)).join('');
+}
 
-  // ---------- navigator ----------
-  let navBrush, navX, navSvg, navMuting = false;
-  function drawNav() {
-    const el = document.getElementById('nav'); el.replaceChildren();
-    const s = SYMS[0], d = D[s]; if (!d) return;
-    const W = el.clientWidth || 600, H = 46;
-    const bars = d.h4.filter((b) => b.slow != null);
-    navX = d3.scaleUtc().domain([bars[0].t, Date.now()]).range([0, W]);
-    const y = d3.scaleLinear().domain(d3.extent(bars, (b) => b.c)).range([H - 14, 4]);
-    navSvg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('preserveAspectRatio', 'none');
-    navSvg.append('rect').attr('width', W).attr('height', H - 12).attr('rx', 6).attr('fill', css('--chip'));
-    navSvg.append('path').datum(bars).attr('d', d3.area().x((b) => navX(b.t)).y0(H - 12).y1((b) => y(b.c))).attr('fill', css('--faint')).attr('fill-opacity', .25);
-    navSvg.append('g').attr('transform', `translate(0,${H - 12})`).call(d3.axisBottom(navX).ticks(Math.max(2, W / 120)).tickSize(0).tickFormat(d3.utcFormat('%b %y'))).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '.95em');
-    navBrush = d3.brushX().extent([[0, 0], [W, H - 12]]).on('end', (ev) => {
-      if (navMuting || !ev.sourceEvent) return;
-      if (!ev.selection) { navSync(); return; }
-      setRange(ev.selection.map((v) => +navX.invert(v)), 'brush');
-    });
-    navSvg.append('g').attr('class', 'brush').call(navBrush);
-    navSvg.selectAll('.brush .selection').attr('fill', css('--accent')).attr('fill-opacity', .18).attr('stroke', css('--accent'));
-    navSvg.selectAll('.brush .handle').attr('fill', css('--accent')).attr('fill-opacity', .5).attr('rx', 2);
-    navSync();
-  }
-  function navSync() {
-    if (!navSvg || !range) return;
-    navMuting = true; navSvg.select('.brush').call(navBrush.move, range.map(navX)); navMuting = false;
-  }
+document.addEventListener('click', (e) => {
+  const l = e.target.closest('[data-l]'), g = e.target.closest('[data-g]');
+  if (l) { state.lev = +l.dataset.l; state.per = {}; save(); render(); }
+  if (g) { state.group = g.dataset.g; save(); render(); }
+});
+document.addEventListener('change', (e) => {
+  const s = e.target.closest('select[data-sym]');
+  if (s) { state.per[s.dataset.sym] = +s.value; save(); render(); }
+});
 
-  // ---------- coin cards ----------
-  const opt = { avg: true, zones: true, candles: true, bot: true };
-  function cardShell(s) {
-    const c = document.createElement('article'); c.className = 'card'; c.id = 'coin-' + s;
-    c.innerHTML = `<div class="card-head"><span class="sym">${s}</span><span class="px" data-k="px">–</span><span class="chg" data-k="chg"></span>
-      <span class="pill" data-k="pill">–</span></div>
-      <div class="pos" data-k="pos"></div>
-      <div class="chart" data-k="chart" role="img" aria-label="${s} price with the bot's averages"></div>
-      <div class="stats">
-        <div><div class="k">Fast average</div><div class="val" data-k="fast">–</div></div>
-        <div><div class="k">Slow average</div><div class="val" data-k="slow">–</div></div>
-        <div><div class="k">Gap</div><div class="val" data-k="gap">–</div></div>
-        <div><div class="k">Rule unchanged since</div><div class="val" data-k="since">–</div></div>
-      </div>
-      <div class="hint">Drag across the chart to zoom in · double-click to go back · tap or hover for values</div>`;
-    return c;
-  }
-  function drawCoins() {
-    const host = document.getElementById('coins');
-    SYMS.forEach((s) => { if (!document.getElementById('coin-' + s)) host.appendChild(cardShell(s)); drawCoin(s); });
-  }
-  function drawCoin(s) {
-    const d = D[s], card = document.getElementById('coin-' + s); if (!d || !card || !range) return;
-    const q = (k) => card.querySelector(`[data-k="${k}"]`);
-    const lastB = d.h4[d.h4.length - 1], pos = BOT.positions[s];
-    q('px').textContent = fmtP(d.live);
-    const pill = q('pill'); pill.textContent = 'Rule: ' + (lastB.sig > 0 ? 'long' : 'short'); pill.className = 'pill ' + (lastB.sig > 0 ? 'long' : 'short');
-    q('fast').textContent = fmtP(lastB.fast); q('slow').textContent = fmtP(lastB.slow);
-    const gap = (lastB.fast / lastB.slow - 1) * 100; q('gap').textContent = fmtPct(gap);
-    let since = null; for (let i = d.h4.length - 1; i > 0; i--) if (d.h4[i].flip) { since = d.h4[i].t; break; }
-    q('since').textContent = since ? d3.utcFormat('%d %b %H:%M')(new Date(since)) : 'before chart';
-
-    // price series for the chosen range
-    const iv = detailInterval(range[1] - range[0]);
-    const src = iv && d.detail[iv] ? d.detail[iv].bars : d.h4;
-    const vis = src.filter((b) => b.t >= range[0] && b.t <= range[1] + 1);
-    const avg = d.h4.filter((b) => b.t >= range[0] - H4 && b.t <= range[1] + H4 && b.slow != null);
-    const firstC = vis.length ? vis[0].o : null;
-    const chg = firstC ? (d.live / firstC - 1) * 100 : null;
-    const ce = q('chg'); ce.textContent = chg == null ? '' : fmtPct(chg) + ' in range'; cls(ce, chg);
-
-    const pe = q('pos');
-    if (pos) {
-      const dir = pos.side === 'long' ? 1 : -1, pnl = dir * (d.live - pos.entry) * pos.size, toStop = pos.stop ? Math.abs(pos.stop / d.live - 1) * 100 : null;
-      pe.innerHTML = `<span>Bot: <b class="${dir > 0 ? 'up' : 'down'}">${pos.side} ${pos.leverage}x</b></span><span>entry <b class="num">${fmtP(pos.entry)}</b></span>
-        <span>stop <b class="num">${fmtP(pos.stop)}</b> <span class="muted">(${toStop == null ? '–' : toStop.toFixed(2) + '% away'})</span></span>
-        <span>live result <b class="num ${pnl >= 0 ? 'up' : 'down'}">${fmtUsd(pnl, true)} USD</b></span>`;
-    } else {
-      const closed = [...BOT.events].reverse().find((e) => e.symbol === s && /closed/.test(e.kind));
-      pe.innerHTML = `<span class="muted">No position${closed ? ' · last ' + closed.kind.replace(' (stop-loss or liquidation)', '') + ' at ' + utc(new Date(closed.ts)) + ' UTC' : ''}</span>`;
-    }
-    drawChart(q('chart'), s, vis, avg, pos);
-  }
-
-  function drawChart(el, s, vis, avg, pos) {
-    el.replaceChildren();
-    if (!vis.length) { el.textContent = 'No prices in this period.'; return; }
-    const W = el.clientWidth || 520, H = el.clientHeight || 270, m = { t: 12, r: 58, b: 20, l: 4 };
-    const x = d3.scaleUtc().domain(range).range([m.l, W - m.r]);
-    const vals = vis.flatMap((b) => [b.h, b.l]).concat(opt.avg ? avg.flatMap((b) => [b.fast, b.slow]) : [])
-      .concat(pos && opt.bot ? [pos.entry, pos.stop] : []).concat([D[s].live]).filter((v) => v != null);
-    const y = d3.scaleLinear().domain(d3.extent(vals)).nice(5).range([H - m.b, m.t]);
-    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    const clip = 'clip-' + s; svg.append('clipPath').attr('id', clip).append('rect').attr('x', m.l).attr('y', 0).attr('width', W - m.l - m.r).attr('height', H);
-    const plot = svg.append('g').attr('clip-path', `url(#${clip})`);
-    if (opt.zones) {
-      plot.append('g').selectAll('rect').data(avg).join('rect').attr('x', (b) => x(b.t)).attr('width', (b) => Math.max(0.5, x(b.t + H4) - x(b.t) + 0.5))
-        .attr('y', m.t).attr('height', H - m.b - m.t).attr('fill', (b) => (b.sig > 0 ? css('--up-bg') : css('--down-bg')));
-    }
-    svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', css('--grid'));
-    svg.append('g').selectAll('text').data(y.ticks(5)).join('text').attr('x', W - m.r + 6).attr('y', (v) => y(v) + 3.5).text(fmtP);
-    const span = range[1] - range[0];
-    const tf = span <= 2 * DAY ? '%H:%M' : span <= 60 * DAY ? '%d %b' : '%b %y';
-    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, W / 105)).tickSize(0).tickFormat(d3.utcFormat(tf))).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.2em');
-    // price
-    const step = vis.length > 1 ? vis[1].t - vis[0].t : H4;
-    const bw = Math.max(1, (x(range[0] + step) - x(range[0])) * 0.62);
-    const upC = css('--up'), dnC = css('--down');
-    if (opt.candles && vis.length <= 260) {
-      const g = plot.append('g');
-      g.selectAll('line').data(vis).join('line').attr('x1', (b) => x(b.t - step / 2)).attr('x2', (b) => x(b.t - step / 2)).attr('y1', (b) => y(b.h)).attr('y2', (b) => y(b.l)).attr('stroke', (b) => (b.c >= b.o ? upC : dnC)).attr('stroke-opacity', .8);
-      g.selectAll('rect').data(vis).join('rect').attr('x', (b) => x(b.t - step / 2) - bw / 2).attr('width', bw)
-        .attr('y', (b) => y(Math.max(b.o, b.c))).attr('height', (b) => Math.max(1, Math.abs(y(b.o) - y(b.c)))).attr('fill', (b) => (b.c >= b.o ? upC : dnC)).attr('fill-opacity', .85);
-    } else {
-      plot.append('path').datum(vis).attr('d', d3.line().x((b) => x(b.t)).y((b) => y(b.c))).attr('fill', 'none').attr('stroke', css('--price')).attr('stroke-width', 1.4);
-    }
-    // live tail
-    const lastV = vis[vis.length - 1];
-    plot.append('line').attr('x1', x(lastV.t)).attr('y1', y(lastV.c)).attr('x2', x(Math.min(Date.now(), range[1]))).attr('y2', y(D[s].live)).attr('stroke', css('--price')).attr('stroke-dasharray', '2 3');
-    if (opt.avg) {
-      const line = (k) => d3.line().x((b) => x(b.t)).y((b) => y(b[k]));
-      plot.append('path').datum(avg).attr('d', line('slow')).attr('fill', 'none').attr('stroke', css('--slow')).attr('stroke-width', 2);
-      plot.append('path').datum(avg).attr('d', line('fast')).attr('fill', 'none').attr('stroke', css('--fast')).attr('stroke-width', 2);
-    }
-    // crossings
-    avg.filter((b) => b.flip && b.t >= range[0] && b.t <= range[1]).forEach((b) => {
-      const c = b.sig > 0 ? upC : dnC, cx = x(b.t);
-      plot.append('line').attr('x1', cx).attr('x2', cx).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', c).attr('stroke-dasharray', '3 3').attr('stroke-opacity', .8);
-      const yy = b.sig > 0 ? H - m.b - 3 : m.t + 3, dir = b.sig > 0 ? -1 : 1;
-      plot.append('path').attr('d', `M${cx},${yy + dir * 10} L${cx - 6},${yy} L${cx + 6},${yy} Z`).attr('fill', c);
-    });
-    // bot
-    if (opt.bot) {
-      if (pos) {
-        [[pos.entry, 'entry', css('--fg')], [pos.stop, 'stop', dnC]].forEach(([v, lab, c]) => {
-          if (v == null) return;
-          svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', c).attr('stroke-dasharray', '6 4').attr('stroke-opacity', .9);
-          svg.append('text').attr('x', m.l + 4).attr('y', y(v) - 4).attr('fill', c).style('fill', c).text(`${lab} ${fmtP(v)}`);
-        });
-      }
-      BOT.events.filter((e) => e.symbol === s && e.ts >= range[0] && e.ts <= range[1] + 60e3).forEach((e) => {
-        const near = vis[Math.min(vis.length - 1, d3.bisector((b) => b.t).center(vis, e.ts))];
-        if (/opened/.test(e.kind) && e.price) {
-          plot.append('circle').attr('cx', x(e.ts)).attr('cy', y(e.price)).attr('r', 5).attr('fill', css('--fg')).attr('stroke', css('--panel')).attr('stroke-width', 2);
-        } else if (/closed/.test(e.kind)) {
-          const cy = y(pos && pos.stop ? near.c : (near ? near.c : D[s].live));
-          plot.append('text').attr('x', x(e.ts)).attr('y', cy + 4).attr('text-anchor', 'middle').style('fill', dnC).style('font', '600 13px var(--font)').text('✕');
-        }
-      });
-    }
-    // live price tag
-    const ly = y(D[s].live);
-    svg.append('rect').attr('x', W - m.r + 2).attr('y', ly - 8).attr('width', m.r - 4).attr('height', 16).attr('rx', 4).attr('fill', css('--fg'));
-    svg.append('text').attr('x', W - m.r + 6).attr('y', ly + 3.5).style('fill', css('--panel')).text(fmtP(D[s].live));
-
-    // hover + drag-to-zoom
-    const tip = d3.select(el).append('div').attr('class', 'tip').style('display', 'none');
-    const guide = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', css('--faint')).style('display', 'none');
-    const sel = svg.append('rect').attr('y', m.t).attr('height', H - m.b - m.t).attr('fill', css('--accent')).attr('fill-opacity', .12).style('display', 'none');
-    let dragFrom = null;
-    const overlay = svg.append('rect').attr('x', m.l).attr('width', W - m.l - m.r).attr('height', H).attr('fill', 'transparent').style('cursor', 'crosshair');
-    const show = (mx) => {
-      const t = +x.invert(mx);
-      const b = vis[Math.min(vis.length - 1, d3.bisector((q) => q.t).center(vis, t))];
-      const a = avg.length ? avg[Math.min(avg.length - 1, Math.max(0, d3.bisector((q) => q.t).right(avg, b.t) - 1))] : null;
-      guide.attr('x1', x(b.t)).attr('x2', x(b.t)).style('display', null);
-      const ch = (b.c / b.o - 1) * 100;
-      tip.html(`<div class="t">${utc(new Date(b.t))} UTC close</div>O ${fmtP(b.o)} &nbsp;H ${fmtP(b.h)}<br>L ${fmtP(b.l)} &nbsp;C ${fmtP(b.c)} <span class="${ch >= 0 ? 'up' : 'down'}">${fmtPct(ch)}</span>` +
-        (a ? `<br><span style="color:${css('--fast')}">fast ${fmtP(a.fast)}</span> · <span style="color:${css('--slow')}">slow ${fmtP(a.slow)}</span><br>rule: <b class="${a.sig > 0 ? 'up' : 'down'}">${a.sig > 0 ? 'long' : 'short'}</b>${a.flip ? ' (crossed)' : ''}` : ''))
-        .style('display', null);
-      const px = x(b.t) / W * el.clientWidth, tw = tip.node().offsetWidth;
-      tip.style('left', (px + 12 + tw > el.clientWidth ? px - tw - 12 : px + 12) + 'px').style('top', '6px');
-    };
-    overlay.on('pointerdown', (ev) => { if (ev.pointerType === 'mouse' && ev.button === 0) { dragFrom = d3.pointer(ev)[0]; } })
-      .on('pointermove', (ev) => {
-        const [mx] = d3.pointer(ev); show(mx);
-        if (dragFrom != null) { sel.attr('x', Math.min(dragFrom, mx)).attr('width', Math.abs(mx - dragFrom)).style('display', null); }
-      })
-      .on('pointerup', (ev) => {
-        const [mx] = d3.pointer(ev);
-        if (dragFrom != null && Math.abs(mx - dragFrom) > 12) setRange([+x.invert(Math.min(dragFrom, mx)), +x.invert(Math.max(dragFrom, mx))], 'drag');
-        dragFrom = null; sel.style('display', 'none');
-      })
-      .on('pointerleave', () => { tip.style('display', 'none'); guide.style('display', 'none'); dragFrom = null; sel.style('display', 'none'); })
-      .on('dblclick', () => { preset = store.get('wbt-last-preset') || '30d'; setRange(presetRange(preset), 'preset'); });
-  }
-
-  // ---------- activity ----------
-  function drawFeed() {
-    const ul = document.getElementById('feed'); ul.replaceChildren();
-    const ev = [...BOT.events].reverse();
-    if (!ev.length) { ul.innerHTML = '<li class="muted">Nothing yet.</li>'; return; }
-    ev.forEach((e) => {
-      const li = document.createElement('li');
-      const kind = /opened/.test(e.kind) ? 'open' : /closed/.test(e.kind) ? 'close' : 'note';
-      const label = kind === 'open' ? 'opened' : kind === 'close' ? 'closed' : 'skipped';
-      li.innerHTML = `<span class="when"></span><b></b><span class="what"><span class="tag ${kind}">${label}</span><span class="txt"></span></span>`;
-      li.querySelector('.when').textContent = utc(new Date(e.ts));
-      li.querySelector('b').textContent = e.symbol || '';
-      li.querySelector('.txt').textContent = e.kind + (e.price ? ' at ' + fmtP(e.price) : '') + (e.note ? ' — ' + e.note : '');
-      ul.appendChild(li);
-    });
-  }
-
-  // ---------- chrome ----------
-  function setDot(ok) { document.getElementById('liveDot').classList.toggle('stale', !ok); }
-  function tick() {
-    const now = Date.now(), next = Math.ceil(now / H4) * H4, left = next - now;
-    const h = Math.floor(left / 3600e3), mm = Math.floor(left % 3600e3 / 60e3), ss = Math.floor(left % 60e3 / 1e3);
-    document.getElementById('countdown').textContent = `${h}h ${String(mm).padStart(2, '0')}m ${String(ss).padStart(2, '0')}s`;
-    document.getElementById('clock').textContent = d3.utcFormat('%d %b %H:%M:%S')(new Date(now)) + ' UTC';
-    const age = BOT.updated ? Math.round((now - BOT.updated) / 60e3) : null;
-    const ra = document.getElementById('recordAge');
-    ra.textContent = age == null ? 'No bot record in this copy' : `Bot record ${age} min old`;
-    ra.classList.toggle('warn', age == null || age > 30);
-  }
-  document.getElementById('themeBtn').addEventListener('click', () => {
-    const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    r.dataset.theme = dark ? 'light' : 'dark'; store.set('wbt-theme', r.dataset.theme); redrawAll();
-  });
-  const savedTheme = store.get('wbt-theme'); if (savedTheme) document.documentElement.dataset.theme = savedTheme;
-  document.querySelectorAll('#presets button').forEach((b) => b.addEventListener('click', () => { preset = b.dataset.p; store.set('wbt-last-preset', preset); setRange(presetRange(preset), 'preset'); }));
-  ['from', 'to'].forEach((id) => document.getElementById(id).addEventListener('change', () => {
-    const f = Date.parse(document.getElementById('from').value + 'T00:00:00Z'), t = Date.parse(document.getElementById('to').value + 'T23:59:59Z');
-    if (isFinite(f) && isFinite(t) && t > f) setRange([f, t], 'dates');
-  }));
-  [['tAvg', 'avg'], ['tZones', 'zones'], ['tCandles', 'candles'], ['tBot', 'bot']].forEach(([id, k]) => {
-    const el = document.getElementById(id), saved = store.get('wbt-' + k);
-    if (saved != null) el.checked = saved === '1';
-    opt[k] = el.checked;
-    el.addEventListener('change', () => { opt[k] = el.checked; store.set('wbt-' + k, el.checked ? '1' : '0'); drawCoins(); });
-  });
-  document.getElementById('nFast').textContent = BOT.fast; document.getElementById('nSlow').textContent = BOT.slow;
-  document.getElementById('rMargin').textContent = BOT.config.margin_per_position ?? 20;
-  document.getElementById('rLev').textContent = BOT.config.leverage ?? 3;
-  document.getElementById('rStop').textContent = ((BOT.config.stop_loss_pct ?? 0.03) * 100).toFixed(0);
-  function redrawAll() { drawAccount(); drawNav(); drawCoins(); }
-  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redrawAll, 150); });
-
-  // pick up a newer bot record from the published page without a full reload
-  async function refreshRecord() {
-    if (location.protocol === 'file:') return;
-    try {
-      const txt = await (await fetch(location.pathname + '?t=' + Date.now(), { cache: 'no-store' })).text();
-      const m = txt.match(/window\.BOT = (\{.*?\});<\/script>/s);
-      if (m) { const fresh = JSON.parse(m[1].replace(/<\\\//g, '</')); if (fresh.updated > (BOT.updated || 0)) { Object.assign(BOT, fresh); drawAccount(); drawCoins(); drawFeed(); } }
-    } catch {}
-  }
-
-  const VIEWS = ['live', 'whatif', 'lab', 'research'];
-  function route() {
-    const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'live';
-    VIEWS.forEach((x) => { document.getElementById('view-' + x).hidden = x !== v; });
-    document.querySelectorAll('.tabs a').forEach((a) => a.classList.toggle('on', a.dataset.view === v));
-    if (v === 'whatif' && window.WhatIf) window.WhatIf.mount(document.getElementById('view-whatif'), BOT);
-    if (v === 'lab' && window.Lab) window.Lab.mount(document.getElementById('view-lab'));
-    if (v === 'research' && window.Lab) window.Lab.mountResearch(document.getElementById('view-research'));
-    if (v === 'live') setTimeout(redrawAll, 0);
-  }
-  window.addEventListener('hashchange', route);
-  route();
-
-  (async () => {
-    tick(); setInterval(tick, 1000);
-    drawFeed();
-    try { await loadAll(); setDot(true); }
-    catch (e) { setDot(false); document.getElementById('coins').innerHTML = `<p class="warn">Could not load prices from Binance (${e.message}). Check the connection and reload.</p>`; return; }
-    drawAccount(); drawNav();
-    if (preset === 'custom') { let r = null; try { r = JSON.parse(store.get('wbt-range')); } catch {} await setRange(r || presetRange('30d'), r ? 'dates' : 'preset'); }
-    else await setRange(presetRange(preset), 'preset');
-    setInterval(async () => { await refreshLive(); if (preset !== 'custom') range = presetRange(preset); await ensureDetail(range).catch(() => {}); drawAccount(); drawNav(); drawCoins(); }, 60e3);
-    setInterval(refreshRecord, 5 * 60e3);
-  })();
-})();
+async function load() {
+  try {
+    const r = await fetch('bot/data/market/markets.json?t=' + Date.now());
+    DATA = await r.json();
+    const ago = Math.round((Date.now() - DATA.updated) / 60000);
+    document.getElementById('meta').textContent = `Updated ${new Date(DATA.updated).toLocaleString()} (${ago} min ago) · `
+      + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · refreshes every 10 minutes`;
+    render();
+  } catch (e) { document.getElementById('meta').textContent = 'Could not load the market data yet.'; }
+}
+load(); setInterval(load, 5 * 60 * 1000);
 </script>
 </body>
 </html>

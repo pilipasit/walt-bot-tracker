@@ -59,8 +59,7 @@ jobs:
           git config user.email "walt-bot@users.noreply.github.com"
           # In a rebase, -X theirs keeps THIS run's commit: the bot owns its state files.
           save() {
-            [ "$MODE" = "prices" ] && return 0
-            git add -A bot index.html
+                        git add -A bot bot.html index.html
             git diff --cached --quiet && return 0
             git commit -q -m "bot cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
             for i in 1 2 3 4 5; do git pull --rebase -q -X theirs && git push -q && return 0; sleep 7; done
