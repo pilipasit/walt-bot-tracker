@@ -226,7 +226,7 @@ def run(mode: str) -> None:
         from .live import run as live_run
         from .walt_client import connect
 
-        if mode != "markets":  # "markets" = the analysis page only: no trading code runs at all
+        if mode not in ("markets", "quote"):  # "markets"/"quote" = the analysis page only: no trading code runs at all
             cfg = _live_config(str(base / "config.live.json"))
             print(("LIVE" if mode == "live" else "Dry run") + " cycle", flush=True)
             asyncio.run(live_run(cfg, mode == "live", False, connect))
@@ -244,7 +244,8 @@ def run(mode: str) -> None:
         try:
             from .markets import build
 
-            build()
+            if mode != "quote":
+                build()
         except Exception as e:  # noqa: BLE001
             print("market analysis not rebuilt:", str(e)[:200], flush=True)
         if before is not None and TOKEN.exists() and hashlib.sha256(TOKEN.read_bytes()).hexdigest() != before:
@@ -252,7 +253,7 @@ def run(mode: str) -> None:
             print("sign-in renewed and saved", flush=True)
         if TOKEN.exists():
             TOKEN.unlink()
-        if mode == "markets":
+        if mode in ("markets", "quote"):
             return
         try:
             from .dashboard import write_data

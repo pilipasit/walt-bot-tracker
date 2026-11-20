@@ -92,6 +92,12 @@ async def sample(client) -> int:
         store[sym] = [s for s in store[sym] if s[0] > now - KEEP_MS]
     OUT.mkdir(parents=True, exist_ok=True)
     SAMPLES.write_text(json.dumps(store, separators=(",", ":")), encoding="utf-8")
+    # live.json: just the latest Walt price per asset (+ PAXG at that moment) for the page's 1-minute refresh.
+    latest = {k: v[-1] for k, v in store.items() if v and not k.startswith("_")}
+    paxg = store.get("_PAXG", [])
+    (OUT / "live.json").write_text(json.dumps({"updated": now, "prices": latest,
+                                              "paxg": paxg[-1] if paxg and paxg[-1][0] > now - 120_000 else None},
+                                             separators=(",", ":")), encoding="utf-8")
     return n
 
 

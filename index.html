@@ -366,7 +366,7 @@ async function load() {
     DATA = await r.json();
     const ago = Math.round((Date.now() - DATA.updated) / 60000);
     document.getElementById('meta').textContent = `Updated ${new Date(DATA.updated).toLocaleString()} (${ago} min ago) · `
-      + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · crypto prices live · others refresh every 10 min`;
+      + `${DATA.assets.length} assets · fee ${DATA.fee_pct}% per side · crypto + gold live · other Walt prices every minute · trends every 10 min`;
     render(); stream();
   } catch (e) { document.getElementById('meta').textContent = 'Could not load the market data yet.'; }
 }
@@ -388,7 +388,27 @@ function stream() {
   };
   open(0);
 }
-load(); setInterval(load, 60 * 1000);
+/* Walt prices for everything else, refreshed every minute by the cloud job. Read through the GitHub API, which has no
+   CDN cache (the Pages copy can lag by minutes); falls back to the Pages copy if the API refuses. */
+async function quotes() {
+  if (!DATA) return;
+  let q = null;
+  try {
+    const r = await fetch('https://api.github.com/repos/pilipasit/walt-bot-tracker/contents/bot/data/market/live.json', { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+    if (r.ok) q = await r.json();
+  } catch {}
+  if (!q) { try { q = await (await fetch('bot/data/market/live.json?t=' + Date.now())).json(); } catch { return; } }
+  for (const a of DATA.assets) {
+    const w = q.prices[a.symbol]; if (!w) continue;
+    if (!a.walt_at || w[0] > a.walt_at) { a.walt_price = w[1]; a.walt_at = w[0];
+      if (a.proxy) { if (q.paxg) a.proxy_ref = q.paxg[1]; }
+      if (!a.binance && !a.proxy) LIVE[a.symbol] = w[1]; }
+  }
+  QUOTED = q.updated; render();
+}
+let QUOTED = 0;
+load(); setInterval(load, 5 * 60 * 1000);
+setTimeout(quotes, 3000); setInterval(quotes, 75 * 1000);
 </script>
 </body>
 </html>

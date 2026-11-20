@@ -226,7 +226,7 @@ def main() -> None:
     p = sub.add_parser("cloud-relogin", help="the cloud bot's Walt sign-in expired: sign in again and send it to GitHub")
     p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["relogin"]).relogin())
     p = sub.add_parser("cloud-run", help="one bot cycle on GitHub Actions (used by the workflow)")
-    p.add_argument("--mode", choices=["prices", "dry", "live", "markets"], default="markets")
+    p.add_argument("--mode", choices=["prices", "dry", "live", "markets", "quote"], default="markets")
     p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["run"]).run(a.mode))
     p = sub.add_parser("cloud-status", help="show what the GitHub copy of the bot last did")
     p.set_defaults(fn=lambda a: __import__("waltbot.cloud", fromlist=["status"]).status())

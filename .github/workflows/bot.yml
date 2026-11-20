@@ -71,12 +71,16 @@ jobs:
             n=$((n + 1))
             if [ -f bot/STOP ]; then echo "bot/STOP exists — stopping"; break; fi
             echo "::group::cycle $n $(date -u +'%H:%M') UTC ($MODE)"
-            (cd bot && python -m waltbot cloud-run --mode "$MODE") || echo "::warning::cycle $n failed"
+            M="$MODE"
+            # In markets mode: the full analysis on each 10-minute mark (and the first cycle), quick quotes every minute.
+            if [ "$MODE" = "markets" ] && [ "$n" -gt 1 ] && [ $(( $(date +%s) / 60 % 10 )) -ne 0 ]; then M=quote; fi
+            (cd bot && python -m waltbot cloud-run --mode "$M") || echo "::warning::cycle $n failed"
             echo "::endgroup::"
             save
             now=$(date +%s)
-            [ $(( now + 600 )) -ge "$end" ] && break
-            sleep $(( 600 - now % 600 + 5 ))   # wake just after the next 10-minute mark
+            step=600; [ "$MODE" = "markets" ] && step=60
+            [ $(( now + step )) -ge "$end" ] && break
+            sleep $(( step - now % step + 3 ))   # wake just after the next step mark
             git pull --rebase -q -X theirs || git rebase --abort || true
           done
       - name: Start the next run (keeps the bot going without the PC)
