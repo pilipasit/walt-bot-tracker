@@ -35,6 +35,15 @@ MAX_AGE_S = 20 * 3600
 DAILY = {"US100": "^NDX", "HYPE": "HYPE32196-USD", "SUI": "SUI20947-USD"}
 DAY_MS = 86_400_000
 
+# Wider long-term universe (not tradable on Walt): S&P 100 and Nasdaq-100 leaders plus the main ETFs, so the page can
+# rank candidates beyond Walt's list. Names come from Yahoo. Walt symbols already in markets.UNIVERSE are skipped.
+EXTRA_STOCKS = """BRK-B JPM LLY V UNH XOM MA JNJ PG HD COST ABBV WMT NFLX CRM BAC CVX KO MRK PEP TMO LIN ADBE ACN MCD
+CSCO ABT WFC IBM GE DHR QCOM TXN INTU PM CAT AMGN VZ DIS NOW ISRG GS MS CMCSA NEE PFE RTX SPGI UNP T LOW HON AXP
+BKNG COP UBER BLK PLD LMT SCHW SBUX MDT DE BMY GILD C MO ADP CB MDLZ TMUS SO DUK MMM USB BA CL NKE CVS TGT EMR GM F
+COF FDX MET AIG ASML PANW CRWD SNPS CDNS MELI SHOP ANET LRCX AMAT KLAC MRVL ARM NET DDOG ABNB PYPL NVO SAP""".split()
+EXTRA_ETFS = """QQQ VTI VT VXUS EFA EEM IWM DIA TLT IEF BND TIP GLD SLV XLK XLF XLE XLV XLI XLY XLP XLU XLRE XLB XLC SMH
+VNQ SCHD VIG ARKK IBIT""".split()
+
 
 def ysym(sym: str, group: str) -> str:
     if sym in DAILY:
@@ -44,7 +53,7 @@ def ysym(sym: str, group: str) -> str:
     return f"{sym}-USD" if group == "Crypto" else sym
 
 
-def fetch_daily(symbol: str) -> list[tuple[int, float]]:
+def fetch_daily(symbol: str) -> tuple[list[tuple[int, float]], str | None]:
     url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}"
            "?interval=1d&range=20y&includePrePost=false")
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (walt-bot-tracker)"})
@@ -57,7 +66,8 @@ def fetch_daily(symbol: str) -> list[tuple[int, float]]:
         if c and c > 0 and d not in seen:
             seen.add(d)
             out.append((t * 1000, float(c)))
-    return out
+    meta = res.get("meta") or {}
+    return out, meta.get("longName") or meta.get("shortName")
 
 
 def sma(xs: list[float], n: int, end: int | None = None) -> float | None:
@@ -201,22 +211,39 @@ def build(force: bool = False) -> Path | None:
     tp = OUT / "theses.json"
     if tp.exists():
         theses = json.loads(tp.read_text(encoding="utf-8"))
+    walt = {sym for sym, _, _ in UNIVERSE}
+    todo = [(sym, group, True) for sym, group, _ in UNIVERSE]
+    todo += [(t, "Stocks", False) for t in EXTRA_STOCKS if t not in walt]
+    todo += [(t, "ETFs", False) for t in EXTRA_ETFS if t not in walt]
+
+    def one(item):
+        sym, group, on_walt = item
+        y = ysym(sym, group) if on_walt else sym
+        for attempt in range(3):
+            try:
+                rows, name = fetch_daily(y)
+                return item, y, rows, name, None
+            except Exception as e:  # noqa: BLE001
+                err = str(e)[:120]
+                time.sleep(2 * (attempt + 1))
+        return item, y, None, None, err
+
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(4) as ex:
+        results = list(ex.map(one, todo))
     assets, series, errors = [], {}, {}
-    for sym, group, _ in UNIVERSE:
-        y = ysym(sym, group)
-        try:
-            rows = fetch_daily(y)
-        except Exception as e:  # noqa: BLE001
-            errors[sym] = str(e)[:120]
+    for (sym, group, on_walt), y, rows, name, err in results:
+        if err:
+            errors[sym] = err
             continue
         a = analyse(rows, group)
         if a is None:
             errors[sym] = f"only {len(rows)} days of data"
             continue
         series[sym] = (group, rows)
-        assets.append({"symbol": sym, "name": NAMES.get(sym, sym), "group": group, "source": f"Yahoo Finance daily ({y})",
-                       **a, "thesis": theses.get(sym)})
-        time.sleep(0.4)
+        label = NAMES.get(sym) or (name if not on_walt or group != "Crypto" else sym) or sym
+        assets.append({"symbol": sym, "name": label, "group": group, "walt": on_walt,
+                       "source": f"Yahoo Finance daily ({y})", **a, "thesis": theses.get(sym)})
     OUT.mkdir(parents=True, exist_ok=True)
     data = {"updated": int(time.time() * 1000), "assets": assets, "evidence": evidence(series), "errors": errors,
             "theses_updated": theses.get("_updated")}

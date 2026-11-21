@@ -32,6 +32,11 @@ nav a { margin-left:14px; font-weight:600; }
 .sec { margin:26px 0 10px; font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-2); }
 .note { background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:10px 14px; color:var(--ink-2); margin-top:14px; }
 .chips { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 4px; }
+.tools { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin:14px 0 8px; }
+.tools .chips { margin:0; } .chk { display:flex; gap:6px; align-items:center; color:var(--ink-2); }
+#q { font:inherit; background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:5px 10px; min-width:220px; }
+.wb { font-size:11px; font-weight:700; border-radius:4px; padding:0 5px; background:var(--accent); color:var(--on-accent); margin-left:4px; }
+.name { max-width:220px; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:bottom; }
 .chips button { border:1px solid var(--line); background:var(--chip); color:var(--chip-ink); border-radius:999px; padding:4px 11px; cursor:pointer; }
 .chips button[aria-pressed=true] { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
 .tablewrap { overflow-x:auto; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); }
@@ -66,13 +71,15 @@ tr.detail td { white-space:normal; text-align:left; background:var(--panel-2); }
   <nav><a href="index.html">Short-term (Walt trading)</a><a href="longterm.html" aria-current="page">Long-term (investing)</a></nav>
 </header>
 
-<div class="note">For holdings of months to years (e.g. a brokerage portfolio), not Walt day trades. Each row shows the
+<div class="note">For holdings of months to years (e.g. a brokerage portfolio), not Walt day trades. Covers Walt's assets (marked W) plus S&amp;P 100 and Nasdaq leaders and the main ETFs. Each row shows the
   long-term trend (200-day average and the 10-month rule), how big a move would flip it, and where the price stands
   against the asset's <b>own history</b> (price ÷ its 200-week average, ranked against every past day). Click a row for
   the thesis and for what followed in the past from the same valuation zone. Description, not advice: past
   patterns, today's surviving assets only, no company fundamentals.</div>
 
-<div class="chips" id="groups"></div>
+<div class="tools"><div class="chips" id="groups"></div>
+  <label class="chk"><input type="checkbox" id="waltonly"> Tradable on Walt only</label>
+  <input type="search" id="q" placeholder="Search ticker or name" aria-label="Search ticker or name"></div>
 <div class="tablewrap"><table>
   <thead><tr>
     <th data-k="symbol" class="l">Asset</th><th data-k="regime" class="l">Long-term trend</th><th data-k="vs200">vs 200-day</th>
@@ -91,7 +98,7 @@ tr.detail td { white-space:normal; text-align:left; background:var(--panel-2); }
 
 <script>
 const $ = (s) => document.querySelector(s);
-let D = null, GROUP = 'All', SORT = { k: 'pct', dir: 1 }, OPEN = new Set();
+let D = null, GROUP = 'All', Q = '', WALT = false, SORT = { k: 'pct', dir: 1 }, OPEN = new Set();
 const FIFTHS = ['cheapest fifth (0–20)', 'cheap (20–40)', 'middle (40–60)', 'rich (60–80)', 'most stretched (80–100)'];
 const sgn = (x, d = 1) => x == null ? '—' : `${x >= 0 ? '+' : ''}${x.toFixed(d)}%`;
 const cls = (x) => x == null ? '' : x >= 0 ? 'up' : 'down';
@@ -156,12 +163,13 @@ function detail(a) {
 function render() {
   const groups = ['All', ...new Set(D.assets.map((a) => a.group))];
   $('#groups').innerHTML = groups.map((g) => `<button aria-pressed="${g === GROUP}" data-g="${g}">${g}</button>`).join('');
-  const xs = D.assets.filter((a) => GROUP === 'All' || a.group === GROUP).slice()
+  const xs = D.assets.filter((a) => (GROUP === 'All' || a.group === GROUP) && (!WALT || a.walt)
+    && (!Q || a.symbol.toLowerCase().includes(Q) || (a.name || '').toLowerCase().includes(Q))).slice()
     .sort((a, b) => { const x = key(a, SORT.k), y = key(b, SORT.k);
       return (typeof x === 'string' ? x.localeCompare(y) : (x ?? 1e9) - (y ?? 1e9)) * SORT.dir; });
   $('#rows').innerHTML = xs.map((a) => {
     const t = a.trend, reg = t.regime.startsWith('turning') ? 'turning' : t.regime;
-    const row = `<tr class="row" data-s="${a.symbol}"><td><b>${a.symbol}</b> <span class="muted">${esc(a.name !== a.symbol ? a.name : a.group)}</span></td>
+    const row = `<tr class="row" data-s="${a.symbol}"><td><b>${a.symbol}</b>${a.walt ? '<span class="wb" title="Tradable on Walt">W</span>' : ''} <span class="muted name" title="${esc(a.name)}">${esc(a.name !== a.symbol ? a.name : a.group)}</span></td>
       <td class="l"><span class="tag t-${reg}">${t.regime}</span></td>
       <td class="num ${cls(t.vs_200d_pct)}">${sgn(t.vs_200d_pct)}</td>
       <td class="num ${a.flip.normal_months < 0.75 ? 'mid' : ''}">${Math.abs(a.flip.move_pct).toFixed(1)}% <span class="muted">(${a.flip.normal_months.toFixed(1)} mo)</span></td>
@@ -173,15 +181,19 @@ function render() {
 }
 
 function renderEvidence() {
-  const order = ['All', 'Stocks', 'Indices', 'Crypto', 'Metals', 'Energy', 'FX'];
+  const order = ['All', 'Stocks', 'ETFs', 'Indices', 'Crypto', 'Metals', 'Energy', 'FX'];
   $('#evidence').innerHTML = `<p style="margin-top:0">Every month-end since data began, each asset's price ÷ 200-week average was ranked against
     its own history <i>up to that date</i> (no look-ahead) and the next 12 months' return recorded. Medians by zone:</p>
     <div class="grid2 evgrid">${order.filter((g) => D.evidence[g]).map((g) => `<div><h4>${g}</h4>${evidenceTable(g, -1)}</div>`).join('')}</div>
-    <p class="muted">In stocks and indices the cheaper zones were followed by higher medians, the textbook pattern; in crypto too, but
-    driven by a few cycles; in metals, energy and FX the zones said little. Today's assets survived, which flatters the cheap zones
-    (assets that kept falling and died are missing).</p>`;
+    <p class="muted">Cheapest vs most stretched fifth, median next 12 months: ${order.filter((g) => D.evidence[g]?.[0] && D.evidence[g]?.[4])
+      .map((g) => `${g} ${sgn(D.evidence[g][0].median, 0)} vs ${sgn(D.evidence[g][4].median, 0)}`).join(' · ')}.
+    Today's assets survived, which flatters the cheap zones (assets that kept falling and died are missing), and windows overlap.</p>`;
 }
 
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'q') { Q = e.target.value.trim().toLowerCase(); render(); }
+  if (e.target.id === 'waltonly') { WALT = e.target.checked; render(); }
+});
 document.addEventListener('click', (e) => {
   const g = e.target.closest('[data-g]'); if (g) { GROUP = g.dataset.g; render(); return; }
   const th = e.target.closest('th[data-k]');
