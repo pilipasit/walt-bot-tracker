@@ -253,6 +253,14 @@ def run(mode: str) -> None:
                 build()
         except Exception as e:  # noqa: BLE001
             print("market analysis not rebuilt:", str(e)[:200], flush=True)
+        try:
+            if mode != "quote":
+                from .longterm import build as build_longterm
+
+                if build_longterm():  # rebuilt at most once every 20 hours
+                    print("long-term view rebuilt", flush=True)
+        except Exception as e:  # noqa: BLE001
+            print("long-term view not rebuilt:", str(e)[:200], flush=True)
         if before is not None and TOKEN.exists() and hashlib.sha256(TOKEN.read_bytes()).hexdigest() != before:
             enc.write_bytes(_fernet(key).encrypt(TOKEN.read_bytes()))
             print("sign-in renewed and saved", flush=True)

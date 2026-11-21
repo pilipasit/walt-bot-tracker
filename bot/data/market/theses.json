@@ -1,0 +1,371 @@
+{
+  "_updated": "2026-11-21",
+  "BTC": {
+    "what": "A decentralised digital asset with a programmatic, capped supply; its multi-year price tracks adoption, liquidity and its role as a monetary alternative.",
+    "bull": ["Fixed supply schedule makes it a scarce asset if demand as a store of value keeps growing.", "Regulated fund wrappers and corporate treasuries widen the pool of institutional demand.", "Network has the longest track record, deepest liquidity and strongest brand among crypto assets."],
+    "bear": ["No cash flows, so value rests entirely on shared belief and can fade.", "Highly sensitive to global liquidity; drawdowns of half or more have repeated across cycles.", "Regulatory restrictions or a better competing store of value could cap adoption."],
+    "drivers": ["Global liquidity and real interest rates", "Spot ETF and institutional flows", "Regulatory treatment", "Miner issuance versus new demand"],
+    "watch": ["Net flows into regulated Bitcoin funds turning persistently positive or negative", "Central banks or large corporates adding or exiting reserve exposure", "Major jurisdictions changing rules on custody or taxation"],
+    "horizon": "Multi-year market cycles"
+  },
+  "ETH": {
+    "what": "The leading smart-contract platform; its value depends on how much economic activity runs on it and how fees and issuance feed back to the token.",
+    "bull": ["Largest developer and application ecosystem, including stablecoins and tokenised assets.", "Staking yield and fee burning can make supply flat or shrinking when usage is high.", "Institutional tokenisation projects often choose it as the settlement layer."],
+    "bear": ["Activity is migrating to cheaper layer-2 networks and rival chains, which may capture fees.", "Token value depends on fee capture, which can fall even as usage rises.", "Competition from faster, cheaper blockchains is persistent."],
+    "drivers": ["On-chain fees and application usage", "Staking participation and net issuance", "Layer-2 scaling economics", "Crypto liquidity cycles"],
+    "watch": ["Share of stablecoin and tokenised-asset value settled on Ethereum versus rivals", "Net ETH supply turning inflationary or deflationary over a sustained period", "Fees reaching the base layer versus staying on layer-2s"],
+    "horizon": "Multi-year platform adoption cycle"
+  },
+  "SOL": {
+    "what": "A high-throughput smart-contract blockchain; its price follows developer adoption, user activity and fee revenue relative to token issuance.",
+    "bull": ["Low fees and fast confirmation suit payments, trading and consumer applications.", "Strong developer and retail activity can create network effects.", "Growing fee revenue could offset staking inflation over time."],
+    "bear": ["History of network outages raises reliability and trust questions.", "Token issuance dilutes owners unless activity and fees keep growing.", "Competes with Ethereum, its layer-2s and other fast chains."],
+    "drivers": ["Active users and transaction fees", "Developer and application growth", "Staking inflation versus demand", "Crypto risk appetite"],
+    "watch": ["Uptime record over long stretches", "Fee revenue compared with token issuance", "Whether institutional products and applications build on it"],
+    "horizon": "Multi-year adoption cycle"
+  },
+  "XRP": {
+    "what": "The token of the XRP Ledger, designed for fast cross-border settlement; its value depends on real payment usage and legal clarity.",
+    "bull": ["Fast, low-cost settlement addresses a large cross-border payments market.", "Clearer regulatory status in key markets could unlock institutional use.", "Established network with long operating history and exchange liquidity."],
+    "bear": ["Banks can use faster payment rails without needing the token.", "Large supply controlled by the issuing company creates concentration and overhang concerns.", "Utility demand has been small relative to speculative trading."],
+    "drivers": ["Regulatory and legal outcomes", "Payment-corridor and institutional adoption", "Escrow releases and company supply", "Crypto liquidity cycles"],
+    "watch": ["Measured volume of real payments settled through the token", "Banks or payment firms adopting it as a bridge asset", "Changes to regulation across major jurisdictions"],
+    "horizon": "Multi-year adoption and regulatory cycle"
+  },
+  "BNB": {
+    "what": "The native token of an exchange-linked blockchain ecosystem; its value follows exchange business health, chain usage and token burns.",
+    "bull": ["Utility across a very large exchange and its own blockchain supports steady demand.", "Scheduled supply reductions through burns lower the circulating amount over time.", "Broad retail user base gives wide distribution."],
+    "bear": ["Value is tied to one corporate ecosystem and its regulatory risk.", "Centralised control contrasts with more open competing networks.", "Exchange revenue is cyclical and falls in quiet markets."],
+    "drivers": ["Exchange trading volumes and fees", "Chain activity and applications", "Burn schedule", "Regulatory actions against the exchange"],
+    "watch": ["Enforcement or licensing changes affecting the exchange", "Share of chain activity retained against rival blockchains", "Burn pace relative to token distribution"],
+    "horizon": "Multi-year, linked to exchange cycles"
+  },
+  "DOGE": {
+    "what": "A meme-origin cryptocurrency with no fixed supply cap; its price is driven mainly by attention, sentiment and retail speculation.",
+    "bull": ["Very strong brand recognition and a loyal community.", "Simple, cheap payments could find use in tipping and merchant acceptance.", "High-profile endorsements can bring renewed demand."],
+    "bear": ["Unlimited inflationary supply and minimal development roadmap limit fundamental value.", "Price relies on sentiment, which is unstable and cyclical.", "Little real economic activity compared with other networks."],
+    "drivers": ["Retail attention and social media", "Crypto risk appetite", "Merchant and payment adoption", "Exchange and fund access"],
+    "watch": ["Real payment usage versus trading volume", "Development activity continuing over years", "Concentration of coins among large wallets"],
+    "horizon": "Sentiment-driven, short multi-year cycles"
+  },
+  "HYPE": {
+    "what": "The token of a decentralised derivatives exchange and its blockchain; its value follows trading volume, fee revenue and token repurchase or burn mechanics.",
+    "bull": ["Fee revenue from on-chain perpetual trading flows to token owners.", "Takes share from centralised exchanges with a transparent, self-custodial model.", "Community-weighted distribution rather than large venture allocations."],
+    "bear": ["Short track record and concentrated dependence on one trading venue.", "Exchange volumes fall sharply in quiet markets, cutting fees.", "Scheduled token unlocks and technical or regulatory risks remain."],
+    "drivers": ["Perpetual trading volume and open interest", "Fee revenue and token repurchase design", "Competition from other derivatives venues", "Crypto liquidity cycles"],
+    "watch": ["Market share versus centralised and decentralised competitors", "Fee revenue persisting through low-volatility periods", "Regulatory moves on on-chain derivatives"],
+    "horizon": "Multi-year, linked to derivatives-market share"
+  },
+  "LINK": {
+    "what": "The token of a decentralised oracle network that delivers off-chain data to smart contracts; value depends on how much on-chain finance relies on it.",
+    "bull": ["Dominant oracle provider embedded in many decentralised finance applications.", "Tokenised real-world assets need reliable data and cross-chain messaging.", "Staking and fee models could link usage more directly to the token."],
+    "bear": ["Value capture is unclear, since users pay fees that may not need the token.", "Competing oracle and interoperability solutions are improving.", "Revenue depends on the health of the wider crypto sector."],
+    "drivers": ["Total value secured by its oracles", "Enterprise and institutional integrations", "Staking and fee design", "Crypto liquidity cycles"],
+    "watch": ["Share of tokenised assets and stablecoins using its services", "Revenue directed to token owners", "Loss of major integrations to competitors"],
+    "horizon": "Multi-year infrastructure adoption"
+  },
+  "AVAX": {
+    "what": "The token of a smart-contract network with customisable sub-networks; its value depends on application adoption and demand for its custom chains.",
+    "bull": ["Custom chains suit institutions and games that want their own rules and capacity.", "Fast finality and low fees are competitive for applications.", "Fee burning offsets part of the token issuance."],
+    "bear": ["Crowded field of competing layer-1 and layer-2 networks with larger ecosystems.", "Sub-network activity may not create demand for the main token.", "Liquidity and developer attention are concentrated in a few leading chains."],
+    "drivers": ["Application and sub-network adoption", "Fees and token burn versus issuance", "Institutional partnerships", "Crypto risk appetite"],
+    "watch": ["Whether custom chains lock or burn the main token", "Developer count relative to rival networks", "Sustained fee revenue rather than incentive-driven activity"],
+    "horizon": "Multi-year ecosystem competition"
+  },
+  "ADA": {
+    "what": "The token of a proof-of-stake blockchain built through an academic, peer-reviewed process; value depends on whether applications and users arrive.",
+    "bull": ["Methodical engineering and strong research culture may produce a durable platform.", "Large, loyal community and wide staking participation.", "Low fees and a growing set of tools for decentralised applications."],
+    "bear": ["Slow development has left it behind rivals in applications and liquidity.", "Limited on-chain economic activity gives few fundamental sources of demand.", "Competition for developers is intense."],
+    "drivers": ["Developer and application growth", "Staking participation and issuance", "Governance and treasury funding decisions", "Crypto liquidity cycles"],
+    "watch": ["Growth in stablecoin and application activity on the network", "Developer numbers compared with leading chains", "Delivery of scaling upgrades"],
+    "horizon": "Multi-year ecosystem build-out"
+  },
+  "SUI": {
+    "what": "The token of a newer high-performance blockchain with a distinct programming model; value depends on applications, users and scheduled token releases.",
+    "bull": ["Parallel transaction processing offers speed and low fees for consumer applications.", "Developer-friendly language and tooling could attract builders.", "Fresh ecosystem with room for growth from a small base."],
+    "bear": ["Short history and an untested ecosystem compared with established chains.", "Scheduled token unlocks add steady supply pressure.", "Many comparable networks compete for the same developers and capital."],
+    "drivers": ["Application and user growth", "Token unlock schedule", "Fees and staking economics", "Crypto liquidity cycles"],
+    "watch": ["Sustained activity after incentive programmes end", "Total value locked and stablecoin balances", "Unlock schedule absorbed by genuine demand"],
+    "horizon": "Multi-year, early-stage ecosystem"
+  },
+  "TRX": {
+    "what": "The token of a blockchain widely used for moving stablecoins; its value follows transfer volume, fee burning and its role in emerging-market payments.",
+    "bull": ["Large share of stablecoin transfers brings steady fee-generating usage.", "Low cost and simplicity suit remittances and everyday payments.", "Fee burning can offset issuance when activity is high."],
+    "bear": ["Heavy reliance on one stablecoin issuer's usage patterns.", "Centralised governance and reputational and regulatory risk.", "Usage could shift to cheaper or more regulated rails."],
+    "drivers": ["Stablecoin transfer volume", "Fee burn versus issuance", "Regulation of stablecoins and associated flows", "Crypto liquidity cycles"],
+    "watch": ["Stablecoin supply held on the network versus rivals", "Changes to stablecoin regulation in major jurisdictions", "Net supply trend from burn versus issuance"],
+    "horizon": "Multi-year payments adoption"
+  },
+  "XMR": {
+    "what": "A privacy-focused cryptocurrency with hidden amounts and addresses; its value rests on demand for private digital cash and its exchange availability.",
+    "bull": ["Privacy by default offers a feature most other major coins lack.", "Tail emission gives miners a steady reward without an end to security funding.", "Demand for censorship-resistant money can persist across cycles."],
+    "bear": ["Regulators can force exchanges to delist privacy coins, limiting liquidity.", "Association with illicit use invites persistent legal pressure.", "Small developer base and limited use in mainstream finance."],
+    "drivers": ["Exchange listings and delistings", "Regulation of privacy tools", "Demand for private payments", "Crypto liquidity cycles"],
+    "watch": ["Major exchanges or payment firms adding or removing support", "New rules specifically aimed at privacy coins", "Advances in blockchain analysis that weaken privacy claims"],
+    "horizon": "Multi-year regulatory cycle"
+  },
+  "XAU": {
+    "what": "Gold, a non-yielding precious metal used as a store of value and reserve asset; long-run price tracks real interest rates, currency confidence and central-bank demand.",
+    "bull": ["Scarce, with a multi-century role as a store of value outside any government.", "Central banks diversifying reserves provide a steady structural source of demand.", "Tends to do well when real yields fall or currency confidence weakens."],
+    "bear": ["Pays no income, so higher real interest rates raise the cost of owning it.", "Price can stagnate for many years when inflation fears and geopolitical stress fade.", "Competing stores of value, such as digital assets, may draw some demand."],
+    "drivers": ["Real interest rates", "US dollar strength", "Central-bank reserve purchases", "Investment flows into gold funds"],
+    "watch": ["Central-bank net purchases turning down", "Real yields rising for a sustained period", "Exchange-traded fund inflows or outflows over several quarters"],
+    "horizon": "Multi-year to multi-decade macro cycle"
+  },
+  "XAG": {
+    "what": "Silver, a precious metal with both monetary and industrial uses; its price swings with gold's moves and with manufacturing demand.",
+    "bull": ["Industrial demand from solar, electronics and electrification supports use.", "Mine supply grows slowly and much comes as a by-product of other metals.", "Tends to amplify gold's moves when precious-metal sentiment is strong."],
+    "bear": ["Industrial exposure makes it vulnerable to global slowdowns.", "Thin market leads to larger swings than gold.", "Substitution and thrifting can reduce use per unit of product."],
+    "drivers": ["Real interest rates and dollar strength", "Industrial demand, especially solar and electronics", "Gold price direction", "Mine and recycling supply"],
+    "watch": ["Industrial demand trends in photovoltaics", "Gold-to-silver price ratio drifting persistently", "Mine output changes in major producing countries"],
+    "horizon": "Multi-year commodity cycle"
+  },
+  "XPT": {
+    "what": "Platinum, a rare metal used mainly in vehicle catalysts, jewellery and industry; supply is concentrated in few countries and demand depends on engine and hydrogen trends.",
+    "bull": ["Very concentrated supply from a few mines, with limited ability to expand quickly.", "Hydrogen technologies could create new industrial demand.", "Has historically traded at a discount to its past relationship with gold."],
+    "bear": ["Demand relies on combustion-engine catalysts, which shrink with electrification.", "Palladium and other metals can be substituted in catalysts.", "Supply disruptions and demand slowdowns both move price sharply."],
+    "drivers": ["Auto catalyst demand and emissions rules", "Mine supply in a few countries", "Industrial and hydrogen use", "Investment demand and gold's trend"],
+    "watch": ["Electric vehicle share of new car sales", "Commercial progress of hydrogen electrolysers and fuel cells", "Mine supply shocks in major producers"],
+    "horizon": "Multi-year to decade-plus industrial shift"
+  },
+  "XCU": {
+    "what": "Copper, a core industrial metal used in construction, power grids and electronics; its price follows global growth, China and electrification demand.",
+    "bull": ["Electrification, grids and renewables are copper-intensive.", "New mines take many years to develop and ore grades are declining.", "Few cheap substitutes at scale for electrical wiring."],
+    "bear": ["Demand is cyclical and heavily dependent on Chinese property and manufacturing.", "Higher prices encourage substitution, recycling and new mine supply.", "Slow global growth can swamp structural trends for years."],
+    "drivers": ["Chinese construction and manufacturing", "Power grid and renewable investment", "Mine supply and ore grades", "US dollar and global growth"],
+    "watch": ["Inventories at major metal exchanges trending persistently", "Pipeline of new mines and capital spending", "Sustained shifts in Chinese infrastructure and property activity"],
+    "horizon": "Multi-year commodity cycle"
+  },
+  "WTI": {
+    "what": "US benchmark crude oil; price is set by global supply decisions, economic growth and the pace of the energy transition.",
+    "bull": ["Underinvestment in new supply can tighten markets when demand stays firm.", "Developing economies continue to add oil demand for transport and petrochemicals.", "Producer-group output discipline can support prices."],
+    "bear": ["Electric vehicles and efficiency gains may flatten and then reduce demand.", "Shale producers add supply quickly when prices rise, capping rallies.", "Recessions cut demand sharply."],
+    "drivers": ["Producer-group output policy", "US shale supply response", "Global economic growth", "Geopolitical supply disruptions"],
+    "watch": ["Global oil demand growth turning negative in annual forecasts", "Spare production capacity held by major producers", "US output and drilling activity changes"],
+    "horizon": "Multi-year commodity cycle, decade-plus transition"
+  },
+  "BRENTOIL": {
+    "what": "International benchmark crude oil priced from North Sea and seaborne supply; it reflects global balance of supply, demand and geopolitics.",
+    "bull": ["Supply from the major producing regions depends on political stability and investment.", "Global demand in emerging markets keeps rising for transport and chemicals.", "Disciplined producer-group output can tighten the market."],
+    "bear": ["Electrification of transport and efficiency erode long-term demand growth.", "Non-producer-group supply growth, including the Americas, can swamp restraint.", "Economic slowdowns reduce consumption quickly."],
+    "drivers": ["Producer-group output decisions", "Global growth and transport demand", "Geopolitical disruptions to supply routes", "Dollar strength and inventories"],
+    "watch": ["Spare capacity trends among major producers", "Adoption pace of electric vehicles in large markets", "Sustained changes in upstream capital spending"],
+    "horizon": "Multi-year commodity cycle"
+  },
+  "NATGAS": {
+    "what": "US natural gas, a regional fuel used for power, heating and industry; price is driven by weather, storage levels, production and export capacity.",
+    "bull": ["Growing liquefied gas export capacity links US gas to global demand.", "Gas is used as a flexible partner to renewable power and in new data-centre demand.", "Prices have often mean-reverted after periods of oversupply."],
+    "bear": ["Prolific shale production can flood the market and keep prices low.", "Renewables and efficiency may slowly displace gas in power generation.", "Mild weather and high storage can depress prices for long stretches."],
+    "drivers": ["Weather and seasonal demand", "Storage levels versus average", "Shale production growth", "Export terminal capacity"],
+    "watch": ["New export terminals reaching operation", "Production growth from the largest gas-producing basins", "Power-sector gas demand relative to renewables"],
+    "horizon": "Seasonal swings within a multi-year cycle"
+  },
+  "SPY": {
+    "what": "A fund tracking the S&P 500, large US companies; long-run returns follow corporate earnings growth, valuations and interest rates.",
+    "bull": ["Index contains many globally dominant, highly profitable companies.", "Earnings have grown over the long run with the US economy and productivity gains.", "Regular rebalancing removes weak companies and adds new leaders."],
+    "bear": ["Heavy weight on a few mega-cap technology firms concentrates risk.", "Higher interest rates and elevated valuations can compress returns for years.", "Past outperformance may not repeat versus other regions."],
+    "drivers": ["Corporate earnings growth", "Interest rates and valuation multiples", "Technology and productivity trends", "US economic growth and policy"],
+    "watch": ["Share of index earnings coming from the largest companies", "Earnings growth broadening or narrowing across sectors", "Long-term rates rising or falling persistently"],
+    "horizon": "Multi-year to decade-plus economic cycle"
+  },
+  "US100": {
+    "what": "An index of the largest non-financial companies on the Nasdaq, heavily weighted to technology; returns follow innovation, earnings growth and interest rates.",
+    "bull": ["Exposure to leading firms in software, cloud, semiconductors and artificial intelligence.", "High margins and scalable business models can compound earnings.", "Technology adoption keeps expanding into more industries."],
+    "bear": ["Concentrated in a few firms, so single-company problems move the index.", "Long-duration growth stocks are sensitive to rising interest rates.", "Large capital spending on AI may not earn adequate returns."],
+    "drivers": ["Technology earnings and capital spending", "Interest rates and discount rates", "Regulation and antitrust", "Artificial intelligence adoption"],
+    "watch": ["Returns on large AI infrastructure investments becoming visible or not", "Antitrust or trade rules constraining the largest firms", "Earnings growth outside the top few constituents"],
+    "horizon": "Multi-year technology cycle"
+  },
+  "US10Y": {
+    "what": "The yield on the US 10-year Treasury, the benchmark long-term borrowing rate; it is a yield, not a price, and moves opposite to bond prices.",
+    "bull": ["Rising yields mean new bonds pay more income, benefiting savers and future bond investors.", "Higher yields reflect stronger growth or inflation, which can accompany healthy economies.", "Elevated yields give room to fall later if growth weakens, lifting existing bond prices."],
+    "bear": ["Rising yields lower existing bond prices and raise borrowing costs for governments, firms and households.", "Higher discount rates press on valuations of stocks and property.", "Falling yields can signal slowing growth or fear, and lower income for new savers."],
+    "drivers": ["Inflation expectations", "Central-bank policy path", "Government deficits and Treasury supply", "Foreign and institutional demand for Treasuries"],
+    "watch": ["Term premium rising as borrowing needs grow", "Inflation measures staying above or returning to central-bank goals", "Shifts in large foreign Treasury investors' demand"],
+    "horizon": "Multi-year rate and inflation cycle"
+  },
+  "NVDA": {
+    "what": "Designer of graphics and AI accelerator chips and the software around them; its fortunes follow data-centre AI spending and its competitive position.",
+    "bull": ["Leading AI chips plus a deeply embedded software ecosystem create switching costs.", "Data-centre investment in AI could keep growing as models and users expand.", "High margins fund heavy research spending."],
+    "bear": ["Customers are building their own chips and rivals are catching up.", "AI spending is cyclical and could slow if returns disappoint.", "Dependence on one foundry and export restrictions add supply and policy risk."],
+    "drivers": ["Data-centre capital spending by large customers", "AI model demand and efficiency", "Competition from rival and in-house chips", "Export controls and supply-chain capacity"],
+    "watch": ["Large customers shifting workloads to in-house chips", "Reported AI infrastructure budgets rising or flattening", "Changes in export rules to major markets"],
+    "horizon": "Multi-year AI investment cycle"
+  },
+  "TSLA": {
+    "what": "Maker of electric vehicles, batteries and energy storage, also pursuing autonomy and robotics; value depends on vehicle competitiveness and unproven new businesses.",
+    "bull": ["Manufacturing scale and brand in electric vehicles and a growing energy-storage business.", "Autonomy and robotics could open much larger markets if they work.", "Vertically integrated approach can lower costs."],
+    "bear": ["Intensifying competition, especially from lower-cost Chinese makers, pressures vehicle margins.", "Valuation leans on autonomy and robotics that remain unproven.", "Dependence on a single leader and regulatory scrutiny add risk."],
+    "drivers": ["Vehicle demand and pricing", "Battery costs and margins", "Autonomy progress and regulation", "Energy-storage growth"],
+    "watch": ["Autonomous service operating without supervision at scale", "Vehicle gross margins staying firm versus competitors", "Energy-storage becoming a larger share of profit"],
+    "horizon": "Multi-year, dependent on new products"
+  },
+  "AAPL": {
+    "what": "Maker of iPhones, computers and wearables with a growing services business; its value follows device loyalty, services revenue and ecosystem lock-in.",
+    "bull": ["Loyal user base and tightly integrated hardware, software and services.", "Services revenue is higher-margin and recurring.", "Strong cash generation funds shareholder returns and research."],
+    "bear": ["Mature smartphone market limits unit growth.", "Regulators challenge app-store fees and default-search payments.", "Heavy supply-chain reliance on China and Taiwan."],
+    "drivers": ["iPhone upgrade cycles", "Services revenue and margins", "Regulation of app stores and search deals", "Supply-chain and tariff exposure"],
+    "watch": ["Changes to app-store rules reducing services revenue", "Whether new product categories reach meaningful scale", "Shifts in manufacturing location and trade rules"],
+    "horizon": "Multi-year product and services cycle"
+  },
+  "MSFT": {
+    "what": "Software and cloud company spanning business applications, the Azure cloud and AI services; value follows enterprise IT spending and cloud share.",
+    "bull": ["Deeply embedded enterprise software provides recurring, sticky revenue.", "Cloud platform is one of the top two, benefiting from AI workloads.", "Diverse earnings base and strong balance sheet."],
+    "bear": ["Large AI capital spending may not earn adequate returns.", "Dependence on a partner for leading AI models adds strategic risk.", "Cloud competition and antitrust scrutiny could squeeze growth and margins."],
+    "drivers": ["Cloud migration and AI workload growth", "Enterprise software renewals and pricing", "Capital spending versus revenue return", "Regulation and competition"],
+    "watch": ["Cloud growth rate versus capital spending growth", "Adoption of AI assistants among paying business users", "Regulatory action on bundling of products"],
+    "horizon": "Multi-year enterprise technology cycle"
+  },
+  "AMZN": {
+    "what": "E-commerce, logistics and cloud-computing group; value is driven chiefly by cloud profits, advertising and retail efficiency.",
+    "bull": ["Cloud leader with high margins and demand from AI workloads.", "Advertising on its retail platform is a growing high-margin business.", "Logistics network improvements can lift retail profitability."],
+    "bear": ["Retail is low-margin and capital-intensive.", "Cloud rivals are gaining share in AI workloads.", "Antitrust and labour regulation risks are persistent."],
+    "drivers": ["Cloud growth and margins", "Advertising revenue", "Retail and logistics efficiency", "Consumer spending and capital spending"],
+    "watch": ["Cloud market-share trend against rivals", "Operating margins in retail rising or stalling", "Regulatory outcomes in antitrust cases"],
+    "horizon": "Multi-year platform cycle"
+  },
+  "GOOGL": {
+    "what": "Parent of the world's main search engine, YouTube, a major cloud business and AI research; value follows advertising, cloud growth and AI disruption of search.",
+    "bull": ["Dominant search and video platforms generate large advertising cash flows.", "Strong AI research and custom chips support products and cloud.", "Cloud business is growing and becoming more profitable."],
+    "bear": ["AI chat tools may change how people search, threatening ad revenue.", "Antitrust cases could force changes to default-search deals and structure.", "Advertising is cyclical and concentrated."],
+    "drivers": ["Search and video advertising", "Cloud growth", "AI product competition", "Antitrust and regulatory outcomes"],
+    "watch": ["Search query share against AI assistants", "Remedies imposed in antitrust rulings", "Cloud profit margin trend"],
+    "horizon": "Multi-year, shaped by AI search shift"
+  },
+  "META": {
+    "what": "Owner of Facebook, Instagram and WhatsApp; earns mainly from advertising and invests heavily in AI and long-term hardware bets.",
+    "bull": ["Billions of users and strong ad personalisation produce high margins.", "AI improves ad performance and content engagement.", "Messaging platforms have untapped business-monetisation potential."],
+    "bear": ["Spending on AI and unproven hardware could weigh on returns.", "Regulation of privacy, youth safety and competition is expanding.", "Advertising is cyclical and exposed to platform rule changes."],
+    "drivers": ["Advertising demand and pricing", "User engagement and time spent", "Capital spending on AI", "Regulation and privacy rules"],
+    "watch": ["Return on AI and hardware spending showing in revenue", "Legal or regulatory limits on data use for ads", "Engagement trends among younger users"],
+    "horizon": "Multi-year platform and ad cycle"
+  },
+  "AMD": {
+    "what": "Designer of processors and AI accelerators competing with Intel and Nvidia; value follows data-centre share gains and the AI chip cycle.",
+    "bull": ["Has gained server market share with competitive processors.", "AI accelerators give a route into a fast-growing market as an alternative supplier.", "Fabless model keeps capital needs lower."],
+    "bear": ["Leading rival has a dominant software ecosystem in AI.", "Chip demand is cyclical and AI spending may slow.", "Dependence on one foundry and trade restrictions create supply risk."],
+    "drivers": ["Data-centre processor and AI accelerator demand", "Competition from Nvidia and Intel", "Foundry capacity", "PC and gaming cycles"],
+    "watch": ["Data-centre revenue share versus competitors", "Developers adopting its AI software stack", "Customers placing large AI accelerator commitments"],
+    "horizon": "Multi-year semiconductor cycle"
+  },
+  "MSTR": {
+    "what": "A software company that largely functions as a leveraged vehicle for Bitcoin, funded by equity and debt; its value moves with Bitcoin and its funding conditions.",
+    "bull": ["Offers leveraged exposure to Bitcoin through a listed stock.", "Access to capital markets lets it add to its position when conditions allow.", "Premium to its assets, if sustained, funds accretive issuance."],
+    "bear": ["Leverage magnifies losses when Bitcoin falls.", "If the stock trades below its asset value, issuing shares dilutes owners.", "Debt service and preferred payments rely on continued market access."],
+    "drivers": ["Bitcoin price", "Premium or discount to underlying assets", "Debt and preferred-share terms", "Index inclusion and investor access"],
+    "watch": ["Share price relative to value of its Bitcoin per share", "Financing costs and maturity schedule", "Changes in accounting or index treatment"],
+    "horizon": "Multi-year, tied to Bitcoin cycles"
+  },
+  "COIN": {
+    "what": "A major US crypto exchange and custodian; revenue follows trading volumes, which rise and fall with crypto prices, plus growing subscription and stablecoin income.",
+    "bull": ["Regulated, trusted venue positioned as institutions enter crypto.", "Diversifying into custody, staking, stablecoin and derivatives revenue.", "Clearer US rules could favour compliant incumbents."],
+    "bear": ["Revenue is highly cyclical and falls sharply in quiet crypto markets.", "Fee competition from rival exchanges and brokers compresses margins.", "Regulatory action or policy reversals are a continuing risk."],
+    "drivers": ["Crypto trading volumes and prices", "Fee rates and competition", "Stablecoin and subscription revenue", "US crypto regulation"],
+    "watch": ["Non-trading revenue share rising", "Retail volume across full market cycles", "Final form of US crypto market-structure rules"],
+    "horizon": "Multi-year, tied to crypto cycles"
+  },
+  "PLTR": {
+    "what": "Software firm supplying data-analysis and AI platforms to governments and large companies; value depends on sustaining growth in commercial and defence contracts.",
+    "bull": ["Embedded in government and defence workflows with high switching costs.", "AI platform lets enterprises deploy models on their own data.", "Growing commercial customer base and strong operating leverage."],
+    "bear": ["Valuation has historically been high relative to earnings, leaving little room for disappointment.", "Government contracts can be lumpy and politically sensitive.", "Large AI providers and cloud firms compete for the same customers."],
+    "drivers": ["Government and defence budgets", "Commercial customer growth", "AI platform adoption", "Competition from cloud and AI providers"],
+    "watch": ["Commercial customer growth continuing beyond early adopters", "Concentration of revenue in a few government clients", "Margins persisting as the business scales"],
+    "horizon": "Multi-year enterprise AI adoption"
+  },
+  "TSM": {
+    "what": "The world's largest contract chip manufacturer, producing advanced chips for most leading designers; value follows leading-edge demand and geopolitical risk around Taiwan.",
+    "bull": ["Leading-edge manufacturing lead that rivals have struggled to match.", "Demand from AI and mobile customers supports high utilisation.", "Huge capital and know-how create strong barriers to entry."],
+    "bear": ["Concentration in Taiwan exposes it to geopolitical and natural risks.", "Capital spending is enormous and the chip cycle is volatile.", "Customers and governments are pushing manufacturing diversification at higher cost."],
+    "drivers": ["AI and smartphone chip demand", "Leading-edge technology lead", "Capital spending and utilisation", "Geopolitics and trade policy"],
+    "watch": ["Rivals reaching comparable advanced manufacturing quality at scale", "Overseas factories reaching volume and margins", "Escalation or easing of cross-strait tensions"],
+    "horizon": "Multi-year semiconductor and geopolitical cycle"
+  },
+  "AVGO": {
+    "what": "Designer of networking chips, custom AI accelerators and infrastructure software; value follows hyperscaler AI spending and software acquisitions.",
+    "bull": ["Custom AI chips for large cloud customers are a growing, hard-to-replace line.", "Networking products are key to scaling AI clusters.", "Infrastructure software brings sticky, high-margin recurring revenue."],
+    "bear": ["Reliance on a few very large customers creates concentration risk.", "AI spending cycles may slow or customers may change suppliers.", "Software strategy depends on price rises and acquisitions that may be limited."],
+    "drivers": ["Hyperscaler AI capital spending", "Custom chip programme wins", "Networking demand", "Software renewals and acquisitions"],
+    "watch": ["Customers moving custom chip design in-house or elsewhere", "AI networking share against rivals", "Software renewal rates after price changes"],
+    "horizon": "Multi-year AI infrastructure cycle"
+  },
+  "MU": {
+    "what": "A major maker of memory chips (DRAM and flash); earnings swing sharply with the supply and demand cycle for memory, now influenced by AI demand.",
+    "bull": ["AI servers need far more high-bandwidth memory, supporting demand.", "Industry has consolidated to a few producers, supporting pricing discipline.", "Advanced memory is hard to make, protecting leaders."],
+    "bear": ["Memory is a commodity business with deep boom-and-bust cycles.", "Capacity additions can quickly lead to oversupply and price falls.", "Competition from larger rivals and state-backed entrants is intense."],
+    "drivers": ["Memory supply and pricing cycle", "AI server memory demand", "Capital spending by producers", "Smartphone and PC demand"],
+    "watch": ["Industry inventory and capacity additions", "High-bandwidth memory pricing and share versus rivals", "Demand softness in consumer devices"],
+    "horizon": "Multi-year memory cycle"
+  },
+  "ORCL": {
+    "what": "Enterprise database and business-software company expanding into cloud infrastructure for AI; value depends on converting large contracts into profitable growth.",
+    "bull": ["Deeply embedded databases and applications give stable recurring revenue.", "Cloud infrastructure is attracting large AI-training customers.", "Large contracted backlog gives visibility on future revenue."],
+    "bear": ["Cloud build-out requires heavy spending and rising debt.", "Customer concentration in a few AI firms raises risk.", "Competition from larger cloud providers is intense."],
+    "drivers": ["Cloud infrastructure demand", "Capital spending and debt levels", "Database and application renewals", "AI customer financing health"],
+    "watch": ["Debt and free cash flow as data centres are built", "Contract backlog turning into reported revenue", "Financial strength of its largest AI customers"],
+    "horizon": "Multi-year cloud build-out"
+  },
+  "INTC": {
+    "what": "Maker of processors that is also building a contract chip-manufacturing business; value depends on whether its manufacturing recovery and new foundry customers materialise.",
+    "bull": ["Government support and desire for domestic chip supply favour a US manufacturer.", "A successful advanced process could win outside customers.", "Large installed base in PCs and servers gives revenue stability."],
+    "bear": ["Has lost market share and manufacturing leadership to rivals.", "Foundry build-out demands very large capital with uncertain returns.", "AI accelerator market is largely served by others."],
+    "drivers": ["Manufacturing process progress", "Foundry customer wins", "PC and server market share", "Government support and capital spending"],
+    "watch": ["Outside customers committing to its advanced manufacturing", "Server processor share against rivals", "Foundry losses narrowing"],
+    "horizon": "Multi-year turnaround cycle"
+  },
+  "HOOD": {
+    "what": "A retail brokerage and crypto trading platform; revenue follows retail trading activity, net interest on customer cash, and growth in accounts and new products.",
+    "bull": ["Young, growing customer base and product expansion into retirement, banking and prediction markets.", "Low-cost, user-friendly platform attracts new investors.", "Operating leverage as accounts grow."],
+    "bear": ["Revenue depends on retail trading and crypto activity, which fall in quiet markets.", "Interest income shrinks if rates fall.", "Payment-for-order-flow and other regulations could change the business model."],
+    "drivers": ["Retail trading and crypto volumes", "Interest rates on customer balances", "Account and asset growth", "Regulation of order flow and crypto"],
+    "watch": ["Customer assets and funded accounts growing across market cycles", "Share of revenue from sources other than trading and interest", "Regulatory changes to order-flow payments"],
+    "horizon": "Multi-year, linked to retail market cycles"
+  },
+  "BABA": {
+    "what": "Chinese e-commerce and cloud group; value follows Chinese consumer spending, competition from rivals, regulation and the AI and cloud build-out.",
+    "bull": ["Very large e-commerce and logistics platform with a growing cloud and AI business.", "Chinese consumption recovery could lift core commerce.", "Strong cash generation and capital-return capacity."],
+    "bear": ["Fierce competition from rival platforms squeezes margins.", "Regulatory and geopolitical risks, including listing and ownership structure concerns.", "Weak Chinese consumer and property backdrop."],
+    "drivers": ["Chinese consumer demand", "Competition in e-commerce and delivery", "Cloud and AI demand", "Regulation and US-China relations"],
+    "watch": ["Core commerce growth versus rivals", "Cloud revenue growth and profitability", "Changes in regulation or US-China capital-market rules"],
+    "horizon": "Multi-year, tied to Chinese economy"
+  },
+  "EURUSD": {
+    "what": "The price of one euro in US dollars; it reflects relative growth, interest rates, trade and capital flows between the euro area and the United States.",
+    "bull": ["Euro rises if euro-area growth and rates narrow the gap with the US.", "Large current-account surplus supports the currency.", "Dollar can weaken if US deficits or confidence in policy worsen."],
+    "bear": ["Euro weakens if euro-area growth lags and the central bank cuts rates faster.", "Political fragmentation and energy dependence are structural vulnerabilities.", "Dollar's reserve-currency role supports it in global stress."],
+    "drivers": ["Interest-rate differentials", "Relative economic growth", "Trade balances and energy costs", "Risk sentiment and safe-haven flows"],
+    "watch": ["Gap between ECB and Federal Reserve policy rates", "Euro-area fiscal integration or political strain", "Share of euro in global reserves"],
+    "horizon": "Multi-year macro cycle"
+  },
+  "GBPUSD": {
+    "what": "The price of one pound in US dollars; it reflects UK versus US growth, interest rates, trade performance and investor confidence in UK policy.",
+    "bull": ["Pound can rise if UK rates stay higher than US rates for longer.", "Deep financial centre attracts capital flows.", "Weak dollar phases lift it when US policy credibility is questioned."],
+    "bear": ["Large current-account deficit makes it dependent on foreign capital.", "Sluggish productivity and fiscal strain can weaken confidence.", "Dollar strengthens in global stress."],
+    "drivers": ["Interest-rate differentials", "UK growth and inflation", "Fiscal credibility", "Risk sentiment"],
+    "watch": ["Bank of England versus Federal Reserve rate paths", "Gilt market stress linked to government borrowing", "Current-account deficit trend"],
+    "horizon": "Multi-year macro cycle"
+  },
+  "USDJPY": {
+    "what": "The number of yen per US dollar; it is shaped by the very large gap between US and Japanese interest rates, Japan's trade position and policy shifts at the Bank of Japan.",
+    "bull": ["Higher US yields than Japan's draw capital towards dollars, keeping the pair higher.", "Japanese investors continue to invest abroad, converting yen into foreign assets.", "Structural energy import costs weigh on the yen."],
+    "bear": ["Yen could strengthen sharply if Japan keeps normalising its policy rates.", "Government intervention risk limits yen weakness.", "Yen tends to rise in global risk-off episodes as carry trades unwind."],
+    "drivers": ["US-Japan interest-rate gap", "Bank of Japan policy", "Risk sentiment and carry trades", "Japan's trade balance and energy prices"],
+    "watch": ["Bank of Japan raising rates or ending bond support", "Intervention by Japanese authorities", "US yields falling persistently"],
+    "horizon": "Multi-year rate-differential cycle"
+  },
+  "USDCHF": {
+    "what": "The number of Swiss francs per US dollar; the franc is a safe-haven currency backed by Swiss surpluses and low inflation.",
+    "bull": ["Dollar can strengthen if US rates and growth stay ahead of Switzerland's.", "Swiss central bank may resist further franc strength.", "Persistent safe-haven demand for dollars in crises also helps."],
+    "bear": ["Franc has strengthened for decades thanks to low inflation and current-account surpluses.", "Franc attracts safe-haven inflows in global stress.", "Falling US rates reduce the dollar's yield advantage."],
+    "drivers": ["Interest-rate differentials", "Swiss inflation and current-account surplus", "Safe-haven flows", "Swiss National Bank policy"],
+    "watch": ["Swiss National Bank intervention or negative-rate policy", "Divergence between US and Swiss inflation", "Global stress episodes lifting the franc"],
+    "horizon": "Multi-year macro cycle"
+  },
+  "USDCAD": {
+    "what": "The number of Canadian dollars per US dollar; the Canadian dollar is a commodity-linked currency tied to oil prices, US trade and Bank of Canada policy.",
+    "bull": ["Canadian dollar can weaken if oil falls or US growth outpaces Canada's.", "Canada's heavy trade reliance on the US ties it to US policy and tariffs.", "Interest-rate gaps in the dollar's favour support the pair."],
+    "bear": ["Higher oil and commodity prices tend to lift the Canadian dollar.", "Stable institutions and resource wealth support the currency.", "A weaker US dollar globally lowers the pair."],
+    "drivers": ["Oil and commodity prices", "Interest-rate differentials", "US-Canada trade relations", "Risk sentiment"],
+    "watch": ["Changes in US trade policy toward Canada", "Oil price trends over several quarters", "Bank of Canada versus Federal Reserve rate paths"],
+    "horizon": "Multi-year commodity and rate cycle"
+  }
+}

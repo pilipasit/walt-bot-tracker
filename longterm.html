@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walt markets — long-term view</title>
+<style>
+:root { color-scheme: light;
+  --bg:#f3f4f7; --panel:#ffffff; --panel-2:#f8f9fb; --ink:#111827; --ink-2:#374151; --muted:#5b6474; --line:#e2e5eb; --line-2:#eef0f4;
+  --chip:#eef0f4; --chip-ink:#1f2937; --up:#0b7a52; --up-bg:#e3f4ec; --down:#c23a2f; --down-bg:#fbe7e5; --side:#77705f; --side-bg:#f1efe9;
+  --accent:#c2410c; --accent-ink:#b23c0b; --on-accent:#ffffff; --warn:#8a5a00; --warn-bg:#fdf3dc;
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06); --r:10px;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) { color-scheme: dark;
+  --bg:#0b0f14; --panel:#131920; --panel-2:#171e27; --ink:#e7ecf2; --ink-2:#c9d1db; --muted:#97a3b1; --line:#253040; --line-2:#1c2531;
+  --chip:#1c2530; --chip-ink:#dce3ea; --up:#3dd08f; --up-bg:#0f2a20; --down:#ff6f63; --down-bg:#331816; --side:#bdb29b; --side-bg:#24221d;
+  --accent:#ff8a3d; --accent-ink:#ffa466; --on-accent:#1b0c00; --warn:#f2c14e; --warn-bg:#2b230e; --shadow:0 1px 2px rgba(0,0,0,.4); } }
+:root[data-theme=dark] { color-scheme: dark;
+  --bg:#0b0f14; --panel:#131920; --panel-2:#171e27; --ink:#e7ecf2; --ink-2:#c9d1db; --muted:#97a3b1; --line:#253040; --line-2:#1c2531;
+  --chip:#1c2530; --chip-ink:#dce3ea; --up:#3dd08f; --up-bg:#0f2a20; --down:#ff6f63; --down-bg:#331816; --side:#bdb29b; --side-bg:#24221d;
+  --accent:#ff8a3d; --accent-ink:#ffa466; --on-accent:#1b0c00; --warn:#f2c14e; --warn-bg:#2b230e; --shadow:0 1px 2px rgba(0,0,0,.4); }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 var(--sans); font-variant-numeric:tabular-nums; }
+.wrap { max-width:1440px; margin:0 auto; padding:20px 24px 32px; }
+.muted { color:var(--muted); } a { color:var(--accent-ink); }
+header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+header > div { display:flex; align-items:center; gap:12px; }
+.brand { display:grid; place-items:center; width:38px; height:38px; border-radius:10px; background:var(--accent); color:var(--on-accent); font:800 19px/1 var(--sans); }
+h1 { margin:0; font-size:21px; font-weight:750; letter-spacing:-.015em; }
+nav a { margin-left:14px; font-weight:600; }
+.sec { margin:26px 0 10px; font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-2); }
+.note { background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:10px 14px; color:var(--ink-2); margin-top:14px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 4px; }
+.chips button { border:1px solid var(--line); background:var(--chip); color:var(--chip-ink); border-radius:999px; padding:4px 11px; cursor:pointer; }
+.chips button[aria-pressed=true] { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+.tablewrap { overflow-x:auto; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); }
+table { border-collapse:collapse; width:100%; min-width:980px; }
+th, td { padding:7px 10px; text-align:right; border-bottom:1px solid var(--line-2); white-space:nowrap; }
+th { font-size:12px; color:var(--muted); font-weight:600; cursor:pointer; position:sticky; top:0; background:var(--panel); }
+th:first-child, td:first-child, th.l, td.l { text-align:left; }
+tbody tr.row { cursor:pointer; } tbody tr.row:hover { background:var(--panel-2); }
+.num { font-family:var(--mono); font-size:13px; }
+.up { color:var(--up); } .down { color:var(--down); } .mid { color:var(--warn); }
+.tag { display:inline-block; border-radius:6px; padding:1px 7px; font-size:12px; font-weight:600; }
+.t-uptrend { background:var(--up-bg); color:var(--up); } .t-downtrend { background:var(--down-bg); color:var(--down); }
+.t-turning { background:var(--warn-bg); color:var(--warn); }
+.bar5 { display:inline-block; width:70px; height:8px; border-radius:4px; background:linear-gradient(90deg,var(--up-bg),var(--chip),var(--down-bg)); position:relative; vertical-align:middle; }
+.bar5 i { position:absolute; top:-3px; width:3px; height:14px; background:var(--ink); border-radius:2px; }
+tr.detail td { white-space:normal; text-align:left; background:var(--panel-2); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px 22px; padding:6px 4px; }
+.grid2 h4 { margin:0 0 4px; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); }
+.grid2 ul { margin:0; padding-left:18px; } .grid2 p { margin:0 0 6px; }
+.ev { border-collapse:collapse; min-width:0; width:auto; margin-top:4px; } .ev td, .ev th { padding:3px 8px; font-size:12.5px; }
+.evgrid { grid-template-columns:repeat(auto-fit,minmax(470px,1fr)); } .evgrid > div { overflow-x:auto; }
+.ev th { position:static; cursor:default; }
+.ev tr.me td { font-weight:700; background:var(--warn-bg); }
+@media (max-width:640px) { .wrap { padding:14px 16px 24px; } nav a { margin:0 12px 0 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><span class="brand" aria-hidden="true">W</span><div><h1>Long-term view</h1>
+    <div class="muted" id="meta">Loading…</div></div></div>
+  <nav><a href="index.html">Short-term (Walt trading)</a><a href="longterm.html" aria-current="page">Long-term (investing)</a></nav>
+</header>
+
+<div class="note">For holdings of months to years (e.g. a brokerage portfolio), not Walt day trades. Each row shows the
+  long-term trend (200-day average and the 10-month rule), how big a move would flip it, and where the price stands
+  against the asset's <b>own history</b> (price ÷ its 200-week average, ranked against every past day). Click a row for
+  the thesis and for what followed in the past from the same valuation zone. Description, not advice: past
+  patterns, today's surviving assets only, no company fundamentals.</div>
+
+<div class="chips" id="groups"></div>
+<div class="tablewrap"><table>
+  <thead><tr>
+    <th data-k="symbol" class="l">Asset</th><th data-k="regime" class="l">Long-term trend</th><th data-k="vs200">vs 200-day</th>
+    <th data-k="flip" title="How far the price must move to cross its 200-day average, in normal months of movement">Flip needs</th>
+    <th data-k="cross" class="l">50/200 average</th><th data-k="tenm">10-month rule</th>
+    <th data-k="pct" title="Price ÷ 200-week average, ranked against the asset's own history: 0 = cheapest ever, 100 = most stretched">Valuation vs own history</th>
+    <th data-k="ath">From all-time high</th><th data-k="r1y">1 year</th><th data-k="r5y">5 years / yr</th>
+  </tr></thead>
+  <tbody id="rows"></tbody>
+</table></div>
+
+<h2 class="sec">How valuation zones played out</h2>
+<div class="note" id="evidence"></div>
+<p class="muted" id="foot"></p>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+let D = null, GROUP = 'All', SORT = { k: 'pct', dir: 1 }, OPEN = new Set();
+const FIFTHS = ['cheapest fifth (0–20)', 'cheap (20–40)', 'middle (40–60)', 'rich (60–80)', 'most stretched (80–100)'];
+const sgn = (x, d = 1) => x == null ? '—' : `${x >= 0 ? '+' : ''}${x.toFixed(d)}%`;
+const cls = (x) => x == null ? '' : x >= 0 ? 'up' : 'down';
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtPx = (v) => v >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v >= 1 ? v.toFixed(2) : v.toPrecision(3);
+
+function key(a, k) {
+  const t = a.trend;
+  return { symbol: a.symbol, regime: t.regime, vs200: t.vs_200d_pct, flip: a.flip.normal_months, cross: t.sma50_vs_200_pct,
+    tenm: t.ten_month === 'above' ? 1 : 0, pct: a.valuation ? a.valuation.percentile : 999, ath: a.from_ath_pct,
+    r1y: a.ret['1y'], r5y: a.ret['5y_ann'] }[k];
+}
+
+function crossText(t) {
+  const c = t.last_cross, now = t.sma50_vs_200_pct >= 0 ? '50 above 200' : '50 below 200';
+  let s = c ? `${c.type === 'golden' ? 'golden' : 'death'} cross ${c.days_ago} d ago` : now;
+  if (t.days_to_cross != null) s += ` · <span class="mid">${t.next_cross} cross ${t.days_to_cross <= 1 ? 'imminent' : `in ~${t.days_to_cross} d at this pace`}</span>`;
+  return s;
+}
+
+function zoneText(a) {
+  const v = a.valuation;
+  if (!v) return '<span class="muted">under 7 years of data</span>';
+  return `<span class="bar5" title="${v.percentile}th percentile"><i style="left:calc(${v.percentile}% - 1px)"></i></span> <span class="num">${v.percentile}</span>`
+    + ` <span class="muted">(${sgn(v.vs_200w_pct, 0)} vs 200-wk)</span>`;
+}
+
+function evidenceTable(group, fifth) {
+  const e = D.evidence[group];
+  if (!e) return '<p class="muted">Not enough history in this group.</p>';
+  let h = `<table class="ev"><tr><th class="l">Zone at the month-end</th><th>Cases</th><th>Median next 12 months</th><th>Positive</th><th>Worst 10% / best 10%</th></tr>`;
+  for (let f = 0; f < 5; f++) { const x = e[f]; if (!x) continue;
+    h += `<tr class="${f === fifth ? 'me' : ''}"><td class="l">${FIFTHS[f]}</td><td>${x.n}</td><td class="${cls(x.median)}">${sgn(x.median)}</td>`
+      + `<td>${Math.round(x.pos_share * 100)}%</td><td>${sgn(x.p10, 0)} / ${sgn(x.p90, 0)}</td></tr>`; }
+  return h + '</table>';
+}
+
+function detail(a) {
+  const t = a.thesis, v = a.valuation, tr = a.trend;
+  const list = (xs) => xs && xs.length ? `<ul>${xs.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p class="muted">—</p>';
+  const flipDir = a.flip.move_pct >= 0 ? 'rise' : 'fall';
+  const facts = `<p>Price ${fmtPx(a.price)} (${a.as_of}). The long-term trend is <b>${tr.regime}</b>: ${sgn(tr.vs_200d_pct)} from the 200-day
+    average (${fmtPx(a.flip.level)}), which has moved ${sgn(tr.sma200_slope_20d_pct, 2)} in 20 days. To flip it the price would need to
+    ${flipDir} <b>${Math.abs(a.flip.move_pct).toFixed(1)}%</b>, about ${a.flip.normal_months.toFixed(1)} normal months of movement
+    (a normal month here is ±${a.flip.month_move_pct.toFixed(1)}%). Month-end close is ${tr.ten_month ?? '—'} its 10-month average
+    (${tr.ten_month_avg ? fmtPx(tr.ten_month_avg) : '—'}).</p>
+    <p>Valuation: ${v ? `price is ${sgn(v.vs_200w_pct, 0)} vs its 200-week average, the <b>${v.percentile}th percentile</b> of ${v.history_years} years of its own history` : 'not enough history for a 200-week comparison'};
+    ${sgn(a.from_ath_pct, 0)} from its all-time high; ${a.range5y_pos != null ? `${Math.round(a.range5y_pos)}% of the way up its 5-year range` : ''}.
+    Returns: 1 month ${sgn(a.ret['1m'])}, 3 months ${sgn(a.ret['3m'])}, 1 year ${sgn(a.ret['1y'])}, 3 years ${sgn(a.ret['3y_ann'])}/yr, 5 years ${sgn(a.ret['5y_ann'])}/yr.</p>`;
+  const th = t ? `<div class="grid2">
+      <div><h4>What it is</h4><p>${esc(t.what)}</p><h4>Time scale</h4><p>${esc(t.horizon)}</p></div>
+      <div><h4>Bull case</h4>${list(t.bull)}</div><div><h4>Bear case</h4>${list(t.bear)}</div>
+      <div><h4>Long-term drivers</h4>${list(t.drivers)}</div><div><h4>Signposts that would change the picture</h4>${list(t.watch)}</div></div>`
+    : '<p class="muted">No thesis written yet.</p>';
+  const fifth = v ? Math.min(4, Math.floor(v.percentile / 20)) : -1;
+  const ev = a.symbol === 'US10Y' ? '<p class="muted">A yield, not a price: no valuation history.</p>'
+    : `<h4>What followed from each valuation zone (${esc(a.group)}, all assets in the group, month-ends)</h4>${evidenceTable(a.group, fifth)}`;
+  return `<div class="grid2"><div style="grid-column:1/-1">${facts}</div></div>${th}<div class="grid2"><div style="grid-column:1/-1">${ev}
+    <p class="muted">Overlapping 12-month windows and booms shared across assets make these look more certain than they are.</p></div></div>`;
+}
+
+function render() {
+  const groups = ['All', ...new Set(D.assets.map((a) => a.group))];
+  $('#groups').innerHTML = groups.map((g) => `<button aria-pressed="${g === GROUP}" data-g="${g}">${g}</button>`).join('');
+  const xs = D.assets.filter((a) => GROUP === 'All' || a.group === GROUP).slice()
+    .sort((a, b) => { const x = key(a, SORT.k), y = key(b, SORT.k);
+      return (typeof x === 'string' ? x.localeCompare(y) : (x ?? 1e9) - (y ?? 1e9)) * SORT.dir; });
+  $('#rows').innerHTML = xs.map((a) => {
+    const t = a.trend, reg = t.regime.startsWith('turning') ? 'turning' : t.regime;
+    const row = `<tr class="row" data-s="${a.symbol}"><td><b>${a.symbol}</b> <span class="muted">${esc(a.name !== a.symbol ? a.name : a.group)}</span></td>
+      <td class="l"><span class="tag t-${reg}">${t.regime}</span></td>
+      <td class="num ${cls(t.vs_200d_pct)}">${sgn(t.vs_200d_pct)}</td>
+      <td class="num ${a.flip.normal_months < 0.75 ? 'mid' : ''}">${Math.abs(a.flip.move_pct).toFixed(1)}% <span class="muted">(${a.flip.normal_months.toFixed(1)} mo)</span></td>
+      <td class="l">${crossText(t)}</td><td class="${t.ten_month === 'above' ? 'up' : 'down'}">${t.ten_month ?? '—'}</td>
+      <td>${zoneText(a)}</td><td class="num">${sgn(a.from_ath_pct, 0)}</td>
+      <td class="num ${cls(a.ret['1y'])}">${sgn(a.ret['1y'], 0)}</td><td class="num ${cls(a.ret['5y_ann'])}">${sgn(a.ret['5y_ann'], 0)}</td></tr>`;
+    return row + (OPEN.has(a.symbol) ? `<tr class="detail"><td colspan="10">${detail(a)}</td></tr>` : '');
+  }).join('');
+}
+
+function renderEvidence() {
+  const order = ['All', 'Stocks', 'Indices', 'Crypto', 'Metals', 'Energy', 'FX'];
+  $('#evidence').innerHTML = `<p style="margin-top:0">Every month-end since data began, each asset's price ÷ 200-week average was ranked against
+    its own history <i>up to that date</i> (no look-ahead) and the next 12 months' return recorded. Medians by zone:</p>
+    <div class="grid2 evgrid">${order.filter((g) => D.evidence[g]).map((g) => `<div><h4>${g}</h4>${evidenceTable(g, -1)}</div>`).join('')}</div>
+    <p class="muted">In stocks and indices the cheaper zones were followed by higher medians, the textbook pattern; in crypto too, but
+    driven by a few cycles; in metals, energy and FX the zones said little. Today's assets survived, which flatters the cheap zones
+    (assets that kept falling and died are missing).</p>`;
+}
+
+document.addEventListener('click', (e) => {
+  const g = e.target.closest('[data-g]'); if (g) { GROUP = g.dataset.g; render(); return; }
+  const th = e.target.closest('th[data-k]');
+  if (th) { SORT = { k: th.dataset.k, dir: SORT.k === th.dataset.k ? -SORT.dir : 1 }; render(); return; }
+  const r = e.target.closest('tr.row');
+  if (r) { const s = r.dataset.s; OPEN.has(s) ? OPEN.delete(s) : OPEN.add(s); render(); }
+});
+
+fetch('bot/data/market/longterm.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+  D = d;
+  $('#meta').textContent = `Daily data, updated ${new Date(d.updated).toLocaleString()} · ${d.assets.length} assets`
+    + (d.theses_updated ? ` · theses written ${d.theses_updated}` : '');
+  const err = Object.keys(d.errors || {});
+  $('#foot').textContent = (err.length ? `No data this time for: ${err.join(', ')}. ` : '') + 'Prices: Yahoo Finance daily closes (futures for commodities). Not financial advice.';
+  render(); renderEvidence();
+}).catch((e) => { $('#meta').textContent = 'Could not load the long-term data: ' + e.message; });
+</script>
+</body>
+</html>
